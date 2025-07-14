@@ -1,3 +1,45 @@
 .base {
     padding: 0;
 }
+
+.box {
+    padding-top: 40px;
+    width: 80vw;
+    height: 80vh;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .box {
+        padding-top: 40px;
+        width: 70vw;
+        height: 50vh;
+    }
+
+    .divBotao {
+        width: 100%;
+    }
+}
+
+@media (min-width: 600px) {
+    .divBotao {
+        width: 20%;
+    }
+}
+
+
+.content {
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    width: 100vw;
+    height: 90vh;
+}
+
+.indicator {
+    font-size: large;
+}

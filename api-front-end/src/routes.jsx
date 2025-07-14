@@ -3,7 +3,7 @@ import { PaginaInicial } from "./components/PaginaInicial/PaginaIncial";
 
 export const routes = createBrowserRouter([
     {
-        path: "/index",
+        path: "",
         element: <PaginaInicial/>,
         errorElement: <div>Erro</div>
     }
