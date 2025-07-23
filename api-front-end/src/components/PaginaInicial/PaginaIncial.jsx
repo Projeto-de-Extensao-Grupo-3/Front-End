@@ -6,12 +6,12 @@ import { Botao } from "../MaterialUI/botao/botao"
 export function PaginaInicial(){
     return(
         <div className={styles.base}>
-            <Navbar/>
+            <Navbar vazio={true} />
             <div className={styles.content}>
                 <div className={styles.box}>
                     <span className={styles.indicator}>Insira seu dados para entrar no sistema</span>
-                    <CaixaTexto texto={"Cpf"}/>
-                    <CaixaTexto texto={"Senha"} tipo={"password"}/>
+                    <CaixaTexto texto="Cpf"/>
+                    <CaixaTexto texto="Senha" tipo="password"/>
                     <div className={styles.divBotao}>
                         <Botao tipo="contained" texto="Entrar"></Botao>
                     </div>

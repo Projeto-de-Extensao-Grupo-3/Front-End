@@ -1,5 +1,47 @@
+.emptyCard {
+    background-color: #2932BB;
+    width: 100vw;
+    height: 10vh;
+}
+
 .card {
     background-color: #2932BB;
     width: 100vw;
     height: 10vh;
+    display: flex;
+}
+
+.link {
+    text-decoration: none;
+    color: #EDFFFA;
+    font-size: large;
+    border-radius: 15px;
+    padding: 8px;
+}
+
+.link:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.divLinks {
+    width: 60%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.divBurger {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .card {
+        flex-direction: row-reverse;
+    }
+    .divBurger {
+        display: flex;
+    }
+    .divLinks {
+        display: none;
+    }
 }
