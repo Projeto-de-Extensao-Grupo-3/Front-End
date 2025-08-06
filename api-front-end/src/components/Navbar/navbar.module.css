@@ -20,7 +20,8 @@
 }
 
 .link:hover {
-    background-color: rgba(0, 0, 0, 0.5);
+    animation: destaque 0.5s;
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .divLinks {
@@ -32,6 +33,11 @@
 
 .divBurger {
     display: none;
+}
+
+@keyframes destaque {
+    from {background-color: transparent;}
+    to {background-color: rgba(0, 0, 0, 0.3);}
 }
 
 @media (max-width: 600px) {

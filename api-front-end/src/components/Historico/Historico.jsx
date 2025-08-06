@@ -1,9 +1,9 @@
 import { Navbar } from "../Navbar/Navbar"
 
-export function Movimentacao() {
+export function Historico() {
     return (
         <div>
-             <Navbar vazio = {true} pageNumber = {0}/>
+             <Navbar vazio = {false} pageNumber = {0}/>
         </div>
     )
 }
