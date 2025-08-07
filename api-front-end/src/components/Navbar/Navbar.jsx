@@ -38,7 +38,7 @@ export function Navbar(props) {
                 <div className={styles.link} style={{ fontFamily: weights[0] }}>Histórico</div>
                 <div className={styles.link} style={{ fontFamily: weights[1] }}>Estoque</div>
                 <div className={styles.link} style={{ fontFamily: weights[2] }}>Dashboard</div>
-                <div className={styles.link} style={{ fontFamily: weights[3] }}>Funcionarios</div>
+                <div className={styles.link} style={{ fontFamily: weights[3] }}>Funcionários</div>
             </div>
             <div className={styles.divBurger}>
                 <ButtonReact onClick={handleClick}>
