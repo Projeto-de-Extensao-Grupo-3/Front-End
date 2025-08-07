@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
-import { PaginaInicial } from "./components/PaginaInicial/PaginaIncial";
-import { Historico } from "./components/Historico/Historico";
+import { PaginaInicial } from "./Pages/PaginaInicial/PaginaIncial";
+import { Historico } from "./Pages/Historico/Historico";
 
 export const routes = createBrowserRouter([
     {

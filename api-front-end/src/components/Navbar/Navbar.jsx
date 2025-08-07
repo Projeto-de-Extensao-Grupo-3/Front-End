@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from "./Navbar.module.css"
-import Button from '@mui/material/Button';
+import ButtonReact from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import burgerIco from "../../assets/white-burger.png"
 import { MenuItem } from "@mui/material";
@@ -18,8 +18,8 @@ export function Navbar(props) {
     // [1] -> Estoque
     // [2] -> Dashboard
     // [3] -> Funcionários
-    const weights = ["normal", "normal", "normal", "normal"]
-    weights[props.pageNumber] = "900"
+    const weights = ["Montserrat", "Montserrat", "Montserrat", "Montserrat"]
+    weights[props.pageNumber] = "Montserrat Bold"
 
     // Código retirado de https://mui.com/material-ui/react-menu/#menu-positioning com leves simplificações
     // Para explicação, me procurar (Giorgio), mas não é complicado 
@@ -35,15 +35,15 @@ export function Navbar(props) {
     return (
         <div className={styles.card}>
             <div className={styles.divLinks}>
-                <a href="" className={styles.link} style={{ fontWeight: weights[0] }}>Histórico</a>
-                <a href="" className={styles.link} style={{ fontWeight: weights[1] }}>Estoque</a>
-                <a href="" className={styles.link} style={{ fontWeight: weights[2] }}>Dashboard</a>
-                <a href="" className={styles.link} style={{ fontWeight: weights[3] }}>Funcionarios</a>
+                <div className={styles.link} style={{ fontFamily: weights[0] }}>Histórico</div>
+                <div className={styles.link} style={{ fontFamily: weights[1] }}>Estoque</div>
+                <div className={styles.link} style={{ fontFamily: weights[2] }}>Dashboard</div>
+                <div className={styles.link} style={{ fontFamily: weights[3] }}>Funcionarios</div>
             </div>
             <div className={styles.divBurger}>
-                <Button onClick={handleClick}>
+                <ButtonReact onClick={handleClick}>
                     <img src={burgerIco} style={{maxWidth: "50px"}} />
-                </Button>
+                </ButtonReact>
                 <Menu anchorEl={anchorEl} open={open} onClose={handleClose} >
                     <MenuItem onClick={handleClose}>Histórico</MenuItem>
                     <MenuItem onClick={handleClose}>Estoque</MenuItem>
