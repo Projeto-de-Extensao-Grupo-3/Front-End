@@ -1,0 +1,39 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+.main {
+    display: flex;
+
+    /* Eu talvez me arrependa disso... */
+    justify-content: center;
+}
+
+.barraFiltros {
+    width: 95vw;
+    height: auto;
+    align-self: center;
+}
+
+.bigBoxData {
+    display: flex;
+    flex-direction: row;
+    width: 25%;
+    min-width: 350px;
+    height: 10vh;
+}
+
+.boxData {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.data {
+    width: 48%;
+}
+
+.boxSelectItens {
+    width: 20%;
+}

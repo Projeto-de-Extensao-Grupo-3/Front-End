@@ -8,8 +8,14 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useEffect } from "react"
 
 export function PaginaInicial(){
+
+        useEffect(() => {
+            document.title = "Login"
+        })
+
     const navigate = useNavigate();
 
     const [cpf, setCpf] = useState('');

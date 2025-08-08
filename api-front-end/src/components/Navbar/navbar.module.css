@@ -38,6 +38,7 @@
     animation: destaque 0.5s;
     background-color: rgba(0, 0, 0, 0.3);
     border-bottom: 3px solid white;
+    cursor: pointer;
 }
 
 .divLinks {
