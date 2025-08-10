@@ -16,7 +16,7 @@
 
 .card {
     background-color: #2932BB;
-    width: 100vw;
+    width: 100%;
     height: 70px;
     display: flex;
     align-items: flex-start;

@@ -4,6 +4,7 @@ import ButtonReact from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import burgerIco from "../../assets/white-burger.png"
 import { MenuItem } from "@mui/material";
+import { useNavigate } from "react-router-dom"
 
 export function Navbar(props) {
 
@@ -32,13 +33,20 @@ export function Navbar(props) {
         setAnchorEl(null);
     };
 
+    const navigate = useNavigate();
+
+    const redirecionar = (path) => {
+        navigate(path);
+    }
+
     return (
         <div className={styles.card}>
             <div className={styles.divLinks}>
-                <div className={styles.link} style={{ fontFamily: weights[0] }}>Histórico</div>
+                <div onClick={() => redirecionar("/historico")} className={styles.link} style={{ fontFamily: weights[0] }}>Histórico</div>
                 <div className={styles.link} style={{ fontFamily: weights[1] }}>Estoque</div>
                 <div className={styles.link} style={{ fontFamily: weights[2] }}>Dashboard</div>
                 <div className={styles.link} style={{ fontFamily: weights[3] }}>Funcionários</div>
+                <div onClick={() => redirecionar("/fornecedores")} className={styles.link} style={{ fontFamily: weights[4] }}>Fornecedores</div>
             </div>
             <div className={styles.divBurger}>
                 <ButtonReact onClick={handleClick}>
@@ -49,6 +57,7 @@ export function Navbar(props) {
                     <MenuItem onClick={handleClose}>Estoque</MenuItem>
                     <MenuItem onClick={handleClose}>Dashboard</MenuItem>
                     <MenuItem onClick={handleClose}>Funcionários</MenuItem>
+                    <MenuItem onClick={handleClose}>Fornecedores</MenuItem>
                 </Menu>
             </div>
         </div>
