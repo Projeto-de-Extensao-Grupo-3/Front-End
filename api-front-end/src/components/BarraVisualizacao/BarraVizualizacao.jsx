@@ -5,7 +5,7 @@ import EditSquareIcon from '@mui/icons-material/EditSquare';
 export function BarraVisualizacao() {
     return(
         <div className={styles.card}>
-            <ul>
+            <ul className={styles.uul}>
                 <li>Nome da costureira: <br /> Costureira teste </li>
                 <hr />
                 <li>Telefone: <br /> +55 (11) 99999-9999 </li>
