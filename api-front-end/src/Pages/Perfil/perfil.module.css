@@ -1,0 +1,64 @@
+.main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.textPerfil {
+    font-weight: bold;
+    padding: 1rem 0 1rem 0;
+}
+
+.linha_horizontal {
+  width: 100%; /* Define a largura da linha */
+  height: 2px; /* Define a espessura da linha */
+  background-color: black; /* Define a cor da linha */
+  margin-bottom: 1rem; /* Espaçamento abaixo da linha */
+}
+
+.linha-vertical {
+  width: 2px; /* Define a espessura da linha */
+  height: 100px; /* Define a altura da linha */
+  background-color: black; /* Define a cor da linha */
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.side_bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20%;
+ /* Cor de fundo da barra lateral */
+}
+
+.navegacaoSideBar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    width: 70%;
+    padding: 2.5rem 0 2.5rem 0;
+}
+
+.navegacaoSideBar img {
+    width: 30px; /* Define a largura do ícone */
+    height: 30px; /* Define a altura do ícone */
+    margin-right: 10px; /* Espaçamento entre o ícone e o texto */
+}
+
+.perfil_info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    background-color: lightgray; /* Cor de fundo da área de informações do perfil */
+}
+
+
