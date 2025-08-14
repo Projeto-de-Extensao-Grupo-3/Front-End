@@ -16,6 +16,7 @@
     align-self: center;
     display: flex;
     justify-content: flex-start;
+    flex-wrap: wrap;
 }
 
 .bigBoxData {
@@ -38,7 +39,7 @@
     width: 48%;
 }
 
-.boxSelectItens {
+.boxSelect {
     /* width: 20; */
     height: 100%;
     display: flex;
@@ -48,12 +49,26 @@
 
 .boxSelectCamposFiltros {
     margin: 0 5px 0 5px;
-    width: 170px;
+    width: auto;
     height: 100%;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
 }
 
 .selectCampo {
-    margin: 0 2px 10px 2px;
+    width: 100px;
+    /* margin: 0 2px 10px 2px; */
+}
+
+.formSelectItens {
+    width: 200px;
+
+}
+
+.boxConfirmarFiltros {
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
 }

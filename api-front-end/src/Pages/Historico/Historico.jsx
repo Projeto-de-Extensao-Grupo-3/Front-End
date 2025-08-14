@@ -20,25 +20,35 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import dayjs from "dayjs";
 
+import Button from '@mui/material/Button';
+import { Height } from "@mui/icons-material";
+
 const theme = createTheme(
     ptBR
 )
 
 export function Historico() {
 
-    const [ItemSelecionado, SetItemSelecionado] = useState(2)
-
+    
     // 30 dias atrás
     const [DtInicio, SetDtInicio] = useState(dayjs().subtract(30, 'days'))
     // Hoje
     const [DtFim, SetDtFim] = useState(dayjs())
+    
+    // Ambos
+    const [ItemSelecionado, SetItemSelecionado] = useState(2)
 
-    const [BoolMostrarEntrada, SetBoolMostrarEntrada] = useState(true)
+    // Ambos
+    const [tipoMocimentacao, SetTipoMovimentacao] = useState(2)
 
     // console.log(DtInicio)
 
     const handleItemSelecionado = (e) => {
         SetItemSelecionado(e.target.value)
+    }
+
+    const handleTipoMovimentacao = (e) => {
+        SetTipoMovimentacao(e.target.value)
     }
 
     useEffect(() => {
@@ -74,45 +84,54 @@ export function Historico() {
                             </DemoContainer>
                         </LocalizationProvider>
                     </div>
-                    <div className={styles.boxSelectItens}>
-                        <Select value={ItemSelecionado} onChange={handleItemSelecionado}>
+                    <div className={styles.boxSelect}>
+                        <FormControl>
+                        <InputLabel id="label-categoria-slct">Categoria</InputLabel>
+                        <Select value={ItemSelecionado} onChange={handleItemSelecionado} labelid="label-categoria-slct" label="Categoria">
                             <MenuItem value={0}>Tecidos</MenuItem>
                             <MenuItem value={1}>Produtos</MenuItem>
                             <MenuItem selected value={2}>Ambos</MenuItem>
                         </Select>
-                    </div>
-                    <div className={styles.boxSelectCamposFiltros}>
-                        <FormControl fullWidth>
-                            <InputLabel id="label-main-slct">Filtrar por campo</InputLabel>
-                                <Select labelId="label-main-slct" label="Filtrar por Campo" value={""}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="label-item-slct">Item</InputLabel>
-                                            <Select value={""} className={styles.selectCampo} labelId="label-item-slct" label="Item">
-                                                {/* Aqui posteriormente terá uma lógica para os filtros. Agora está estático para propósito de demonstração e desenvolvimento */}
-                                                <MenuItem value={0}>Algodão azul</MenuItem>
-                                                <MenuItem value={1}>Jeans marrom</MenuItem>
-                                                <MenuItem value={2}>Cropped Rosa Salmão</MenuItem>
-                                            </Select>
-                                    </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="label-tipo-slct">Tipo</InputLabel>
-                                            <Select value={""} className={styles.selectCampo} labelId="label-tipo-slct" label="Tipo">
-                                                <MenuItem value={0}>Entrada</MenuItem>
-                                                <MenuItem value={1}>Saída</MenuItem>
-                                            </Select>
-                                    </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="label-destino-slct">Destino</InputLabel>
-                                            <Select value={""} className={styles.selectCampo} labelId="label-destino-slct" label="Destino">
-                                            </Select>
-                                    </FormControl>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="label-responsavel-slct">Responsável</InputLabel>
-                                            <Select value={""} className={styles.selectCampo} labelId="label-responsavel-slct" label="Responsável">
-                                            </Select>
-                                    </FormControl>
-                                </Select>
                         </FormControl>
+                    </div>
+                    <div className={styles.boxSelect}>
+                        <FormControl >
+                            <InputLabel id="label-tipo-slct">Tipo</InputLabel>
+                            <Select value={tipoMocimentacao} onChange={handleTipoMovimentacao} labelId="label-tipo-slct" label="Tipo">
+                                <MenuItem value={1}>Saída</MenuItem>
+                                <MenuItem value={0}>Entrada</MenuItem>
+                                <MenuItem selected value={2}>Ambos</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div className={styles.boxSelect}>
+                        <FormControl fullWidth>
+                            <InputLabel id="label-item-slct">Itens</InputLabel>
+                            <Select value={""} className={styles.selectCampo} labelId="label-item-slct" label="Itens">
+                                {/* Aqui posteriormente terá uma lógica para os filtros. Agora está estático para propósito de demonstração e desenvolvimento */}
+                                <MenuItem value={0}>Algodão azul</MenuItem>
+                                <MenuItem value={1}>Jeans marrom</MenuItem>
+                                <MenuItem value={2}>Cropped Rosa Salmão</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </div>
+
+                    <div className={styles.boxSelect}>
+                        <FormControl fullWidth>
+                            <InputLabel id="label-destino-slct">Destino</InputLabel>
+                            <Select value={""} className={styles.selectCampo} labelId="label-destino-slct" label="Destino">
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div className={styles.boxSelect}>
+                        <FormControl fullWidth>
+                            <InputLabel id="label-lote-slct">Lote</InputLabel>
+                            <Select value={""} className={styles.selectCampo} labelId="label-lote-slct" label="lote">
+                            </Select>
+                        </FormControl>
+                    </div>
+                    <div className={styles.boxConfirmarFiltros}>
+                        <Button variant="contained" style={{height: "80%"}}>Aplicar Filtros</Button>
                     </div>
                 </div>
             </div>

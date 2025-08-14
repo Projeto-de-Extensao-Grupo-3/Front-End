@@ -3,6 +3,8 @@ import { PaginaInicial } from "./Pages/PaginaInicial/PaginaIncial";
 import { Historico } from "./Pages/Historico/Historico";
 import { Fornecedores } from "./Pages/Fornecedores/Fornecedores";
 import { Perfil } from "./Pages/Perfil/Perfil";
+import { Categorias } from "./Pages/Categorias/Categorias";
+import { Caracteristicas } from "./Pages/Caracteristicas/Caracteristicas";
 
 export const routes = createBrowserRouter([
     {
@@ -13,7 +15,7 @@ export const routes = createBrowserRouter([
     {
         path: "/historico",
         element: <Historico/>,
-        errorElement: <div>Erraaaaao</div>
+        errorElement: <div>Erro</div>
     },
     {
         path: "/fornecedores",
@@ -23,6 +25,14 @@ export const routes = createBrowserRouter([
      {
         path: "/perfil",
         element: <Perfil/>,
+        errorElement: <div>Erro</div>
+    },{
+        path: "/categorias",
+        element: <Categorias/>,
+        errorElement: <div>Erro</div>
+    },{
+        path: "/caracteristicas",
+        element: <Caracteristicas />,
         errorElement: <div>Erro</div>
     }
 ]);
