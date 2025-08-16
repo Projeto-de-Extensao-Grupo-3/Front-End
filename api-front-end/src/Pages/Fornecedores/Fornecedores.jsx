@@ -1,10 +1,10 @@
 import { BarraVisualizacao } from "../../components/BarraVisualizacao/BarraVizualizacao";
+import { BarraPesquisa} from "../../components/BarraPesquisa/BarraPesquisa";
 import { Navbar } from "../../components/Navbar/Navbar";
-import TextField from '@mui/material/TextField';
+import { JanelaCadastro } from "../../components/JanelaCadastro/JanelaCadastro";
 import Button from '@mui/material/Button';
 import styles from "./fornecedores.module.css"
 
-// Ainda não tem interação, preciso validar a aparência com o Giorgio
 export function Fornecedores() {
     
     return(
@@ -17,14 +17,16 @@ export function Fornecedores() {
                 </div>
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
-                        <TextField fullWidth label="Buscar Costureira"/>
+                        <BarraPesquisa busca={"Buscar costureira"}></BarraPesquisa>
                     </div>
-                    <Button variant="outlined" size="large" sx={
-                        {p:"1rem 6rem 1rem 6rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)"}
-                    }>Cadastrar Nova Costureira</Button>
+                    <JanelaCadastro children={
+                        <Button variant="outlined" size="large" sx={
+                            {p:"1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)"}
+                        }>Cadastrar Nova Costureira</Button>
+                    } action={"Cadastrar nova costureira"} message={"Confirmar cadastro"}/>
                 </div>
-                <BarraVisualizacao />
-                <BarraVisualizacao />
+                <BarraVisualizacao/>
+                <BarraVisualizacao/>
                 <BarraVisualizacao />
             </div>
         </div>
