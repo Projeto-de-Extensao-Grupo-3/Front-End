@@ -45,3 +45,11 @@
 .barra_pesquisa {
     width: 60%;
 }
+
+.lista_parceiros {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}

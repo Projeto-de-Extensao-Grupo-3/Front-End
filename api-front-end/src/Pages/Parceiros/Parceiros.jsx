@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BarraVisualizacao } from "../../components/BarraVisualizacao/BarraVizualizacao";
 import { BarraPesquisa} from "../../components/BarraPesquisa/BarraPesquisa";
 import { Navbar } from "../../components/Navbar/Navbar";
@@ -6,21 +6,42 @@ import { JanelaCadastro } from "../../components/JanelaCadastro/JanelaCadastro";
 import { Options } from "../../components/Options/Options";
 import Button from '@mui/material/Button';
 import styles from "./parceiros.module.css"
+import axios from "axios";
 
 export function Parceiros() {
+    const [parceiro, setParceiro] = useState("costureira");
     const [pesquisa, setPesquisa] = useState("Buscar costureira");
     const [categoria, setCategoria] = useState("Nova Costureira");
     const [atualizarDados, setAtualizarDados] = useState("da costureira");
+    const [data, setData] = useState([]);
+
+    const listarParceiros = () => {
+        axios.get(`http://localhost:8080/servico-terceiros/listagem/${parceiro}`)
+        .then(response => {
+            setData(response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+    useEffect(() => {
+        listarParceiros();
+    }, [parceiro]);
 
     const atualizarInfoTela = (tela) => {
         if (tela == "costureira") {
+            setParceiro("costureira");
             setPesquisa("Buscar costureira");
             setCategoria("Nova Costureira");
             setAtualizarDados("da costureira");
+            parceiro = "costureira;"
         } else if (tela == "fornecedor") {
+            setParceiro("fornecedor");
             setPesquisa("Buscar fornecedor");
             setCategoria("Novo Fornecedor");
             setAtualizarDados("do fornecedor");
+            parceiro = "fornecedor"
         }
     }
     
@@ -39,9 +60,22 @@ export function Parceiros() {
                         }>Cadastrar {categoria}</Button>
                     } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}/>
                 </div>
-                <BarraVisualizacao acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}/>
-                <BarraVisualizacao acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}/>
-                <BarraVisualizacao acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}/>
+                    {data.length > 0 ? (
+                    <div className={styles.lista_parceiros}>
+                        {data.map(item => (
+                        <BarraVisualizacao key={item.id}
+                        acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
+                        nome={item.nome}
+                        telefone={item.telefone}
+                        email={item.email}
+                        endereco={item.endereco}
+                        identificacao={item.identificacao}
+                        />
+                        ))}
+                    </div>
+                    ) : (
+                    <p>Carregando dados...</p>
+                    )}
             </div>
         </div>
     )

@@ -8,15 +8,20 @@ export function BarraVisualizacao(props) {
     return(
         <div className={styles.card}>
             <ul className={styles.uul}>
-                <li>Nome da costureira: <br /> Costureira teste </li>
+                <li>Nome: <br /> {props.nome} </li>
                 <hr />
-                <li>Telefone: <br /> +55 (11) 99999-9999 </li>
+                <li>Telefone: <br /> {props.telefone} </li>
                 <hr />
-                <li>E-mail: <br /> email@gmail.com </li>
+                <li>E-mail: <br /> {props.email} </li>
                 <hr />
-                <li>Identificação: <br /> 0000000000 </li>
+                <li>Identificação: <br /> {props.identificacao} </li>
                 <hr />
-                <li><JanelaCadastro children={
+                <li><JanelaCadastro 
+                        nome={props.nome}
+                        telefone={props.telefone}
+                        email={props.email}
+                        endereco={props.endereco}
+                        identificacao={props.identificacao} children={
                     <EditSquareIcon fontSize="large" color="action" sx={{color: "rgba(255, 255, 255, 1)", cursor: "pointer"}}/>
                     } action={props.acao} message={props.confirm}/></li>
                

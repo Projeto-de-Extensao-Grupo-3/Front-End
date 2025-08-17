@@ -56,17 +56,17 @@ export function JanelaCadastro(props) {
         <DialogContent dividers sx={{display:'flex', justifyContent:'space-evenly'}}>
           <div>
             <h2>Nome:</h2>
-            <TextField sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.nome} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
             <h2>E-mail:</h2>
-            <TextField sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.email} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
             <h2>Telefone:</h2>
-            <TextField sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.telefone} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
           </div>
           <div>
             <h2>Endereço:</h2>
-            <TextField sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-            <h2>CPF:</h2>
-            <TextField sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.endereco} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <h2>CPF/CNPJ:</h2>
+            <TextField defaultValue={props.identificacao} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
           </div>
         </DialogContent>
         <DialogActions sx={{display:'flex', justifyContent:'center'}}>
