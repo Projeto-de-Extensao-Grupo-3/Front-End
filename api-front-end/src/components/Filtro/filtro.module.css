@@ -1,0 +1,35 @@
+.noBold {
+    font-weight: normal;
+}
+
+.labelData {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 4px;
+    display: block;
+}
+.filtroContent {
+    display: flex;
+    flex-direction: column;
+    width: 290px;
+    height: 100%;
+    padding: 5px;
+    gap: 10px;
+    border-right: 1px solid #000000a2;
+}
+
+.janelaRegistros {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    height: 12%;
+    align-items: center;
+    justify-content: center;
+}
+
+.inputData {
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #000;
+}

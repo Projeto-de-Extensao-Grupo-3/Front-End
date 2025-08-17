@@ -5,6 +5,7 @@ import { Parceiros } from "./Pages/Parceiros/Parceiros";
 import { Perfil } from "./Pages/Perfil/Perfil";
 import { Categorias } from "./Pages/Categorias/Categorias";
 import { Caracteristicas } from "./Pages/Caracteristicas/Caracteristicas";
+import { Dashboard } from "./Pages/Dashboard/Dashboard";
 
 export const routes = createBrowserRouter([
     {
@@ -33,6 +34,10 @@ export const routes = createBrowserRouter([
     },{
         path: "/caracteristicas",
         element: <Caracteristicas />,
+        errorElement: <div>Erro</div>
+    },{
+        path: "/dashboard",
+        element: <Dashboard />,
         errorElement: <div>Erro</div>
     }
 ]);
