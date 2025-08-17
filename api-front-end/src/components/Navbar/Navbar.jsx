@@ -46,7 +46,7 @@ export function Navbar(props) {
                 <div className={styles.link} style={{ fontFamily: weights[1] }}>Estoque</div>
                 <div className={styles.link} style={{ fontFamily: weights[2] }}>Dashboard</div>
                 <div className={styles.link} style={{ fontFamily: weights[3] }}>Funcionários</div>
-                <div onClick={() => redirecionar("/fornecedores")} className={styles.link} style={{ fontFamily: weights[4] }}>Fornecedores</div>
+                <div onClick={() => redirecionar("/parceiros")} className={styles.link} style={{ fontFamily: weights[4] }}>Fornecedores</div>
             </div>
             <div className={styles.divBurger}>
                 <ButtonReact onClick={handleClick}>

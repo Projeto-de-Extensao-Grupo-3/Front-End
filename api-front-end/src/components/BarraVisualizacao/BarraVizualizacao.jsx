@@ -3,7 +3,7 @@ import { JanelaCadastro } from "../../components/JanelaCadastro/JanelaCadastro";
 import EditSquareIcon from '@mui/icons-material/EditSquare';
 
 // Preciso achar um nome melhor para esse componente
-export function BarraVisualizacao() {
+export function BarraVisualizacao(props) {
 
     return(
         <div className={styles.card}>
@@ -18,7 +18,7 @@ export function BarraVisualizacao() {
                 <hr />
                 <li><JanelaCadastro children={
                     <EditSquareIcon fontSize="large" color="action" sx={{color: "rgba(255, 255, 255, 1)", cursor: "pointer"}}/>
-                    } action={"Atualizar dados da costureira"} message={"Confirmar alterações"}/></li>
+                    } action={props.acao} message={props.confirm}/></li>
                
             </ul>
         </div>

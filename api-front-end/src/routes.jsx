@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import { PaginaInicial } from "./Pages/PaginaInicial/PaginaIncial";
 import { Historico } from "./Pages/Historico/Historico";
-import { Fornecedores } from "./Pages/Fornecedores/Fornecedores";
+import { Parceiros } from "./Pages/Parceiros/Parceiros";
 import { Perfil } from "./Pages/Perfil/Perfil";
 import { Categorias } from "./Pages/Categorias/Categorias";
 import { Caracteristicas } from "./Pages/Caracteristicas/Caracteristicas";
@@ -18,8 +18,8 @@ export const routes = createBrowserRouter([
         errorElement: <div>Erro</div>
     },
     {
-        path: "/fornecedores",
-        element: <Fornecedores/>,
+        path: "/parceiros",
+        element: <Parceiros/>,
         errorElement: <div>Erro</div>
     },
      {
