@@ -1,0 +1,11 @@
+.botaoo {
+  background-color: #696969; /* vermelho */
+  color: white;
+  border: none;
+  padding: 12px 40px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 2px;
+  text-align: center;
+  display: inline-block;
+}

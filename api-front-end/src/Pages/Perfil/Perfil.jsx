@@ -8,6 +8,7 @@ import icone_lapis from './lapis-edicao.png'; // substitua pelo ícone de lápis
 import ricardo from './ricardo.jpeg'; 
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
+import { Permissao } from "../../components/Permissao/Permissao.jsx";
 
 export function Perfil() {
     return (
@@ -19,9 +20,15 @@ export function Perfil() {
                 <div className={styles.linha_horizontal}></div>
 
                 <div className={styles.container}>
-                    <div className={styles.side_bar}>
+
+                <div className={styles.side_bar}>
+
+                    <div className={styles.navegacaoSideBarTop}>
                         <h3>Configurações da Conta</h3>
                         <p>Nome de Usuário</p>
+                    </div>
+
+                    <div className={styles.navegacaoSideBarContainer}>
 
                         <div className={styles.navegacaoSideBar}>
                             <img src={icon_perfil} alt="" />
@@ -37,7 +44,14 @@ export function Perfil() {
                             <img src={icon_configuracao} alt="" />
                             <Link to="/perfil">Configurações</Link>
                         </div>
+
                     </div>
+
+                    <button className={styles.botaoo}>
+                            Sair
+                    </button>
+
+                </div>
 
                     <div className={styles.right_container}>
 
@@ -66,14 +80,11 @@ export function Perfil() {
 
                         </div>
 
-                        <div className={styles.permissoes_container}>
-                            <h3>Permissões</h3>
-                            <div className={styles.permissoes}>
-                            <Box sx={{width: 200, height: 50, borderRadius: 0, bgcolor: 'primary.main', '&:hover': { bgcolor: 'primary.dark', }, 
-                            }}/>
-                            </div>
-                        </div>
-
+                    <div className={styles.permissoes}>
+                       <Permissao permissaoNome="Alterar Estoque" />
+                       <Permissao permissaoNome="Visualizar Dash" />
+                       <Permissao permissaoNome="Conceder Permissão" />
+                    </div>
 
                     </div>
                 </div>
