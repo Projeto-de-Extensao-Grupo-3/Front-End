@@ -1,0 +1,16 @@
+.listCategorias {
+    width: 30%;
+    max-width: 600px;
+    min-width: 250px;
+    padding: 15px;
+}
+
+.main {
+    width: 100vw;
+    padding-top: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-around;
+    height: 80vh;
+}
