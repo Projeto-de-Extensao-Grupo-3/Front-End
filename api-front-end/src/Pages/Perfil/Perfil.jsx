@@ -1,15 +1,35 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import axios from "axios";
 import { Navbar } from "../../components/Navbar/Navbar";
 import styles from "./perfil.module.css";
 import icon_perfil from './icon-perfil.png';
 import icon_notificacao from './notificacao.png';
 import icon_configuracao from './configuracao.png';
 import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
 import { Permissao } from "../../components/Permissao/Permissao.jsx";
 import FotoPerfil from "../../components/fotoPerfil/FotoPerfil.jsx";
 
 export function Perfil() {
+
+    const [permissao, setPermissao] = useState("permissao");
+    const [data, setData] = useState([]);
+    let contador = 0;
+
+    const listarPermissoes = () => {
+            axios.get(`http://localhost:8080/permissoes`)
+            .then(response => {
+                setData(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        }
+
+        useEffect(() => {
+            listarPermissoes();
+        }, [permissao]);
+
     return (
         <div>
             <Navbar vazio={false} pageNumber={5} />
@@ -72,16 +92,25 @@ export function Perfil() {
 
                     <div className={styles.permissoesContainer}>
                     <h3>Permissões</h3>
-                    <div className={styles.permissoes}>
-                       <Permissao permissaoNome="Alterar Estoque" />
-                       <Permissao permissaoNome="Visualizar Dash" />
-                       <Permissao permissaoNome="Conceder Permissão" />
+
+                    {data.length > 0 ? (
+                        <div className={styles.permissoes}>
+                        {data.map(item => (
+                            <Permissao 
+                            key={item.idPermissao}
+                            permissaoNome={item.descricao}
+                            />
+                        ))}
+                        </div>
+                    ) : (
+                        <p>Carregando dados...</p>
+                    )}
                     </div>
 
-                    </div>
                       <button className={styles.botaoSalvar}>
                             Salvar Alterações
                     </button>
+                    
                     </div>
                 </div>
             </div>
