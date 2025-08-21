@@ -1,0 +1,43 @@
+.foto_container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 90%;
+}
+
+.profilePictureContainer {
+  position: relative;
+  display: inline-block;
+  width: 150px;
+  height: 150px;
+}
+
+.profilePicture {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 0.15rem solid #000;
+}
+
+.editButton {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: background 0.2s ease;
+}
+
+.editButton:hover {
+  background: #f0f0f0; /* efeito hover */
+}
+
+.editButton img {
+  width: 18px;
+  height: 18px;
+}

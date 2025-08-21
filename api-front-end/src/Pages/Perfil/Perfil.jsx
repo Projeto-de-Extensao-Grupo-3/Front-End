@@ -4,11 +4,10 @@ import styles from "./perfil.module.css";
 import icon_perfil from './icon-perfil.png';
 import icon_notificacao from './notificacao.png';
 import icon_configuracao from './configuracao.png';
-import icone_lapis from './lapis-edicao.png'; // substitua pelo ícone de lápis
-import ricardo from './ricardo.jpeg'; 
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { Permissao } from "../../components/Permissao/Permissao.jsx";
+import FotoPerfil from "../../components/fotoPerfil/FotoPerfil.jsx";
 
 export function Perfil() {
     return (
@@ -47,7 +46,7 @@ export function Perfil() {
 
                     </div>
 
-                    <button className={styles.botaoo}>
+                    <button className={styles.botaoSair}>
                             Sair
                     </button>
 
@@ -55,16 +54,7 @@ export function Perfil() {
 
                     <div className={styles.right_container}>
 
-                    <div className={styles.foto_container}>
-                        {/* Bloco da Foto de Perfil */}
-                        <div className={styles.profilePictureContainer}>
-                            <img src={ricardo} alt="Foto de perfil" className={styles.profilePicture} />
-                            <button className={styles.editButton}>
-                                <img src={icone_lapis} alt="Editar" />
-                            </button>
-                        </div>
-
-                    </div>
+                    <FotoPerfil />
 
                         <div className={styles.userInfo}>
 
@@ -80,12 +70,18 @@ export function Perfil() {
 
                         </div>
 
+                    <div className={styles.permissoesContainer}>
+                    <h3>Permissões</h3>
                     <div className={styles.permissoes}>
                        <Permissao permissaoNome="Alterar Estoque" />
                        <Permissao permissaoNome="Visualizar Dash" />
                        <Permissao permissaoNome="Conceder Permissão" />
                     </div>
 
+                    </div>
+                      <button className={styles.botaoSalvar}>
+                            Salvar Alterações
+                    </button>
                     </div>
                 </div>
             </div>
