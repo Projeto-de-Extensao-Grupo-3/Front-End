@@ -12,6 +12,7 @@ export function BarraPesquisa(props) {
       <InputBase
         sx={{ ml: 1, flex: 1 }}
         placeholder={props.busca}
+        onChange={(e) => props.func(e.target.value)}
       />
       <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
         <SearchIcon />

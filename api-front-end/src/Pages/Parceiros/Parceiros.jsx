@@ -14,11 +14,30 @@ export function Parceiros() {
     const [categoria, setCategoria] = useState("Nova Costureira");
     const [atualizarDados, setAtualizarDados] = useState("da costureira");
     const [data, setData] = useState([]);
+    const [operations, setOperations] = useState(0);
+    const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
     const listarParceiros = () => {
         axios.get(`http://localhost:8080/servico-terceiros/listagem/${parceiro}`)
         .then(response => {
-            setData(response.data);
+            console.log(response.data);
+            setData(response.data.reverse());
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+    const buscarParceiro = (nome) => {
+        axios.get(`http://localhost:8080/servico-terceiros/${parceiro}/busca?nome=${nome}`)
+        .then(response => {
+            console.log(response.data);
+            if (response.data.length === 0) {
+                setData([])
+                setLoadMsg("Nenhum dado encontrado");
+            } else {
+                setData(response.data.reverse());
+            }
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -38,7 +57,27 @@ export function Parceiros() {
         )
         .then(response => {
             console.log(response.data);
-            setData(data.push(response.data));
+            setOperations(operations+1);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+    const cadastrarParceiro = (id, categoria, nome, telefone, email, endereco, identificacao) => {
+        axios.post(`http://localhost:8080/servico-terceiros`, 
+            {
+                "categoria": categoria,
+                "nome": nome,
+                "telefone": telefone,
+                "email": email,
+                "endereco": endereco,
+                "identificacao": identificacao,
+            }
+        )
+        .then(response => {
+            console.log(response.data);
+            setOperations(operations+1);
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -47,7 +86,8 @@ export function Parceiros() {
 
     useEffect(() => {
         listarParceiros();
-    }, [parceiro, data]);
+        setLoadMsg("Carregando dados...");
+    }, [parceiro, operations]);
 
     const atualizarInfoTela = (tela) => {
         if (tela == "costureira") {
@@ -70,9 +110,10 @@ export function Parceiros() {
                 <Options item1={"Costureiras"} item2={"Fornecedores de Tecido"} acao={atualizarInfoTela}/>
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
-                        <BarraPesquisa busca={pesquisa}></BarraPesquisa>
+                        <BarraPesquisa func={buscarParceiro} busca={pesquisa}></BarraPesquisa>
                     </div>
-                    <JanelaCadastro children={
+                    <JanelaCadastro func={cadastrarParceiro} id={''} categoria={parceiro} children={
+
                         <Button variant="outlined" size="large" sx={
                             {p:"1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)"}
                         }>Cadastrar {categoria}</Button>
@@ -95,7 +136,7 @@ export function Parceiros() {
                         ))}
                     </div>
                     ) : (
-                    <p>Carregando dados...</p>
+                    <p>{loadMsg}</p>
                     )}
             </div>
         </div>

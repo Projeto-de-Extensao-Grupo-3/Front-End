@@ -34,6 +34,10 @@ export function JanelaCadastro(props) {
     setOpen(false);
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+  }
+
   return (
     <React.Fragment>
       <div onClick={handleClickOpen}>
@@ -59,28 +63,32 @@ export function JanelaCadastro(props) {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent dividers sx={{display:'flex', justifyContent:'space-evenly'}}>
-          <div>
-            <h2>Nome:</h2>
-            <TextField defaultValue={props.nome} onChange={(e) => setNome(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-            <h2>E-mail:</h2>
-            <TextField defaultValue={props.email} onChange={(e) => setEmail(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-            <h2>Telefone:</h2>
-            <TextField defaultValue={props.telefone} onChange={(e) => setTelefone(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-          </div>
-          <div>
-            <h2>Endereço:</h2>
-            <TextField defaultValue={props.endereco} onChange={(e) => setEndereco(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-            <h2>CPF/CNPJ:</h2>
-            <TextField defaultValue={props.identificacao} onChange={(e) => setIdentificacao(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-          </div>
+        <DialogContent dividers>
+          <form onSubmit={(e) => {
+              handleSubmit(e);
+              props.func(props.id, props.categoria, nome, telefone, email, endereco, identificacao); 
+              handleClose();
+            }} id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
+            <div>
+              <h2>Nome:</h2>
+              <TextField required={true} defaultValue={props.nome} onChange={(e) => setNome(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+              <h2>E-mail:</h2>
+              <TextField required={true} defaultValue={props.email} onChange={(e) => setEmail(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+              <h2>Telefone:</h2>
+              <TextField required={true} defaultValue={props.telefone} onChange={(e) => setTelefone(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            </div>
+            <div>
+              <h2>Endereço:</h2>
+              <TextField required={true} defaultValue={props.endereco} onChange={(e) => setEndereco(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+              <h2>CPF/CNPJ:</h2>
+              <TextField required={true} defaultValue={props.identificacao} onChange={(e) => setIdentificacao(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            </div>
+          </form>
         </DialogContent>
         <DialogActions sx={{display:'flex', justifyContent:'center'}}>
-          <Button autoFocus onClick={() => {
-            props.func(props.id, props.categoria, nome, telefone, email, endereco, identificacao); 
-            handleClose();
-            }
-            } sx={{color:'white', fontSize:'1.5rem', border:'2px solid black', backgroundColor:'blue'}}>
+          <Button type='submit' form='form-cadastro' autoFocus sx={{
+            color:'white', fontSize:'1.5rem', border:'2px solid black', backgroundColor:'blue'
+            }}>
             {props.message}
           </Button>
         </DialogActions>
