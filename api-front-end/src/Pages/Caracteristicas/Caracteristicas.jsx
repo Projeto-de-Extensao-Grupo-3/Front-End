@@ -6,31 +6,26 @@ import { Seletor } from "../../components/SeletorSubpagina/Seletor";
 import { Paper } from '@mui/material';
 import styles from "./caracteristicas.module.css"
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import api from "../../provider/api"
 
 export function Caracteristicas() {
 
-    const resposta = [
-  {
-    "id": 1,
-    "nome": "Tecido"
-  },
-  {
-    "id": 2,
-    "nome": "Roupa"
-  },
-  {
-    "id": 3,
-    "nome": "Nylon"
-  },
-  {
-    "id": 4,
-    "nome": "Poliéster"
-  },
-  {
-    "id": 5,
-    "nome": "Algodão"
-  }]
+  const [dadosTecido, setDadosTecido] = useState()
+  const [dadosRoupa, setDadosRoupa] = useState()
+
+    useEffect(() => {
+        api.get("/categorias/tipo/tecido").then(
+            response => {
+                setDadosTecido(response.data)
+            })
+
+        api.get("/categorias/tipo/roupa").then(
+            response => {
+                setDadosRoupa(response.data)
+            })
+    // O Array vazio faz o useEffect ativas apenas ao renderizar pela primeira vez 
+    }, [])
 
     return (
         <div>
@@ -39,8 +34,10 @@ export function Caracteristicas() {
             <div className={styles.main}>
                 <div className={styles.listCategorias}>
                     <Paper >
-                        <List>{resposta.map((categoria)=>
-                            <ListItem>
+                        <List>
+                            <ListItem key={0}>Roupas</ListItem>
+                            {dadosRoupa.map((categoria)=>
+                            <ListItem key={categoria.id}>
                                 {categoria.nome}
                             </ListItem>
                         )}</List>
@@ -48,8 +45,8 @@ export function Caracteristicas() {
                 </div>
                                 <div className={styles.listCategorias}>
                     <Paper >
-                        <List>{resposta.map((categoria)=>
-                            <ListItem>
+                        <List>{dadosTecido.map((categoria)=>
+                            <ListItem key={categoria.id}>
                                 {categoria.nome}
                             </ListItem>
                         )}</List>
