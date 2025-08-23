@@ -25,9 +25,29 @@ export function Parceiros() {
         });
     }
 
+    const atualizarParceiro = (id, categoria, nome, telefone, email, endereco, identificacao) => {
+        axios.put(`http://localhost:8080/servico-terceiros/${id}`, 
+            {
+                "categoria": categoria,
+                "nome": nome,
+                "telefone": telefone,
+                "email": email,
+                "endereco": endereco,
+                "identificacao": identificacao,
+            }
+        )
+        .then(response => {
+            console.log(response.data);
+            setData(data.push(response.data));
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
     useEffect(() => {
         listarParceiros();
-    }, [parceiro]);
+    }, [parceiro, data]);
 
     const atualizarInfoTela = (tela) => {
         if (tela == "costureira") {
@@ -35,13 +55,11 @@ export function Parceiros() {
             setPesquisa("Buscar costureira");
             setCategoria("Nova Costureira");
             setAtualizarDados("da costureira");
-            parceiro = "costureira;"
         } else if (tela == "fornecedor") {
             setParceiro("fornecedor");
             setPesquisa("Buscar fornecedor");
             setCategoria("Novo Fornecedor");
             setAtualizarDados("do fornecedor");
-            parceiro = "fornecedor"
         }
     }
     
@@ -63,8 +81,11 @@ export function Parceiros() {
                     {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
                         {data.map(item => (
-                        <BarraVisualizacao key={item.id}
+                        <BarraVisualizacao key={item.idParceiro}
                         acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
+                        func={atualizarParceiro}
+                        id={item.idParceiro}
+                        categoria={parceiro}
                         nome={item.nome}
                         telefone={item.telefone}
                         email={item.email}

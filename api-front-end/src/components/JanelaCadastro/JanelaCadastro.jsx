@@ -20,6 +20,12 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export function JanelaCadastro(props) {
   const [open, setOpen] = React.useState(false);
+  
+  const [nome, setNome] = React.useState(props.nome);
+  const [telefone, setTelefone] = React.useState(props.telefone);
+  const [email, setEmail] = React.useState(props.email);
+  const [endereco, setEndereco] = React.useState(props.endereco);
+  const [identificacao, setIdentificacao] = React.useState(props.identificacao);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -56,21 +62,25 @@ export function JanelaCadastro(props) {
         <DialogContent dividers sx={{display:'flex', justifyContent:'space-evenly'}}>
           <div>
             <h2>Nome:</h2>
-            <TextField defaultValue={props.nome} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.nome} onChange={(e) => setNome(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
             <h2>E-mail:</h2>
-            <TextField defaultValue={props.email} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.email} onChange={(e) => setEmail(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
             <h2>Telefone:</h2>
-            <TextField defaultValue={props.telefone} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.telefone} onChange={(e) => setTelefone(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
           </div>
           <div>
             <h2>Endereço:</h2>
-            <TextField defaultValue={props.endereco} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.endereco} onChange={(e) => setEndereco(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
             <h2>CPF/CNPJ:</h2>
-            <TextField defaultValue={props.identificacao} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+            <TextField defaultValue={props.identificacao} onChange={(e) => setIdentificacao(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
           </div>
         </DialogContent>
         <DialogActions sx={{display:'flex', justifyContent:'center'}}>
-          <Button autoFocus onClick={handleClose} sx={{color:'white', fontSize:'1.5rem', border:'2px solid black', backgroundColor:'blue'}}>
+          <Button autoFocus onClick={() => {
+            props.func(props.id, props.categoria, nome, telefone, email, endereco, identificacao); 
+            handleClose();
+            }
+            } sx={{color:'white', fontSize:'1.5rem', border:'2px solid black', backgroundColor:'blue'}}>
             {props.message}
           </Button>
         </DialogActions>

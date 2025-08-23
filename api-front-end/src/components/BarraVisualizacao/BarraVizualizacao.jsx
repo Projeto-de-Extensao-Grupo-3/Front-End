@@ -16,12 +16,16 @@ export function BarraVisualizacao(props) {
                 <hr />
                 <li>Identificação: <br /> {props.identificacao} </li>
                 <hr />
-                <li><JanelaCadastro 
+                <li><JanelaCadastro
+                        func={props.func}
+                        id={props.id}
+                        categoria={props.categoria}
                         nome={props.nome}
                         telefone={props.telefone}
                         email={props.email}
                         endereco={props.endereco}
-                        identificacao={props.identificacao} children={
+                        identificacao={props.identificacao} 
+                        children={
                     <EditSquareIcon fontSize="large" color="action" sx={{color: "rgba(255, 255, 255, 1)", cursor: "pointer"}}/>
                     } action={props.acao} message={props.confirm}/></li>
                
