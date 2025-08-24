@@ -3,6 +3,8 @@
     max-width: 600px;
     min-width: 250px;
     padding: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
 .main {
@@ -13,4 +15,11 @@
     flex-direction: row;
     justify-content: space-around;
     height: 80vh;
+}
+
+.divBotoes {
+    width: 100%;
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
 }
