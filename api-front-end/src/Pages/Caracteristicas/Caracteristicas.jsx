@@ -15,8 +15,14 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
+import axios from "axios";
 
 export function Caracteristicas() {
+
+        useEffect(() => {
+            document.title = "Caracteristicas"
+        })
+
 
     const [popupAdicionarAberto, setPopupAdicionarAberto] = useState(false)
     const [popupEscolhido, setPopupEscolhido] = useState()
@@ -36,7 +42,6 @@ export function Caracteristicas() {
         const formJson = Object.fromEntries(formData.entries())
         const nome = formJson.nomeCategoria
         let duplicado = false;
-        let idCategoriaPai = 1; // id do tecido Tecido por padrão, para categoria Pai
         if (popupEscolhido == "Roupa") {
             dadosRoupa.map(r => {
                 if (r.nome == nome) {
@@ -44,31 +49,33 @@ export function Caracteristicas() {
                     duplicado = true
                 }
             })
-            idCategoriaPai = 2 // Mudando id categoria pai para para a de roupa 
         } else {
             dadosTecido.map(r => {
                 if (r.nome == nome) {
                     document.getElementById('alert-cadastro').style.display = "flex"
                     duplicado = true
                 }
-            }) 
-            idCategoriaPai = 1 // Mudando id categoria pai para para a de tecido 
+            })
         }
         if (!duplicado) {
-            // api.post("/categorias", {                
-            //       nome: {nome},
-            //       categoriaPai: {
-            //         idCategoria: 1
-            //       }
-            // }) eventualmente cadastro aqui...
+            cadastrarRoupa(nome)
             handlePopupAdicionarFechar()
-        } 
+        }
+    }
+
+    const cadastrarRoupa = (nome) => {
+        axios.post("http://localhost:8080/categorias", {
+            "nome": nome,
+            "categoriaPai": {
+                "idCategoria": 2
+            }
+        })
     }
 
     const [dadosTecido, setDadosTecido] = useState([])
     const [dadosRoupa, setDadosRoupa] = useState([])
 
-    useEffect(() => {
+    const reload = useEffect(() => {
         api.get("/categorias/tipo/tecido").then(
             response => {
                 setDadosTecido(response.data)
@@ -120,7 +127,7 @@ export function Caracteristicas() {
                 </div>
             </div>
             <Dialog open={popupAdicionarAberto}>
-                
+
                 <DialogTitle>Adiconar nova categoria de {popupEscolhido}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
@@ -134,13 +141,13 @@ export function Caracteristicas() {
                             name="nomeCategoria"
                             label="Nome da Categoria"
                             fullWidth
-                            />
+                        />
                     </form>
                     <br />
-                    <Alert severity='error' id='alert-cadastro' style={{display: "none"}}>Nome indisponível</Alert>
+                    <Alert severity='error' id='alert-cadastro' style={{ display: "none" }}>Nome indisponível</Alert>
                     <DialogActions>
-                            <Button onClick={() => handlePopupAdicionarFechar()}>Cancelar</Button>
-                            <Button type='submit' form="formAddCategoria">Cadastrar</Button>
+                        <Button onClick={() => handlePopupAdicionarFechar()}>Cancelar</Button>
+                        <Button type='submit' form="formAddCategoria">Cadastrar</Button>
                     </DialogActions>
                 </DialogContent>
             </Dialog>
