@@ -3,22 +3,17 @@ import { BarraVisualizacao } from "../../components/BarraVisualizacao/BarraVizua
 import { BarraPesquisa} from "../../components/BarraPesquisa/BarraPesquisa";
 import { Navbar } from "../../components/Navbar/Navbar";
 import { JanelaCadastro } from "../../components/JanelaCadastro/JanelaCadastro";
-import { Options } from "../../components/Options/Options";
 import Button from '@mui/material/Button';
-import styles from "./parceiros.module.css"
+import styles from "../Parceiros/parceiros.module.css"
 import axios from "axios";
 
-export function Parceiros() {
-    const [parceiro, setParceiro] = useState("costureira");
-    const [pesquisa, setPesquisa] = useState("Buscar costureira");
-    const [categoria, setCategoria] = useState("Nova Costureira");
-    const [atualizarDados, setAtualizarDados] = useState("da costureira");
+export function Funcionarios() {
     const [data, setData] = useState([]);
     const [operations, setOperations] = useState(0);
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
-    const listarParceiros = () => {
-        axios.get(`http://localhost:8080/servico-terceiros/listagem/${parceiro}`)
+    const listarFuncionarios = () => {
+        axios.get(`http://localhost:8080/funcionarios`)
         .then(response => {
             console.log(response.data);
             setData(response.data.reverse());
@@ -28,8 +23,8 @@ export function Parceiros() {
         });
     }
 
-    const buscarParceiro = (nome) => {
-        axios.get(`http://localhost:8080/servico-terceiros/${parceiro}/busca?nome=${nome}`)
+    const buscarFuncionario = (nome) => {
+        axios.get(`http://localhost:8080/funcionarios/busca?nome=${nome}`)
         .then(response => {
             console.log(response.data);
             if (response.data.length === 0) {
@@ -44,15 +39,14 @@ export function Parceiros() {
         });
     }
 
-    const atualizarParceiro = (dados) => {
-        axios.put(`http://localhost:8080/servico-terceiros/${dados[0][1]}`, 
+    const cadastrarFuncionario = (dados) => {
+        axios.post(`http://localhost:8080/funcionarios`, 
             {
-                "categoria": dados[1][1],
                 "nome": dados[2][1],
-                "telefone": dados[3][1],
-                "email": dados[4][1],
-                "endereco": dados[5][1],
-                "identificacao": dados[6][1],
+                "cpf": dados[3],
+                "telefone": dados[4][1],
+                "email": dados[5][1],
+                "senha": dados[6][1]
             }
         )
         .then(response => {
@@ -64,15 +58,14 @@ export function Parceiros() {
         });
     }
 
-    const cadastrarParceiro = (dados) => {
-        axios.post(`http://localhost:8080/servico-terceiros`, 
+    const atualizarFuncionario = (dados) => {
+        axios.put(`http://localhost:8080/funcionarios/${dados[0][1]}`, 
             {
-                "categoria": dados[1][1],
                 "nome": dados[2][1],
-                "telefone": dados[3][1],
-                "email": dados[4][1],
-                "endereco": dados[5][1],
-                "identificacao": dados[6][1],
+                "cpf": dados[3],
+                "telefone": dados[4][1],
+                "email": dados[5][1],
+                "senha": dados[6][1]
             }
         )
         .then(response => {
@@ -85,48 +78,33 @@ export function Parceiros() {
     }
 
     useEffect(() => {
-        listarParceiros();
+        listarFuncionarios();
         setLoadMsg("Carregando dados...");
-    }, [parceiro, operations]);
+    }, [operations]);
 
-    const atualizarInfoTela = (tela) => {
-        if (tela == "costureira") {
-            setParceiro("costureira");
-            setPesquisa("Buscar costureira");
-            setCategoria("Nova Costureira");
-            setAtualizarDados("da costureira");
-        } else if (tela == "fornecedor") {
-            setParceiro("fornecedor");
-            setPesquisa("Buscar fornecedor");
-            setCategoria("Novo Fornecedor");
-            setAtualizarDados("do fornecedor");
-        }
-    }
-    
     return(
         <div>
-            <Navbar vazio={false} pageNumber={4}/>
+            <Navbar vazio={false} pageNumber={3}/>
             <div className={styles.main}>
-                <Options item1={"Costureiras"} item2={"Fornecedores de Tecido"} acao={atualizarInfoTela}/>
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
-                        <BarraPesquisa func={buscarParceiro} busca={pesquisa}/>
+                        <BarraPesquisa func={buscarFuncionario} busca={"Buscar funcionário"}/>
                     </div>
                     <div>
-                        <JanelaCadastro func={cadastrarParceiro} id={''} categoria={parceiro} 
-                        campos={["Id", "Categoria", "Nome", "Telefone", "E-mail", "Endereço", "CPF/CNPJ"]}
-                        vazio={[["", ""], ["", `${parceiro}`], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]}
+                        <JanelaCadastro func={cadastrarFuncionario} id={''} categoria={"funcionário"} 
+                        campos={["Id", "Categoria", "Nome", "CPF", "Telefone", "E-mail", "Senha"]}
+                        vazio={[["", ""], ["", `${"funcionário"}`], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]}
                         children={
                             <Button variant="outlined" size="large" sx={
                                 {p:"1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)"}
-                            }>Cadastrar {categoria}</Button>
-                        } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}/>
+                            }>Cadastrar funcionário</Button>
+                        } action={`Cadastrar funcionário`} message={"Confirmar cadastro"}/>
                     </div>
                 </div>
-                    {data.length > 0 ? (
+                {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
                         {data.map(item => (
-                        <BarraVisualizacao key={item.idParceiro}
+                        <BarraVisualizacao key={item.idFuncionario}
                         children={
                         <>
                         <li>Nome: <br /> {item.nome} </li>
@@ -136,10 +114,15 @@ export function Parceiros() {
                         <li>E-mail: <br /> {item.email} </li>
                         <hr />
                         </>}
-                        acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
-                        func={atualizarParceiro}
-                        dados={Object.entries(item)}
-                        campos={["Id", "Categoria", "Nome", "Telefone", "E-mail", "Endereço", "CPF/CNPJ"]}
+                        acao={`Atualizar dados do funcionário`} confirm={"Confirmar alterações"}
+                        func={atualizarFuncionario}
+                        dados={() => {
+                            let data = Object.entries(item);
+                            data.unshift(['', '']);
+                            data.pop();
+                            return data;
+                        }}
+                        campos={["Id", "Categoria", "Nome", "CPF", "Telefone", "E-mail"]}
                         />
                         ))}
                     </div>

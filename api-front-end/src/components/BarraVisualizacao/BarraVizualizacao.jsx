@@ -8,27 +8,14 @@ export function BarraVisualizacao(props) {
     return(
         <div className={styles.card}>
             <ul className={styles.uul}>
-                <li>Nome: <br /> {props.nome} </li>
-                <hr />
-                <li>Telefone: <br /> {props.telefone} </li>
-                <hr />
-                <li>E-mail: <br /> {props.email} </li>
-                <hr />
-                <li>Identificação: <br /> {props.identificacao} </li>
-                <hr />
+                {props.children}
                 <li><JanelaCadastro
                         func={props.func}
-                        id={props.id}
-                        categoria={props.categoria}
-                        nome={props.nome}
-                        telefone={props.telefone}
-                        email={props.email}
-                        endereco={props.endereco}
-                        identificacao={props.identificacao} 
+                        dados={props.dados}
+                        campos={props.campos}
                         children={
                     <EditSquareIcon fontSize="large" color="action" sx={{color: "rgba(255, 255, 255, 1)", cursor: "pointer"}}/>
                     } action={props.acao} message={props.confirm}/></li>
-               
             </ul>
         </div>
     )

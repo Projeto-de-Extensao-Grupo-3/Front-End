@@ -20,18 +20,19 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export function JanelaCadastro(props) {
   const [open, setOpen] = React.useState(false);
-  
-  const [nome, setNome] = React.useState(props.nome);
-  const [telefone, setTelefone] = React.useState(props.telefone);
-  const [email, setEmail] = React.useState(props.email);
-  const [endereco, setEndereco] = React.useState(props.endereco);
-  const [identificacao, setIdentificacao] = React.useState(props.identificacao);
+  const [dados, setDados] = React.useState(props.dados === undefined ? props.vazio : props.dados);
 
   const handleClickOpen = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const updateDados = (index, novoValor) => {
+    let dadosCopia = JSON.parse(JSON.stringify(dados));
+    dadosCopia[index][1] = novoValor;
+    setDados(dadosCopia);
   };
 
   const handleSubmit = (event) => {
@@ -66,23 +67,29 @@ export function JanelaCadastro(props) {
         <DialogContent dividers>
           <form onSubmit={(e) => {
               handleSubmit(e);
-              props.func(props.id, props.categoria, nome, telefone, email, endereco, identificacao); 
+              props.func(dados); 
               handleClose();
             }} id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
-            <div>
-              <h2>Nome:</h2>
-              <TextField required={true} defaultValue={props.nome} onChange={(e) => setNome(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-              <h2>E-mail:</h2>
-              <TextField required={true} defaultValue={props.email} onChange={(e) => setEmail(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-              <h2>Telefone:</h2>
-              <TextField required={true} defaultValue={props.telefone} onChange={(e) => setTelefone(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-            </div>
-            <div>
-              <h2>Endereço:</h2>
-              <TextField required={true} defaultValue={props.endereco} onChange={(e) => setEndereco(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-              <h2>CPF/CNPJ:</h2>
-              <TextField required={true} defaultValue={props.identificacao} onChange={(e) => setIdentificacao(e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-            </div>
+              {dados.length > 0 ? (
+                <div>
+                    { dados.map((item, index) => index >= 2 && index < 5 ? (
+                      <>
+                        <h2>{props.campos[index]}</h2>
+                        <TextField key={index} required={true} defaultValue={item[1]} onChange={(e) => updateDados(index, e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                      </>
+                    ) : <></> )}
+                </div>
+                ) : (<p>ERRO</p>)}
+              {dados.length > 0 ? (
+                <div>
+                    { dados.map((item, index) => index >= 5 ? (
+                      <>
+                        <h2>{props.campos[index]}</h2>
+                        <TextField key={index} required={true} defaultValue={item[1]} onChange={(e) => updateDados(index, e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                      </>
+                    ) : <></> )}
+                </div>
+                ) : (<p>ERRO</p>)}
           </form>
         </DialogContent>
         <DialogActions sx={{display:'flex', justifyContent:'center'}}>
