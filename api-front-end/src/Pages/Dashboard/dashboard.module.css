@@ -1,5 +1,31 @@
-.containerDash {
+.sectionDash {
     display: flex;
     width: 100%;
     height: 92.4vh;
 }
+
+.containerDash {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.conteudoDash {
+    display: flex;
+    width: 100%;
+    height: 50%;
+    justify-content: center;
+    align-items: center;
+}
+
+.conteudoGraficos {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
