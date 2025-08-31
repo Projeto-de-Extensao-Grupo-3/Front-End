@@ -114,6 +114,7 @@ export function Parceiros() {
                     </div>
                     <div>
                         <JanelaCadastro func={cadastrarParceiro} id={''} categoria={parceiro} 
+                        start_index={2} break_index={5}
                         campos={["Id", "Categoria", "Nome", "Telefone", "E-mail", "Endereço", "CPF/CNPJ"]}
                         vazio={[["", ""], ["", `${parceiro}`], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]}
                         children={
@@ -136,6 +137,7 @@ export function Parceiros() {
                         <li>E-mail: <br /> {item.email} </li>
                         <hr />
                         </>}
+                        start_index={2} break_index={5}
                         acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                         func={atualizarParceiro}
                         dados={Object.entries(item)}

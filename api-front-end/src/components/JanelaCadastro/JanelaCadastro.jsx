@@ -8,6 +8,11 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import { SelectOptions } from '../SelectOptions/SelectOptions';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -38,6 +43,8 @@ export function JanelaCadastro(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
   }
+
+  console.log(dados);
 
   return (
     <React.Fragment>
@@ -72,7 +79,7 @@ export function JanelaCadastro(props) {
             }} id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
               {dados.length > 0 ? (
                 <div>
-                    { dados.map((item, index) => index >= 2 && index < 5 ? (
+                    { dados.map((item, index) => index >= props.start_index && index < props.break_index ? (
                       <>
                         <h2>{props.campos[index]}</h2>
                         <TextField key={index} required={true} defaultValue={item[1]} onChange={(e) => updateDados(index, e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
@@ -82,10 +89,15 @@ export function JanelaCadastro(props) {
                 ) : (<p>ERRO</p>)}
               {dados.length > 0 ? (
                 <div>
-                    { dados.map((item, index) => index >= 5 ? (
+                    { dados.map((item, index) => index >= props.break_index ? (
                       <>
                         <h2>{props.campos[index]}</h2>
-                        <TextField key={index} required={true} defaultValue={item[1]} onChange={(e) => updateDados(index, e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                        { Array.isArray(item[1]) ?
+                          <SelectOptions dados={item[1]} lista={props.lista}></SelectOptions>
+                          :
+                          <TextField key={index} required={true} defaultValue={item[1]} onChange={(e) => updateDados(index, e.target.value)} 
+                          sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                        }
                       </>
                     ) : <></> )}
                 </div>

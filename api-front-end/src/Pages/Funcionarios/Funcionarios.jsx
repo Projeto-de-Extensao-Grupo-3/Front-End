@@ -9,6 +9,7 @@ import axios from "axios";
 
 export function Funcionarios() {
     const [data, setData] = useState([]);
+    const [permissoes, setPermissoes] = useState([]);
     const [operations, setOperations] = useState(0);
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
@@ -17,6 +18,17 @@ export function Funcionarios() {
         .then(response => {
             console.log(response.data);
             setData(response.data.reverse());
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
+    const listarPermissoes = () => {
+        axios.get(`http://localhost:8080/permissoes`)
+        .then(response => {
+            console.log(response.data);
+            setPermissoes(response.data.reverse());
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -79,6 +91,7 @@ export function Funcionarios() {
 
     useEffect(() => {
         listarFuncionarios();
+        listarPermissoes();
         setLoadMsg("Carregando dados...");
     }, [operations]);
 
@@ -92,8 +105,9 @@ export function Funcionarios() {
                     </div>
                     <div>
                         <JanelaCadastro func={cadastrarFuncionario} id={''} categoria={"funcionário"} 
-                        campos={["Id", "Categoria", "Nome", "CPF", "Telefone", "E-mail", "Senha"]}
-                        vazio={[["", ""], ["", `${"funcionário"}`], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]}
+                        start_index={1} break_index={4}
+                        campos={["Id", "Nome", "CPF", "Telefone", "E-mail", "Senha"]}
+                        vazio={[["", ""], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]}
                         children={
                             <Button variant="outlined" size="large" sx={
                                 {p:"1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)"}
@@ -104,7 +118,7 @@ export function Funcionarios() {
                 {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
                         {data.map(item => (
-                        <BarraVisualizacao key={item.idFuncionario}
+                        <BarraVisualizacao key={item.idFuncionario} start_index={1} break_index={4}
                         children={
                         <>
                         <li>Nome: <br /> {item.nome} </li>
@@ -115,14 +129,10 @@ export function Funcionarios() {
                         <hr />
                         </>}
                         acao={`Atualizar dados do funcionário`} confirm={"Confirmar alterações"}
+                        lista={permissoes}
                         func={atualizarFuncionario}
-                        dados={() => {
-                            let data = Object.entries(item);
-                            data.unshift(['', '']);
-                            data.pop();
-                            return data;
-                        }}
-                        campos={["Id", "Categoria", "Nome", "CPF", "Telefone", "E-mail"]}
+                        dados={Object.entries(item)}
+                        campos={["Id", "Nome", "CPF", "Telefone", "E-mail", "Permissões"]}
                         />
                         ))}
                     </div>
