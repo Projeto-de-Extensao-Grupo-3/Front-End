@@ -4,7 +4,7 @@ import Divider from '@mui/material/Divider';
 import { Navbar } from "../../components/Navbar/Navbar"
 import { Seletor } from "../../components/SeletorSubpagina/Seletor";
 import { Paper } from '@mui/material';
-import styles from "./caracteristicas.module.css"
+import styles from "./categorias.module.css"
 import { useEffect, useState } from 'react';
 import api from "../../provider/api"
 import Button from '@mui/material/Button';
@@ -17,11 +17,11 @@ import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import axios from "axios";
 
-export function Caracteristicas() {
+export function Categorias() {
 
-        useEffect(() => {
-            document.title = "Categorias"
-        })
+    useEffect(() => {
+        document.title = "Categorias"
+    })
 
 
     const [popupAdicionarAberto, setPopupAdicionarAberto] = useState(false)
@@ -72,7 +72,7 @@ export function Caracteristicas() {
         }).catch(error => {
             console.log("Erro ao cadastrar Categoria: ", error)
         })
-         reload()
+        reload()
     }
 
     const [dadosTecido, setDadosTecido] = useState([])
@@ -98,7 +98,7 @@ export function Caracteristicas() {
     return (
         <div>
             <Navbar vazio={false} pageNumber={1} />
-            <Seletor esquerda="Categorias" direita="Características" escolhido={2} paginaUm="/categorias" paginaDois="/caracteristicas" />
+            <Seletor esquerda="Categorias" direita="Características" escolhido={1} paginaUm="/categorias" paginaDois="/caracteristicas" />
             <div className={styles.main}>
                 <div className={styles.listCategorias}>
                     <Paper >

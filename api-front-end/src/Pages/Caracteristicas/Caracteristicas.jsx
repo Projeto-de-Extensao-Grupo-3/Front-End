@@ -57,7 +57,7 @@ export function Caracteristicas() {
     const [dadosCaracteristicas, setDadosCaracteristicas] = useState([])
 
     const reload = useEffect(() => {
-        api.get("/categorias/tipo/caracteristicas").then(
+        api.get("/categorias/tipo/caracteristica").then(
             response => {
                 setDadosCaracteristicas(response.data)
             }).catch(error => {
@@ -74,32 +74,16 @@ export function Caracteristicas() {
                 <div className={styles.listCategorias}>
                     <Paper >
                         <List>
-                            <ListItem key={0}>Roupas</ListItem>
+                            <ListItem key={0}>Caracteristicas</ListItem>
                             <Divider style={{ width: '100%' }} orientation='horizontal' component="li" />
-                            {dadosRoupa.map((categoria) =>
-                                <ListItem key={categoria.id}>
-                                    {categoria.nome}
+                            {dadosCaracteristicas.map((caracteristica) =>
+                                <ListItem key={caracteristica.id}>
+                                    {caracteristica.nome}
                                 </ListItem>
                             )}</List>
                     </Paper>
                     <div className={styles.divBotoes}>
                         <Button onClick={() => handlePopupAdicionarAbrir("Roupa")} variant='contained'>Adicionar Categoria</Button>
-                        <Button variant='contained'>Remover Categoria</Button>
-                    </div>
-                </div>
-                <div className={styles.listCategorias}>
-                    <Paper >
-                        <List>
-                            <ListItem key={0}>Tecidos</ListItem>
-                            <Divider style={{ width: '100%' }} orientation='horizontal' component="li" />
-                            {dadosCaracteristicas.map((categoria) =>
-                                <ListItem key={categoria.id}>
-                                    {categoria.nome}
-                                </ListItem>
-                            )}</List>
-                    </Paper>
-                    <div className={styles.divBotoes}>
-                        <Button onClick={() => handlePopupAdicionarAbrir("Tecido")} variant='contained'>Adicionar Categoria</Button>
                         <Button variant='contained'>Remover Categoria</Button>
                     </div>
                 </div>
