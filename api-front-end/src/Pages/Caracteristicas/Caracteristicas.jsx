@@ -15,13 +15,12 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
-import axios from "axios";
 
 export function Caracteristicas() {
 
-        useEffect(() => {
-            document.title = "Caracteristicas"
-        })
+    useEffect(() => {
+        document.title = "Caracteristicas"
+    })
 
 
     const [popupAdicionarAberto, setPopupAdicionarAberto] = useState(false)
@@ -36,54 +35,33 @@ export function Caracteristicas() {
         setPopupAdicionarAberto(false)
     }
 
-    const cadastrarCategoria = (event) => {
+    const cadastrarCaracteristica = (event) => {
         event.preventDefault()
         const formData = new FormData(event.currentTarget)
         const formJson = Object.fromEntries(formData.entries())
         const nome = formJson.nomeCategoria
         let duplicado = false;
-        if (popupEscolhido == "Roupa") {
-            dadosRoupa.map(r => {
-                if (r.nome == nome) {
-                    document.getElementById('alert-cadastro').style.display = "flex"
-                    duplicado = true
-                }
-            })
-        } else {
-            dadosTecido.map(r => {
-                if (r.nome == nome) {
-                    document.getElementById('alert-cadastro').style.display = "flex"
-                    duplicado = true
-                }
-            })
-        }
-        if (!duplicado) {
-            cadastrarRoupa(nome)
-            handlePopupAdicionarFechar()
-        }
-    }
-
-    const cadastrarRoupa = (nome) => {
-        axios.post("http://localhost:8080/categorias", {
-            "nome": nome,
-            "categoriaPai": {
-                "idCategoria": 2
+        dadosCaracteristicas.map(r => {
+            if (r.nome == nome) {
+                document.getElementById('alert-cadastro').style.display = "flex"
+                duplicado = true
             }
         })
+        if (!duplicado) {
+            // cadastrarRoupa(nome)
+            handlePopupAdicionarFechar()
+            reload()
+        }
     }
 
-    const [dadosTecido, setDadosTecido] = useState([])
-    const [dadosRoupa, setDadosRoupa] = useState([])
+    const [dadosCaracteristicas, setDadosCaracteristicas] = useState([])
 
     const reload = useEffect(() => {
-        api.get("/categorias/tipo/tecido").then(
+        api.get("/categorias/tipo/caracteristicas").then(
             response => {
-                setDadosTecido(response.data)
-            })
-
-        api.get("/categorias/tipo/roupa").then(
-            response => {
-                setDadosRoupa(response.data)
+                setDadosCaracteristicas(response.data)
+            }).catch(error => {
+                console.log("Erro ao obter os dados de Caracte: ", error)
             })
         // O Array vazio faz o useEffect ativas apenas ao renderizar pela primeira vez 
     }, [])
@@ -114,7 +92,7 @@ export function Caracteristicas() {
                         <List>
                             <ListItem key={0}>Tecidos</ListItem>
                             <Divider style={{ width: '100%' }} orientation='horizontal' component="li" />
-                            {dadosTecido.map((categoria) =>
+                            {dadosCaracteristicas.map((categoria) =>
                                 <ListItem key={categoria.id}>
                                     {categoria.nome}
                                 </ListItem>
@@ -134,7 +112,7 @@ export function Caracteristicas() {
                         Digite o nome da nova categoria
                     </DialogContentText>
                     <br />
-                    <form onSubmit={cadastrarCategoria} id='formAddCategoria'>
+                    <form onSubmit={cadastrarCaracteristica} id='formAddCategoria'>
                         <TextField
                             autoFocus
                             required
