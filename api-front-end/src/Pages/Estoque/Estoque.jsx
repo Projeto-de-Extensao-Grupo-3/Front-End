@@ -5,20 +5,20 @@ import { Navbar } from "../../components/Navbar/Navbar";
 import { JanelaCadastro } from "../../components/JanelaCadastro/JanelaCadastro";
 import { Options } from "../../components/Options/Options";
 import Button from '@mui/material/Button';
-import styles from "./parceiros.module.css"
+import styles from "../Parceiros/parceiros.module.css"
 import axios from "axios";
 
-export function Parceiros() {
-    const [parceiro, setParceiro] = useState("costureira");
-    const [pesquisa, setPesquisa] = useState("Buscar costureira");
-    const [categoria, setCategoria] = useState("Nova Costureira");
-    const [atualizarDados, setAtualizarDados] = useState("da costureira");
+export function Estoque() {
+    const [parceiro, setParceiro] = useState("Roupa");
+    const [pesquisa, setPesquisa] = useState("Buscar roupa");
+    const [categoria, setCategoria] = useState("Nova roupa");
+    const [atualizarDados, setAtualizarDados] = useState("da roupa");
     const [data, setData] = useState([]);
     const [operations, setOperations] = useState(0);
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
     const listarParceiros = () => {
-        axios.get(`http://localhost:8080/servico-terceiros/listagem/${parceiro}`)
+        axios.get(`http://localhost:8080/itens-estoque/categorias?tipo=${parceiro}`)
         .then(response => {
             console.log(response.data);
             setData(response.data.reverse());
@@ -90,31 +90,31 @@ export function Parceiros() {
     }, [parceiro, operations]);
 
     const atualizarInfoTela = (tela) => {
-        if (tela == "costureira") {
-            setParceiro("costureira");
-            setPesquisa("Buscar costureira");
-            setCategoria("Nova Costureira");
-            setAtualizarDados("da costureira");
-        } else if (tela == "fornecedor") {
-            setParceiro("fornecedor");
-            setPesquisa("Buscar fornecedor");
-            setCategoria("Novo Fornecedor");
-            setAtualizarDados("do fornecedor");
+        if (tela == "Roupa") {
+            setParceiro("Roupa");
+            setPesquisa("Buscar roupa");
+            setCategoria("Nova roupa");
+            setAtualizarDados("da roupa");
+        } else if (tela == "Tecido") {
+            setParceiro("Tecido");
+            setPesquisa("Buscar tecido");
+            setCategoria("Novo tecido");
+            setAtualizarDados("do tecido");
         }
     }
-    
+
     return(
         <div>
-            <Navbar vazio={false} pageNumber={4}/>
+            <Navbar vazio={false} pageNumber={1}/>
             <div className={styles.main}>
-                <Options item1={"Costureiras"} item2={"Fornecedores de Tecido"} opt1={"costureira"} opt2={"fornecedor"} acao={atualizarInfoTela}/>
+                <Options opt1={"Roupa"} opt2={"Tecido"} acao={atualizarInfoTela}/>
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
                         <BarraPesquisa func={buscarParceiro} busca={pesquisa}/>
                     </div>
                     <div>
                         <JanelaCadastro func={cadastrarParceiro} id={''} categoria={parceiro} 
-                        campos={["Id", "Categoria", "Nome", "Telefone", "E-mail", "Endereço", "CPF/CNPJ"]}
+                        campos={["Id", "Descrição", "Peso", "Qtd. Mínima", "Qtd. Armazenada", "Subcategoria", "Características"]}
                         vazio={[["", ""], ["", `${parceiro}`], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]}
                         children={
                             <Button variant="outlined" size="large" sx={
@@ -129,17 +129,17 @@ export function Parceiros() {
                         <BarraVisualizacao key={item.idParceiro}
                         children={
                         <>
-                        <li>Nome: <br /> {item.nome} </li>
+                        <li>Imagem <br /> {"1011001"} </li>
                         <hr />
-                        <li>Telefone: <br /> {item.telefone} </li>
+                        <li>Descrição: <br /> {item.descricao} </li>
                         <hr />
-                        <li>E-mail: <br /> {item.email} </li>
+                        <li>Quantidade em estoque: <br /> {item.qtdArmazenado} </li>
                         <hr />
                         </>}
                         acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                         func={atualizarParceiro}
                         dados={Object.entries(item)}
-                        campos={["Id", "Categoria", "Nome", "Telefone", "E-mail", "Endereço", "CPF/CNPJ"]}
+                        campos={["Id", "Descrição", "Peso", "Qtd. Mínima", "Qtd. Armazenada", "Subcategoria", "Características"]}
                         />
                         ))}
                     </div>

@@ -7,6 +7,7 @@ import { Categorias } from "./Pages/Categorias/Categorias";
 import { Caracteristicas } from "./Pages/Caracteristicas/Caracteristicas";
 import { Dashboard } from "./Pages/Dashboard/Dashboard";
 import { Funcionarios } from "./Pages/Funcionarios/Funcionarios";
+import { Estoque } from "./Pages/Estoque/Estoque";
 
 export const routes = createBrowserRouter([
     {
@@ -17,6 +18,11 @@ export const routes = createBrowserRouter([
     {
         path: "/historico",
         element: <Historico/>,
+        errorElement: <div>Erro</div>
+    },
+    {
+        path: "/estoque",
+        element: <Estoque/>,
         errorElement: <div>Erro</div>
     },
     {
