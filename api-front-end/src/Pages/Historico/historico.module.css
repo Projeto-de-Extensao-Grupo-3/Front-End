@@ -5,9 +5,7 @@
 
 .main {
     display: flex;
-
-    /* Eu talvez me arrependa disso... */
-    justify-content: center;
+    flex-direction: column;
 }
 
 .barraFiltros {
@@ -71,4 +69,10 @@
     display: flex;
     align-items: flex-end;
     justify-content: center;
+}
+
+.barraAcoes {
+    width: 100%;
+    display: flex;
+    
 }
