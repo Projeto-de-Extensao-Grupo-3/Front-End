@@ -8,31 +8,34 @@ import Checkbox from '@mui/material/Checkbox';
 
 export function SelectOptions(props) {
   const [listaName, setListaName] = React.useState(props.lista === undefined ? [] : props.lista);
-  let dados = props.dados
+  const [dados, setDados] = React.useState(props.dados)
+  
   console.log(dados)
-  console.log(listaName)
 
   const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
+    const { value } = event.target;
+    console.log(value);
 
-    let duplicateRemoved = [];
+    let duplicateRemoved = [...listaName];
 
-    value.forEach((item) => {
-      if (duplicateRemoved.findIndex((o) => o.descricao == item.descricao) >= 0) {
-        duplicateRemoved = duplicateRemoved.filter((x) => x.descricao == item.descricao);
-      } else {
-        duplicateRemoved.push(item);
-      }
-    });
+    if (value.length > 0) {
+        value.forEach((item) => {
+          if (duplicateRemoved.findIndex((o) => o.descricao == item.descricao) >= 0) {
+            duplicateRemoved = duplicateRemoved.filter((x) => x.descricao == item.descricao);
+          } else {
+            duplicateRemoved.push(item);
+          }
+        });
+    } else {
+        duplicateRemoved = [];
+    }
 
-    dados = duplicateRemoved;
+    setDados(duplicateRemoved);
   };
 
   return (
     <div>
-      <FormControl sx={{ m: 1, width: 300 }}>
+      <FormControl sx={{width:'35vw', marginBottom:'3rem'}}>
         <InputLabel id="demo-multiple-checkbox-label">Lista</InputLabel>
         <Select
           labelId="demo-multiple-checkbox-label"
@@ -40,7 +43,7 @@ export function SelectOptions(props) {
           multiple
           value={dados}
           onChange={handleChange}
-          renderValue={(selected) => selected.map((x) => x.name).join(', ')}
+          renderValue={(selected) => selected.map((x) => x.descricao).join(', ')}
         >
           {listaName.map((dado) => (
             <MenuItem key={dado.descricao} value={dado}>
