@@ -9,7 +9,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 // Limpar localização após conversa com duarte
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import { ptBR } from '@mui/x-date-pickers/locales';
 import 'dayjs/locale/en-gb';
 
@@ -21,11 +21,97 @@ import MenuItem from '@mui/material/MenuItem';
 import dayjs from "dayjs";
 
 import Button from '@mui/material/Button';
-import { Height } from "@mui/icons-material";
+
+// Tabela
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableFooter from '@mui/material/TableFooter';
+import TablePagination from '@mui/material/TablePagination';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import { Paper, TablePaginationActions } from "@mui/material";
+// import { useTheme } from '@mui/material/styles'; 
+import IconButton from '@mui/material/IconButton';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import Box from '@mui/material/Box';
+import PropTypes from 'prop-types';
+
 
 const theme = createTheme(
     ptBR
 )
+
+function PaginarTabela(props) {
+
+    const theme = useTheme()
+
+    const { count, page, rowsPerPage, onPageChange } = props;
+
+    const handleFirstPageButtonClick = (event) => {
+        onPageChange(event, 0);
+    };
+
+    const handleBackButtonClick = (event) => {
+        onPageChange(event, page - 1);
+    };
+
+    const handleNextButtonClick = (event) => {
+        onPageChange(event, page + 1);
+    };
+
+    const handleLastPageButtonClick = (event) => {
+        onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    };
+
+    return (
+        <Box>
+            <IconButton
+                onClick={handleFirstPageButtonClick}
+                disabled={page === 0}
+                aria-label="Primeira Página"
+            >
+                {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+            </IconButton>
+            <IconButton
+                onClick={handleBackButtonClick}
+                disabled={page === 0}
+                aria-label="Página Anterior"
+            >
+                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+            </IconButton>
+            <IconButton
+                onClick={handleNextButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="Próxima Paáina"
+            >
+                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </IconButton>
+            <IconButton
+                onClick={handleLastPageButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="Última Página"
+            >
+                {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+            </IconButton>
+        </Box>
+    )
+}
+
+function criarTupla(img, nome, idLote, tipo, quantidade, preco, destino, dtHora) {
+    return {img, nome, idLote, tipo, quantidade, preco, destino, dtHora}
+}
+
+TablePaginationActions.propTypes = {
+  count: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+  page: PropTypes.number.isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+};
 
 export function Historico() {
 
@@ -52,20 +138,43 @@ export function Historico() {
         SetTipoMovimentacao(e.target.value)
     }
 
-    const [displayBarraFiltros, SetDisplayBarraFiltros] = useState("flex")
+    const [displayBarraFiltros, SetDisplayBarraFiltros] = useState("none")
 
     const handleDisplayBarraFiltros = () => {
         if (displayBarraFiltros == "flex") {
-            SetDisplayBarraFiltros
+            SetDisplayBarraFiltros("none")
+        } else {
+            SetDisplayBarraFiltros("flex")
         }
+    }
+
+    const [pagina, setPagina] = useState(0)
+    const [entradasPorPagina, setEntradasPorPagina] = useState(9)
+    const [tuplas, setTuplas] = useState([])
+
+    const handleChangePage = (event, newPage) => {
+        setPagina(newPage)
+    }
+
+    const buscarDadosTabela = useEffect(() => {
+        // Eventualemente lógica sinistra do back aqui
+        setTuplas([
+            criarTupla("img", "Camiseta Azul", 1, "Entrada", 10, 80.0, "Armazém", "dthora"),
+            criarTupla("img", "Camiseta Amarela", 1, "Entrada", 10, 90.0, "Armazém", "dthora"),
+        ])
+    }, [])
+
+    const handleChangeRowsPerPage = (event) => {
+        setEntradasPorPagina(parseInt(event.target.value, 10))
+        setPagina(0)
     }
 
     return (
         <div>
             <Navbar vazio={false} pageNumber={0} />
-            <div className={styles.main} style={{display:displayBarraFiltros}}>
-                <div className={styles.barraFiltros}>
-                    <div className={styles.bigBoxData}>
+            <div className={styles.main} >
+                <div className={styles.barraFiltros} style={{ display: displayBarraFiltros }}>
+                    <div className={styles.bigBoxData} >
                         <LocalizationProvider
                             localeText={ptBR.components.MuiLocalizationProvider.defaultProps.localeText}
                             dateAdapter={AdapterDayjs}
@@ -121,7 +230,6 @@ export function Historico() {
                             </Select>
                         </FormControl>
                     </div>
-
                     <div className={styles.boxSelect}>
                         <FormControl fullWidth>
                             <InputLabel id="label-destino-slct">Destino</InputLabel>
@@ -143,7 +251,58 @@ export function Historico() {
                     </div>
                 </div>
                 <div className={styles.barraAcoes}>
-                    <Button onClick={()=> handleDisplayBarraFiltros()} variant="contained">Ver Filtros</Button>
+                    <div className={styles.boxButton}>
+                        <Button onClick={() => handleDisplayBarraFiltros()} variant="outlined">Ver Filtros</Button>
+                    </div>
+                    <div className={styles.boxButton}>
+                        <Button variant="contained">Registrar Movimentação</Button>
+                    </div>
+                    <div className={styles.boxButton}>
+                        <Button variant="contained">Alterar Movimentação</Button>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <TableContainer component={Paper}>
+                            <Table>
+                                <TableBody>
+                                    {(entradasPorPagina > 0
+                                        ? tuplas.slice(pagina * entradasPorPagina, pagina * entradasPorPagina + entradasPorPagina)
+                                        : tuplas
+                                    ).map((tupla) => (
+                                        <TableRow key={tupla.nome} 
+                                        // key terá que ser diferente dps, para ser única
+                                        >
+                                            <TableCell>
+                                                {tupla.img}
+                                            </TableCell>
+                                            <TableCell>
+                                                {tupla.nome}
+                                            </TableCell>
+                                            <TableCell>
+                                                {tupla.idLote}
+                                            </TableCell>
+                                            <TableCell>
+                                                {tupla.tipo}
+                                            </TableCell>
+                                            <TableCell>
+                                                {tupla.quantidade}
+                                            </TableCell>
+                                            <TableCell>
+                                                {tupla.preco}
+                                            </TableCell>
+                                            <TableCell>
+                                                {tupla.destino}
+                                            </TableCell>
+                                            <TableCell>
+                                                {tupla.dtHora}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </div>
                 </div>
             </div>
         </div>
