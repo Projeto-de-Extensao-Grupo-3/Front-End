@@ -28,6 +28,11 @@ export function Funcionarios() {
         axios.get(`http://localhost:8080/permissoes`)
         .then(response => {
             console.log(response.data);
+            // Remover id apenas para teste, necessário adição de id em DTO do back-end
+            let listaPermissoes = [];
+            for (let i = 0; i < response.data.length; i++) {
+                listaPermissoes.push(response.data[i].descricao);
+            }
             setPermissoes(response.data.reverse());
         })
         .catch(error => {

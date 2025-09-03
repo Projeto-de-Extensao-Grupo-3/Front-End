@@ -17,7 +17,7 @@ export function Estoque() {
     const [operations, setOperations] = useState(0);
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
-    const listarParceiros = () => {
+    const listarItensEstoque = () => {
         axios.get(`http://localhost:8080/itens-estoque/categorias?tipo=${parceiro}`)
         .then(response => {
             console.log(response.data);
@@ -28,7 +28,7 @@ export function Estoque() {
         });
     }
 
-    const buscarParceiro = (nome) => {
+    const buscarItemEstoque = (nome) => {
         axios.get(`http://localhost:8080/servico-terceiros/${parceiro}/busca?nome=${nome}`)
         .then(response => {
             console.log(response.data);
@@ -44,7 +44,7 @@ export function Estoque() {
         });
     }
 
-    const atualizarParceiro = (dados) => {
+    const atualizarItemEstoque = (dados) => {
         axios.put(`http://localhost:8080/servico-terceiros/${dados[0][1]}`, 
             {
                 "categoria": dados[1][1],
@@ -85,7 +85,7 @@ export function Estoque() {
     }
 
     useEffect(() => {
-        listarParceiros();
+        listarItensEstoque();
         setLoadMsg("Carregando dados...");
     }, [parceiro, operations]);
 
@@ -110,7 +110,7 @@ export function Estoque() {
                 <Options opt1={"Roupa"} opt2={"Tecido"} acao={atualizarInfoTela}/>
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
-                        <BarraPesquisa func={buscarParceiro} busca={pesquisa}/>
+                        <BarraPesquisa func={buscarItemEstoque} busca={pesquisa}/>
                     </div>
                     <div>
                         <JanelaCadastro func={cadastrarParceiro} id={''} categoria={parceiro} 
@@ -137,7 +137,7 @@ export function Estoque() {
                         <hr />
                         </>}
                         acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
-                        func={atualizarParceiro}
+                        func={atualizarItemEstoque}
                         dados={Object.entries(item)}
                         campos={["Id", "Descrição", "Peso", "Qtd. Mínima", "Qtd. Armazenada", "Subcategoria", "Características"]}
                         />
