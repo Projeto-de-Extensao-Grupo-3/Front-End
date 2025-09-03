@@ -103,14 +103,14 @@ function PaginarTabela(props) {
 }
 
 function criarTupla(img, nome, idLote, tipo, quantidade, preco, destino, dtHora) {
-    return {img, nome, idLote, tipo, quantidade, preco, destino, dtHora}
+    return { img, nome, idLote, tipo, quantidade, preco, destino, dtHora }
 }
 
 TablePaginationActions.propTypes = {
-  count: PropTypes.number.isRequired,
-  onPageChange: PropTypes.func.isRequired,
-  page: PropTypes.number.isRequired,
-  rowsPerPage: PropTypes.number.isRequired,
+    count: PropTypes.number.isRequired,
+    onPageChange: PropTypes.func.isRequired,
+    page: PropTypes.number.isRequired,
+    rowsPerPage: PropTypes.number.isRequired,
 };
 
 export function Historico() {
@@ -159,8 +159,21 @@ export function Historico() {
     const buscarDadosTabela = useEffect(() => {
         // Eventualemente lógica sinistra do back aqui
         setTuplas([
-            criarTupla("img", "Camiseta Azul", 1, "Entrada", 10, 80.0, "Armazém", "dthora"),
-            criarTupla("img", "Camiseta Amarela", 1, "Entrada", 10, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Camisa Amarela treino", 6, "Entrada", 10, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Vestido Azul Listrado", 6, "Entrada", 8, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Algodão Preto", 6, "Entrada", 2000, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Algodão Listrado Azul", 5, "Entrada", 1400, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Nylon Preto", 5, "Entrada", 1347, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Nylon Amarelo", 1, "Entrada", 1308, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Top Amarelo Acad", 1, "Entrada", 20, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "55% Algodão 45% Nylon Verde Musgo", 1, "Entrada", 500, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Saia Longa Verde", 1, "Entrada", 13, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Nylon Preto", 1, "Entrada", 9, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Shorts Jeans Curto", 1, "Entrada", 13, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Calça Jeans Baggy", 1, "Entrada", 10, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Jeans Simples", 1, "Entrada", 12, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Algodão Amarelo Florido", 1, "Entrada", 1032, 90.0, "Armazém", "dthora"),
+            criarTupla("img", "Algodão Azul Listrado", 1, "Entrada", 2039, 90.0, "Armazém", "dthora")
         ])
     }, [])
 
@@ -261,16 +274,28 @@ export function Historico() {
                         <Button variant="contained">Alterar Movimentação</Button>
                     </div>
                 </div>
-                <div>
-                    <div>
+                <div className={styles.body}>
+                    <div className={styles.divTabela}>
                         <TableContainer component={Paper}>
                             <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Imagem</TableCell>
+                                        <TableCell>Nome do Item</TableCell>
+                                        <TableCell>Lote</TableCell>
+                                        <TableCell>Quantidade</TableCell>
+                                        <TableCell>Movimento</TableCell>
+                                        <TableCell>Preço</TableCell>
+                                        <TableCell>Destino</TableCell>
+                                        <TableCell>Horário</TableCell>
+                                    </TableRow>
+                                </TableHead>
                                 <TableBody>
                                     {(entradasPorPagina > 0
                                         ? tuplas.slice(pagina * entradasPorPagina, pagina * entradasPorPagina + entradasPorPagina)
                                         : tuplas
                                     ).map((tupla) => (
-                                        <TableRow key={tupla.nome} 
+                                        <TableRow key={tupla.nome}
                                         // key terá que ser diferente dps, para ser única
                                         >
                                             <TableCell>
@@ -300,6 +325,32 @@ export function Historico() {
                                         </TableRow>
                                     ))}
                                 </TableBody>
+                                <TableFooter>
+                                    <TableRow>
+                                        <TablePagination
+                                            align="right"
+                                            rowsPerPageOptions={[6, 9, 12, { label: 'Todas', value: -1 }]}
+                                            colSpan={8 }
+
+                                            // Aqui vai ficar um select count eventualmente, devido a lógica
+                                            // de paginação
+                                            count={tuplas.length}
+                                            rowsPerPage={entradasPorPagina}
+                                            page={pagina}
+                                            slotProps={{
+                                                select: {
+                                                    inputProps: {
+                                                        'aria-label': 'Entradas por Página',
+                                                    },
+                                                    // native: true,
+                                                },
+                                            }}
+                                            onPageChange={handleChangePage}
+                                            onRowsPerPageChange={handleChangeRowsPerPage}
+                                            ActionsComponent={TablePaginationActions}
+                                        />
+                                    </TableRow>
+                                </TableFooter>
                             </Table>
                         </TableContainer>
                     </div>

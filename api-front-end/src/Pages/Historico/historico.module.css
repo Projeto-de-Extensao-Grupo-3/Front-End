@@ -93,6 +93,16 @@
     display: none;
 }
 
+.divTabela {
+    width: 90%;
+}
+
+.body {
+    padding-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
 @media (min-width: 600px) {
     .teste {
         display: none;
