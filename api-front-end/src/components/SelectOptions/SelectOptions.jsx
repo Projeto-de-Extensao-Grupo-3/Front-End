@@ -10,8 +10,6 @@ export function SelectOptions(props) {
   const [opcoes, setOpcoes] = React.useState(props.lista === undefined ? [] : props.lista);
   const [dados, setDados] = React.useState(props.dados)
   
-  
-
   console.log(dados)
 
   const handleChange = (event) => {
@@ -33,16 +31,16 @@ export function SelectOptions(props) {
           multiple
           value={dados}
           onChange={handleChange}
-          renderValue={(selected) => selected.map((item) => item.descricao).join(', ')}
+          renderValue={(selected) => selected.map((item) => item).join(', ')}
         >
-          {opcoes.map((dado) => (
-            <MenuItem key={dado} value={dado}>
+          {opcoes.map((opcao) => (
+            <MenuItem key={opcao} value={opcao}>
               <Checkbox
                 checked={
-                  dados.findIndex((item) => item.descricao == dado.descricao) >= 0
+                  dados.includes(opcao)
                 }
               />
-              <ListItemText primary={dado.descricao} />
+              <ListItemText primary={opcao} />
             </MenuItem>
           ))}
         </Select>

@@ -8,10 +8,6 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 import { SelectOptions } from '../SelectOptions/SelectOptions';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -93,7 +89,7 @@ export function JanelaCadastro(props) {
                       <>
                         <h2>{props.campos[index]}</h2>
                         { Array.isArray(item[1]) ?
-                          <SelectOptions dados={item[1]} lista={props.lista}></SelectOptions>
+                          <SelectOptions dados={item[1].map((dado) => dado.descricao)} lista={props.lista}></SelectOptions>
                           :
                           <TextField key={index} required={true} defaultValue={item[1]} onChange={(e) => updateDados(index, e.target.value)} 
                           sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
