@@ -9,7 +9,7 @@ import styles from "../Parceiros/parceiros.module.css"
 import axios from "axios";
 
 export function Estoque() {
-    const [parceiro, setParceiro] = useState("Roupa");
+    const [itemEstoque, setItemEstoque] = useState("Roupa");
     const [pesquisa, setPesquisa] = useState("Buscar roupa");
     const [categoria, setCategoria] = useState("Nova roupa");
     const [atualizarDados, setAtualizarDados] = useState("da roupa");
@@ -18,7 +18,7 @@ export function Estoque() {
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
     const listarItensEstoque = () => {
-        axios.get(`http://localhost:8080/itens-estoque/categorias?tipo=${parceiro}`)
+        axios.get(`http://localhost:8080/itens-estoque/categorias?tipo=${itemEstoque}`)
         .then(response => {
             console.log(response.data);
             setData(response.data.reverse());
@@ -28,20 +28,24 @@ export function Estoque() {
         });
     }
 
-    const buscarItemEstoque = (nome) => {
-        axios.get(`http://localhost:8080/servico-terceiros/${parceiro}/busca?nome=${nome}`)
-        .then(response => {
-            console.log(response.data);
-            if (response.data.length === 0) {
-                setData([])
-                setLoadMsg("Nenhum dado encontrado");
-            } else {
-                setData(response.data.reverse());
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
-        });
+    const buscarItemEstoque = (descricao) => {
+        if (descricao == "") {
+            listarItensEstoque();
+        } else {
+            axios.get(`http://localhost:8080/itens-estoque/filtros?descricao=${descricao}`)
+            .then(response => {
+                console.log(response.data);
+                if (response.data.length === 0) {
+                    setData([])
+                    setLoadMsg("Nenhum dado encontrado");
+                } else {
+                    setData(response.data.reverse());
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        }
     }
 
     const atualizarItemEstoque = (dados) => {
@@ -64,7 +68,7 @@ export function Estoque() {
         });
     }
 
-    const cadastrarParceiro = (dados) => {
+    const cadastrarItemEstoque = (dados) => {
         axios.post(`http://localhost:8080/servico-terceiros`, 
             {
                 "categoria": dados[1][1],
@@ -87,16 +91,16 @@ export function Estoque() {
     useEffect(() => {
         listarItensEstoque();
         setLoadMsg("Carregando dados...");
-    }, [parceiro, operations]);
+    }, [itemEstoque, operations]);
 
     const atualizarInfoTela = (tela) => {
         if (tela == "Roupa") {
-            setParceiro("Roupa");
+            setItemEstoque("Roupa");
             setPesquisa("Buscar roupa");
             setCategoria("Nova roupa");
             setAtualizarDados("da roupa");
         } else if (tela == "Tecido") {
-            setParceiro("Tecido");
+            setItemEstoque("Tecido");
             setPesquisa("Buscar tecido");
             setCategoria("Novo tecido");
             setAtualizarDados("do tecido");
@@ -113,9 +117,10 @@ export function Estoque() {
                         <BarraPesquisa func={buscarItemEstoque} busca={pesquisa}/>
                     </div>
                     <div>
-                        <JanelaCadastro func={cadastrarParceiro} id={''} categoria={parceiro} 
-                        campos={["Id", "Descrição", "Peso", "Qtd. Mínima", "Qtd. Armazenada", "Subcategoria", "Características"]}
-                        vazio={[["", ""], ["", `${parceiro}`], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]}
+                        <JanelaCadastro func={cadastrarItemEstoque} id={''} categoria={""} 
+                        start_index={1} break_index={5}
+                        campos={["Id", "Descrição", "Peso", "Qtd. Mínima", "Qtd. Armazenada", "Subcategoria", "Características", "Tecidos", "Preço", "Imagem"]}
+                        vazio={[["", ""], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""], ["", ""]]}
                         children={
                             <Button variant="outlined" size="large" sx={
                                 {p:"1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)"}
@@ -129,17 +134,18 @@ export function Estoque() {
                         <BarraVisualizacao key={item.idParceiro}
                         children={
                         <>
-                        <li>Imagem <br /> {"1011001"} </li>
+                        <li>Imagem: <br /> <img src={item.imagem.url} style={{height:"6rem"}} /> </li>
                         <hr />
                         <li>Descrição: <br /> {item.descricao} </li>
                         <hr />
                         <li>Quantidade em estoque: <br /> {item.qtdArmazenado} </li>
                         <hr />
                         </>}
+                        start_index={1} break_index={6}
                         acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                         func={atualizarItemEstoque}
                         dados={Object.entries(item)}
-                        campos={["Id", "Descrição", "Peso", "Qtd. Mínima", "Qtd. Armazenada", "Subcategoria", "Características"]}
+                        campos={["Id", "Descrição", "Peso", "Qtd. Mínima", "Qtd. Armazenada", "Subcategoria", "Características", "Tecidos", "Preço", "Imagem"]}
                         />
                         ))}
                     </div>
