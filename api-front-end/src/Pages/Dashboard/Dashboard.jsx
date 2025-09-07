@@ -5,7 +5,7 @@ import styles from "./dashboard.module.css"
 export function Dashboard() {
     return( 
         <div>
-            <Navbar />
+            <Navbar pageNumber={3}/>
             <div className={styles.sectionDash}>
                 <Filtro />
                 <div className={styles.containerDash}>

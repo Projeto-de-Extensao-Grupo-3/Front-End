@@ -79,14 +79,14 @@ export function Categorias() {
     const [dadosRoupa, setDadosRoupa] = useState([])
 
     const reload = useEffect(() => {
-        api.get("/categorias/tipo/tecido").then(
+        api.get("http://localhost:8080/categorias/tipo/tecido").then(
             response => {
                 setDadosTecido(response.data)
             }).catch(error => {
                 console.log("Erro ao obter os dados de Tecidos: ", error)
             })
 
-        api.get("/categorias/tipo/roupa").then(
+        api.get("http://localhost:8080/categorias/tipo/roupa").then(
             response => {
                 setDadosRoupa(response.data)
             }).catch(error => {
@@ -97,7 +97,7 @@ export function Categorias() {
 
     return (
         <div>
-            <Navbar vazio={false} pageNumber={1} />
+            <Navbar vazio={false} pageNumber={2} />
             <Seletor esquerda="Categorias" direita="Características" escolhido={1} paginaUm="/categorias" paginaDois="/caracteristicas" />
             <div className={styles.main}>
                 <div className={styles.listCategorias}>

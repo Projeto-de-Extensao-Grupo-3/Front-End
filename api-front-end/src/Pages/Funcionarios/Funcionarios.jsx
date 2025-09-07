@@ -103,7 +103,7 @@ export function Funcionarios() {
 
     return(
         <div>
-            <Navbar vazio={false} pageNumber={3}/>
+            <Navbar vazio={false} pageNumber={4}/>
             <div className={styles.main}>
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>

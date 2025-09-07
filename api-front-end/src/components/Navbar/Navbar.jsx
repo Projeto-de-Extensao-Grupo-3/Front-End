@@ -5,6 +5,7 @@ import Menu from '@mui/material/Menu';
 import burgerIco from "../../assets/white-burger.png"
 import { MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom"
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export function Navbar(props) {
 
@@ -44,9 +45,16 @@ export function Navbar(props) {
             <div className={styles.divLinks}>
                 <div onClick={() => redirecionar("/historico")} className={styles.link} style={{ fontFamily: weights[0] }}>Histórico</div>
                 <div onClick={() => redirecionar("/estoque")} className={styles.link} style={{ fontFamily: weights[1] }}>Estoque</div>
-                <div onClick={() => redirecionar("/dashboard")} className={styles.link} style={{ fontFamily: weights[2] }}>Dashboard</div>
-                <div onClick={() => redirecionar("/funcionarios")} className={styles.link} style={{ fontFamily: weights[3] }}>Funcionários</div>
-                <div onClick={() => redirecionar("/parceiros")} className={styles.link} style={{ fontFamily: weights[4] }}>Fornecedores</div>
+                <div onClick={() => redirecionar("/categorias")} className={styles.link} style={{ fontFamily: weights[2] }}>Categorias</div>
+                <div onClick={() => redirecionar("/dashboard")} className={styles.link} style={{ fontFamily: weights[3] }}>Dashboard</div>
+                <div onClick={() => redirecionar("/funcionarios")} className={styles.link} style={{ fontFamily: weights[4] }}>Funcionários</div>
+                <div onClick={() => redirecionar("/parceiros")} className={styles.link} style={{ fontFamily: weights[5] }}>Fornecedores</div>
+            </div>
+            <div className={styles.link}>
+                <AccountCircleIcon fontSize="large" color="action" onClick={() => redirecionar("/perfil")}
+                sx={
+                    {color: "rgba(255, 255, 255, 1)", cursor: "pointer", display: "flex", alignItems: "center"}
+                }/>
             </div>
             <div className={styles.divBurger}>
                 <ButtonReact onClick={handleClick}>

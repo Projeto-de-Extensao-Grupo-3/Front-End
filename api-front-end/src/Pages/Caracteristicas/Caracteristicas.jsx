@@ -57,7 +57,7 @@ export function Caracteristicas() {
     const [dadosCaracteristicas, setDadosCaracteristicas] = useState([])
 
     const reload = useEffect(() => {
-        api.get("/categorias/tipo/caracteristica").then(
+        api.get("http://localhost:8080/categorias/tipo/caracteristica").then(
             response => {
                 setDadosCaracteristicas(response.data)
             }).catch(error => {
@@ -68,7 +68,7 @@ export function Caracteristicas() {
 
     return (
         <div>
-            <Navbar vazio={false} pageNumber={1} />
+            <Navbar vazio={false} pageNumber={2} />
             <Seletor esquerda="Categorias" direita="Características" escolhido={2} paginaUm="/categorias" paginaDois="/caracteristicas" />
             <div className={styles.main}>
                 <div className={styles.listCategorias}>

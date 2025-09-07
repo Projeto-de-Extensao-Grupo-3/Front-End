@@ -105,7 +105,7 @@ export function Parceiros() {
     
     return(
         <div>
-            <Navbar vazio={false} pageNumber={4}/>
+            <Navbar vazio={false} pageNumber={5}/>
             <div className={styles.main}>
                 <Options item1={"Costureiras"} item2={"Fornecedores de Tecido"} opt1={"costureira"} opt2={"fornecedor"} acao={atualizarInfoTela}/>
                 <div className={styles.barra_gerenciamento}>
