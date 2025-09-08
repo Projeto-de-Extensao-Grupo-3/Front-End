@@ -9,3 +9,8 @@ body {
     src: url(assets/Montserrat/Montserrat-VariableFont_wght.ttf);
     font-weight: 400;
 }
+
+@font-face {
+    font-family: "Montserrat B";
+    src: url(assets/Montserrat/static/Montserrat-Bold.ttf);
+}

@@ -89,10 +89,6 @@
     margin: 5px 5px 5px 5px;
 }
 
-.teste {
-    display: none;
-}
-
 .divTabela {
     width: 90%;
 }
@@ -107,4 +103,46 @@
     .teste {
         display: none;
     }
+}
+
+.popupRegistro {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: hidden;
+}
+
+.blackout {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: rgba(0, 0, 0, 0.5); */
+}
+
+.popupWindow {
+    width: 60%;
+    height: 60%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.tituloPopup {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-family: "Montserrat B";
+}
+
+.barraPopup {
+    margin-top: 15px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
 }

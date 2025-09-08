@@ -107,7 +107,7 @@ export function Caracteristicas() {
                     </form>
                     <br />
                     <Alert severity='error' id='alert-cadastro' style={{ display: "none" }}>Nome indisponível</Alert>
-                    <DialogActions>
+                    <DialogActions className={styles.divBotoes}>
                         <Button onClick={() => handlePopupAdicionarFechar()}>Cancelar</Button>
                         <Button type='submit' form="formAddCategoria">Cadastrar</Button>
                     </DialogActions>

@@ -41,6 +41,12 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+
+import TextField from '@mui/material/TextField'
 
 const theme = createTheme(
     ptBR
@@ -182,8 +188,20 @@ export function Historico() {
         setPagina(0)
     }
 
+    const registrarMovimentacao = () => {
+        return null;
+    }
+
+    const [displayPopup, setDiplayPopup] = useState("none");
+
+    const handleDisplayPopupChange = (d) => {
+        setDiplayPopup(d)
+
+    }
+
     return (
-        <div>
+        <div >
+
             <Navbar vazio={false} pageNumber={0} />
             <div className={styles.main} >
                 <div className={styles.barraFiltros} style={{ display: displayBarraFiltros }}>
@@ -268,7 +286,7 @@ export function Historico() {
                         <Button onClick={() => handleDisplayBarraFiltros()} variant="outlined">Ver Filtros</Button>
                     </div>
                     <div className={styles.boxButton}>
-                        <Button variant="contained">Registrar Movimentação</Button>
+                        <Button variant="contained" onClick={() => handleDisplayPopupChange("flex")}>Registrar Movimentação</Button>
                     </div>
                     <div className={styles.boxButton}>
                         <Button variant="contained">Alterar Movimentação</Button>
@@ -330,7 +348,7 @@ export function Historico() {
                                         <TablePagination
                                             align="right"
                                             rowsPerPageOptions={[6, 9, 12, { label: 'Todas', value: -1 }]}
-                                            colSpan={8 }
+                                            colSpan={8}
 
                                             // Aqui vai ficar um select count eventualmente, devido a lógica
                                             // de paginação
@@ -353,6 +371,34 @@ export function Historico() {
                                 </TableFooter>
                             </Table>
                         </TableContainer>
+                    </div>
+                </div>
+            </div>
+            <div>
+                {/* Popups */}
+                <div className={styles.popupRegistro} style={{ display: displayPopup }}>
+                    <div className={styles.blackout} onClick={() => handleDisplayPopupChange("none")}>
+                        <Paper className={styles.popupWindow} onClick={(e) => e.stopPropagation()}>
+                            <h2 className={styles.tituloPopup}>Registrar Movimentação</h2>
+                            <div>
+                                <div className={styles.barraPopup}>
+                                    <TextField label="Buscar Item" style={{width:"60%"}}></TextField>
+                                    <Button onClick={() => handleDisplayPopupChange("none")} variant="contained">Cancelar</Button>
+                                    <Button onClick={() => handleDisplayPopupChange("none")} variant="contained">Registrar</Button>
+                                    {/* <FormControl>
+                                        <FormLabel id="id-entrada-saida">Sentido Movimentação</FormLabel>
+                                        <RadioGroup defaultValue="entrada" aria-labelledby="id-entrada-saida">
+                                            <FormControlLabel value="entrada" control={<Radio />} label="Entrada" />
+                                            <FormControlLabel value="saida" control={<Radio />} label="Saída" />
+                                        </RadioGroup>
+                                    </FormControl> */}
+                                </div>
+                                <div></div>
+                            </div>
+                            <div>
+
+                            </div>
+                        </Paper>
                     </div>
                 </div>
             </div>
