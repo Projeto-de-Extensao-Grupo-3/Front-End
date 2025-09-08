@@ -47,10 +47,37 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 
 import TextField from '@mui/material/TextField'
+import { useReducer } from "react";
 
 const theme = createTheme(
     ptBR
 )
+
+function reducer (state, action) {
+
+    switch (action.type) {
+        case 'alterar_atributo': {
+            return {
+                ...state,
+                [action.field]: action.value
+            }
+        }
+        case 'swicth_display_filtros': {
+            if (action.value == 'none') {
+                return {
+                    ...state,
+                    displayBarraFiltros: 'flex'
+                }
+            } else {
+                return {
+                    ...state,
+                    displayBarraFiltros: 'none'
+                }
+            }
+        }
+        default: throw new Error("Erro no reducer!");
+    }
+}
 
 function PaginarTabela(props) {
 
@@ -124,34 +151,43 @@ export function Historico() {
     useEffect(() => {
         document.title = "Histórico"
     })
+    
+    // TODO: 2, 3, 5, 6, 7, 8, 9
+    const initialState = {
+        // Ocultar barra de filtros
+        displayBarraFiltros: "none",
 
-    // 30 dias atrás
-    const [DtInicio, SetDtInicio] = useState(dayjs().subtract(30, 'days'))
-    // Hoje
-    const [DtFim, SetDtFim] = useState(dayjs())
+        // Itens relevantes para filtros
+        dtInicio: dayjs().subtract(30, 'days'),
+        dtFim: dayjs(),
+        itensSelecionados: 2,
+        tipoMovimentacao: 2,
 
-    // Ambos
-    const [ItemSelecionado, SetItemSelecionado] = useState(2)
+        // Paginação da tabela (defaults escolhidos por conveniência ou usabilidade)
+        pagina: 0,
+        entradasPorPagina: 9,
+        tuplas: [],
+
+        // Ocultar popup de registrar movimentação
+        displayPopup: "none"
+    }
+
+    const [values, dispatch] = useReducer(reducer, initialState);
 
     const handleItemSelecionado = (e) => {
-        SetItemSelecionado(e.target.value)
+        dispatch({
+            type: 'alterar_atributo',
+            field: 'itensSelecionados',
+            value: e.target.value
+        })
     }
 
     // Ambos
-    const [tipoMocimentacao, SetTipoMovimentacao] = useState(2)
+    const [tipoMovimentacao, SetTipoMovimentacao] = useState(2)
 
     const handleTipoMovimentacao = (e) => {
         SetTipoMovimentacao(e.target.value)
-    }
-
-    const [displayBarraFiltros, SetDisplayBarraFiltros] = useState("none")
-
-    const handleDisplayBarraFiltros = () => {
-        if (displayBarraFiltros == "flex") {
-            SetDisplayBarraFiltros("none")
-        } else {
-            SetDisplayBarraFiltros("flex")
-        }
+        dispatch
     }
 
     const [pagina, setPagina] = useState(0)
@@ -204,7 +240,7 @@ export function Historico() {
 
             <Navbar vazio={false} pageNumber={0} />
             <div className={styles.main} >
-                <div className={styles.barraFiltros} style={{ display: displayBarraFiltros }}>
+                <div className={styles.barraFiltros} style={{ display: values.displayBarraFiltros }}>
                     <div className={styles.bigBoxData} >
                         <LocalizationProvider
                             localeText={ptBR.components.MuiLocalizationProvider.defaultProps.localeText}
@@ -216,14 +252,14 @@ export function Historico() {
                                     <DatePicker
                                         className={styles.data}
                                         label="Início"
-                                        value={DtInicio}
-                                        onChange={(newValue) => SetDtInicio(newValue)}
+                                        value={values.dtInicio}
+                                        onChange={(newValue) => dispatch({type: 'alterar_atributo', field: 'dtInicio', value: newValue})}
                                     />
                                     <DatePicker
                                         className={styles.data}
                                         label="Fim"
-                                        value={DtFim}
-                                        onChange={(newValue) => SetDtFim(newValue)}
+                                        value={values.dtFim}
+                                        onChange={(newValue) => dispatch({type: 'alterar_atributo', field: 'dtFim', value: newValue})}
                                     />
                                 </div>
                             </DemoContainer>
@@ -232,7 +268,11 @@ export function Historico() {
                     <div className={styles.boxSelect}>
                         <FormControl>
                             <InputLabel id="label-categoria-slct">Categoria</InputLabel>
-                            <Select value={ItemSelecionado} onChange={handleItemSelecionado} labelid="label-categoria-slct" label="Categoria">
+                            <Select 
+                                value={values.itensSelecionados} 
+                                onChange={(e) => {dispatch({type: 'alterar_atributo',field: 'itensSelecionados',value: e.target.value})}} 
+                                labelid="label-categoria-slct" 
+                                label="Categoria">
                                 <MenuItem value={0}>Tecidos</MenuItem>
                                 <MenuItem value={1}>Produtos</MenuItem>
                                 <MenuItem selected value={2}>Ambos</MenuItem>
@@ -242,7 +282,7 @@ export function Historico() {
                     <div className={styles.boxSelect}>
                         <FormControl >
                             <InputLabel id="label-tipo-slct">Tipo</InputLabel>
-                            <Select value={tipoMocimentacao} onChange={handleTipoMovimentacao} labelId="label-tipo-slct" label="Tipo">
+                            <Select value={tipoMovimentacao} onChange={handleTipoMovimentacao} labelId="label-tipo-slct" label="Tipo">
                                 <MenuItem value={1}>Saída</MenuItem>
                                 <MenuItem value={0}>Entrada</MenuItem>
                                 <MenuItem selected value={2}>Ambos</MenuItem>
@@ -283,7 +323,7 @@ export function Historico() {
                 </div>
                 <div className={styles.barraAcoes}>
                     <div className={styles.boxButton}>
-                        <Button onClick={() => handleDisplayBarraFiltros()} variant="outlined">Ver Filtros</Button>
+                        <Button onClick={(e) => {dispatch({type: 'swicth_display_filtros', value: values.displayBarraFiltros})}} variant="outlined">Ver Filtros</Button>
                     </div>
                     <div className={styles.boxButton}>
                         <Button variant="contained" onClick={() => handleDisplayPopupChange("flex")}>Registrar Movimentação</Button>
