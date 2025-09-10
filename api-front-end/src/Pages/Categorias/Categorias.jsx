@@ -98,7 +98,7 @@ export function Categorias() {
     return (
         <div>
             <Navbar vazio={false} pageNumber={2} />
-            <Seletor esquerda="Categorias" direita="Características" escolhido={1} paginaUm="/categorias" paginaDois="/caracteristicas" />
+            <Seletor rotaPaginaUm="/Categorias" rotaPaginaDois="/Caracteristicas" paginaUm="Categorias" paginaDois="Características" valor="Categorias" />
             <div className={styles.main}>
                 <div className={styles.listCategorias}>
                     <Paper >

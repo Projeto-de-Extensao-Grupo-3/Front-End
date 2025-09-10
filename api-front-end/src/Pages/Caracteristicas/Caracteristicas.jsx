@@ -69,7 +69,7 @@ export function Caracteristicas() {
     return (
         <div>
             <Navbar vazio={false} pageNumber={2} />
-            <Seletor esquerda="Categorias" direita="Características" escolhido={2} paginaUm="/categorias" paginaDois="/caracteristicas" />
+            <Seletor rotaPaginaUm="/Categorias" rotaPaginaDois="/Caracteristicas" pagina paginaUm="Categorias" paginaDois="Características" valor="Características"/>
             <div className={styles.main}>
                 <div className={styles.listCategorias}>
                     <Paper >
