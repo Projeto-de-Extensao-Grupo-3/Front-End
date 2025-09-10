@@ -32,7 +32,7 @@ export function Perfil() {
 
     return (
         <div>
-            <Navbar vazio={false} pageNumber={5} />
+            <Navbar vazio={false} pageNumber={6} />
             <div className={styles.main}>
 
                 <h1 className={styles.textPerfil}>Perfil</h1>

@@ -1,9 +1,15 @@
 import styles from "./barra-visualizacao.module.css"
 import { JanelaCadastro } from "../../components/JanelaCadastro/JanelaCadastro";
 import EditSquareIcon from '@mui/icons-material/EditSquare';
+import { useEffect, useState } from "react";
 
 // Preciso achar um nome melhor para esse componente
 export function BarraVisualizacao(props) {
+    const [dados, setDados] = useState(props.dados);
+
+    useEffect(() => {
+        setDados(props.dados)
+    }, [props.dados])
 
     return(
         <div className={styles.card}>
@@ -12,7 +18,7 @@ export function BarraVisualizacao(props) {
                 <li><JanelaCadastro
                         lista={props.lista}
                         func={props.func}
-                        dados={props.dados}
+                        dados={dados}
                         campos={props.campos}
                         start_index={props.start_index} /*Index inicial para ser considerado ao visualizar os dados*/ 
                         break_index={props.break_index} /*Index para realizar divisão da tela*/ 

@@ -18,10 +18,10 @@ export function Parceiros() {
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
     const listarParceiros = () => {
-        axios.get(`http://localhost:8080/servico-terceiros/listagem/${parceiro}`)
+        axios.get(`http://localhost:8080/parceiros/listagem/${parceiro}`)
         .then(response => {
-            console.log(response.data);
             setData(response.data.reverse());
+            console.log(response.data);
         })
         .catch(error => {
             console.error('Error fetching data:', error);
@@ -29,13 +29,14 @@ export function Parceiros() {
     }
 
     const buscarParceiro = (nome) => {
-        axios.get(`http://localhost:8080/servico-terceiros/${parceiro}/busca?nome=${nome}`)
+        axios.get(`http://localhost:8080/parceiros/${parceiro}/nome?nome=${nome}`)
         .then(response => {
             console.log(response.data);
             if (response.data.length === 0) {
                 setData([])
                 setLoadMsg("Nenhum dado encontrado");
             } else {
+                console.log("Teste")
                 setData(response.data.reverse());
             }
         })
@@ -45,7 +46,7 @@ export function Parceiros() {
     }
 
     const atualizarParceiro = (dados) => {
-        axios.put(`http://localhost:8080/servico-terceiros/${dados[0][1]}`, 
+        axios.put(`http://localhost:8080/parceiros/${dados[0][1]}`, 
             {
                 "categoria": dados[1][1],
                 "nome": dados[2][1],
@@ -65,7 +66,7 @@ export function Parceiros() {
     }
 
     const cadastrarParceiro = (dados) => {
-        axios.post(`http://localhost:8080/servico-terceiros`, 
+        axios.post(`http://localhost:8080/parceiros`, 
             {
                 "categoria": dados[1][1],
                 "nome": dados[2][1],
@@ -85,7 +86,9 @@ export function Parceiros() {
     }
 
     useEffect(() => {
+        console.log("listando")
         listarParceiros();
+        console.log(data);
         setLoadMsg("Carregando dados...");
     }, [parceiro, operations]);
 
@@ -126,6 +129,7 @@ export function Parceiros() {
                 </div>
                     {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
+                        {console.log(data)}
                         {data.map(item => (
                         <BarraVisualizacao key={item.idParceiro}
                         children={

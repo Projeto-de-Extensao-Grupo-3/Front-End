@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useEffect } from "react";
 import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import Dialog from '@mui/material/Dialog';
@@ -23,7 +24,13 @@ export function JanelaCadastro(props) {
   const [open, setOpen] = React.useState(false);
   const [dados, setDados] = React.useState(props.dados === undefined ? props.vazio : props.dados);
 
+  useEffect(() => {
+    setDados(props.dados === undefined ? props.vazio : props.dados)
+  }, [props.dados])
+
   const handleClickOpen = () => {
+    console.log("DADOS")
+    console.log(dados);
     setOpen(true);
   };
   const handleClose = () => {
@@ -40,7 +47,6 @@ export function JanelaCadastro(props) {
     event.preventDefault();
   }
 
-  console.log(dados);
 
   return (
     <React.Fragment>
