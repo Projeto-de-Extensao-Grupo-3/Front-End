@@ -9,6 +9,7 @@ export function BarraVisualizacao(props) {
 
     useEffect(() => {
         setDados(props.dados)
+        props.funct(dados)
     }, [props.dados])
 
     return(
@@ -16,6 +17,7 @@ export function BarraVisualizacao(props) {
             <ul className={styles.uul}>
                 {props.children}
                 <li><JanelaCadastro
+                        form={props.form}
                         lista={props.lista}
                         func={props.func}
                         dados={dados}

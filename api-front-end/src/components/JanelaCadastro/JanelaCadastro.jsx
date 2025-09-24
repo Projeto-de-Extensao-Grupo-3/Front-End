@@ -11,6 +11,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import TextField from '@mui/material/TextField';
 import { SelectOptions } from '../SelectOptions/SelectOptions';
 
+
+// REFATORAR -> REMOVER A LÓGICA DE GERAÇÃO DE INPUTS DINÂMICA
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -74,7 +76,8 @@ export function JanelaCadastro(props) {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-          <form onSubmit={(e) => {
+          {props.form}
+          {/* <form onSubmit={(e) => {
               handleSubmit(e);
               props.func(dados); 
               handleClose();
@@ -104,7 +107,7 @@ export function JanelaCadastro(props) {
                     ) : <></> )}
                 </div>
                 ) : (<p>ERRO</p>)}
-          </form>
+          </form> */}
         </DialogContent>
         <DialogActions sx={{display:'flex', justifyContent:'center'}}>
           <Button type='submit' form='form-cadastro' autoFocus sx={{

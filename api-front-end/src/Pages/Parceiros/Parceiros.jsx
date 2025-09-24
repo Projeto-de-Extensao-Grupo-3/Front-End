@@ -5,6 +5,7 @@ import { Navbar } from "../../components/Navbar/Navbar";
 import { JanelaCadastro } from "../../components/JanelaCadastro/JanelaCadastro";
 import { Options } from "../../components/Options/Options";
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import styles from "./parceiros.module.css"
 import axios from "axios";
 
@@ -16,6 +17,8 @@ export function Parceiros() {
     const [data, setData] = useState([]);
     const [operations, setOperations] = useState(0);
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
+
+    const [dadosCadastro, setDadosCadastro] = useState([]);
 
     const listarParceiros = () => {
         axios.get(`http://localhost:8080/parceiros/listagem/${parceiro}`)
@@ -46,14 +49,15 @@ export function Parceiros() {
     }
 
     const atualizarParceiro = (dados) => {
-        axios.put(`http://localhost:8080/parceiros/${dados[0][1]}`, 
+        console.log(dados);
+        axios.put(`http://localhost:8080/parceiros/${dados.id}`, 
             {
-                "categoria": dados[1][1],
-                "nome": dados[2][1],
-                "telefone": dados[3][1],
-                "email": dados[4][1],
-                "endereco": dados[5][1],
-                "identificacao": dados[6][1],
+                "categoria": dados.categoria,
+                "nome": dados.nome,
+                "telefone": dados.nome,
+                "email": dados.email,
+                "endereco": dados.endereco,
+                "identificacao": dados.identificacao,
             }
         )
         .then(response => {
@@ -105,6 +109,19 @@ export function Parceiros() {
             setAtualizarDados("do fornecedor");
         }
     }
+
+    const handleSubmit = (event) => {
+        event.preventDefault();
+    }
+
+    const updateDados = (novoValor, key) => {
+        console.log("TESTE")
+        console.log(novoValor);
+        let copiaDados = JSON.parse(JSON.stringify(dadosCadastro));
+        copiaDados.key = novoValor;
+        setDadosCadastro(copiaDados);
+        console.log(dadosCadastro);
+    };
     
     return(
         <div>
@@ -124,7 +141,35 @@ export function Parceiros() {
                             <Button variant="outlined" size="large" sx={
                                 {p:"1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)"}
                             }>Cadastrar {categoria}</Button>
-                        } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}/>
+                        } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
+                        form={
+                            <form onSubmit={(e) => {
+                                          handleSubmit(e);
+                                          props.func(dados); 
+                                          handleClose();
+                                        }} 
+                            id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
+                                <div>    
+                                    <h2>Nome</h2>
+                                    <TextField key="Nome" required={true} onChange={(e) => updateDados(index, e.target.value)} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                    <h2>Telefone</h2>
+                                    <TextField key="Telefone" required={true} onChange={(e) => updateDados(index, e.target.value)} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                    <h2>E-mail</h2>
+                                    <TextField key="E-mail" required={true} onChange={(e) => updateDados(index, e.target.value)} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                </div>
+                                <div>
+                                    <h2>Endereço</h2>
+                                    <TextField key="Endereço" required={true} onChange={(e) => updateDados(index, e.target.value)} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                    <h2>CPF/CNPJ</h2>
+                                    <TextField key="CPF/CNPJ" required={true} onChange={(e) => updateDados(index, e.target.value)} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                </div>
+                            </form>
+                        }/>
                     </div>
                 </div>
                     {data.length > 0 ? (
@@ -132,6 +177,7 @@ export function Parceiros() {
                         {console.log(data)}
                         {data.map(item => (
                         <BarraVisualizacao key={item.idParceiro}
+                        funct={setDadosCadastro}
                         children={
                         <>
                         <li>Nome: <br /> {item.nome} </li>
@@ -144,8 +190,35 @@ export function Parceiros() {
                         start_index={2} break_index={5}
                         acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                         func={atualizarParceiro}
-                        dados={Object.entries(item)}
+                        dados={item}
                         campos={["Id", "Categoria", "Nome", "Telefone", "E-mail", "Endereço", "CPF/CNPJ"]}
+                        form={
+                            <form onSubmit={(e) => {
+                                          handleSubmit(e);
+                                          atualizarParceiro(dadosCadastro); 
+                                        }} 
+                            id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
+                                <div>    
+                                    <h2>Nome</h2>
+                                    <TextField key="nome" required={true} defaultValue={item.nome} onChange={(e) => {updateDados(e.target.value, "nome"); console.log(item.nome)}} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                    <h2>Telefone</h2>
+                                    <TextField key="telefone" required={true} defaultValue={item.telefone} onChange={(e) => updateDados(e.target.value, "telefone")} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                    <h2>E-mail</h2>
+                                    <TextField key="email" required={true} defaultValue={item.email} onChange={(e) => updateDados(e.target.value, "email")} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                </div>
+                                <div>
+                                    <h2>Endereço</h2>
+                                    <TextField key="endereco" required={true} defaultValue={item.endereco} onChange={(e) => updateDados(e.target.value, "endereco")} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                    <h2>CPF/CNPJ</h2>
+                                    <TextField key="identificacao" required={true} defaultValue={item.identificacao} onChange={(e) => updateDados(e.target.value, "identificacao")} 
+                                    sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
+                                </div>
+                            </form>
+                        }
                         />
                         ))}
                     </div>
