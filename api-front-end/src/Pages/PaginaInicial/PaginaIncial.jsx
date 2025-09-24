@@ -9,6 +9,11 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useEffect } from "react"
+import api from "../../provider/api"
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 
 export function PaginaInicial(){
 
@@ -18,8 +23,9 @@ export function PaginaInicial(){
 
     const navigate = useNavigate();
 
-    const [cpf, setCpf] = useState('');
+    const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [alertAberto, setAlertAberto] = useState(false)
 
     const handleSubmit = (e) => {
 
@@ -28,11 +34,33 @@ export function PaginaInicial(){
 
         e.preventDefault();
         // Eventualmente, a requisição para o back será feita aqui. Por enquanto, apenas redirecionamento sem validação
-        // Será necessário diferenciar entre registro rápido e login normal
-            setTimeout(() => {
-                navigate('/historico')
+        // Será necessário diferenciar entre registro rápido e login normal (corte de escopo?)
+        
+        api.post('/funcionarios/login', {
+            email: email,
+            senha: senha
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
             }
-            , 1000);
+        }).then(response => {
+            if (response.status === 200 && response.data?.token) {
+                sessionStorage.setItem('authToken', response.data.token)
+                sessionStorage.setItem('usuario', response.data.nome)
+                setTimeout(() => {
+                    navigate('/historico')
+                }
+                , 1000);
+            }
+        }).catch(error => {
+            console.log(error)
+            if (error.status === 401) {
+                setAlertAberto(true)
+            }
+        })
+
+
+
     }
 
     const [boolPopupOpen, setBoolPopupOpen] = useState(false);
@@ -71,9 +99,9 @@ export function PaginaInicial(){
                         <div className={styles.input}>
                             <TextField
                                 fullWidth
-                                label="Cpf"
-                                value={cpf}
-                                onChange={(e) => setCpf(e.target.value)}
+                                label="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
                         <div className={styles.input}>
@@ -85,11 +113,27 @@ export function PaginaInicial(){
                                 onChange={(e) => setSenha(e.target.value)}
                             />
                         </div>
+                        <Collapse in={alertAberto}>
+                            <Alert severity="warning" variant="standard"
+                                action={
+                                    <IconButton
+                                        aria-label="fechar"
+                                        color="inherit"
+                                        size="small"
+                                        onClick={()=>{
+                                            setAlertAberto(false);
+                                        }}
+                                    >
+                                        <CloseIcon fontSize="inherit"/>
+                                    </IconButton>
+                                }
+                                sx={{mb:2}}
+                            >
+                                Dados inválidos: falha no login
+                            </Alert>
+                        </Collapse>
                         <div className={styles.divBotao}>
                             <Button type="submit" className={styles.botao} variant="contained">Entrar</Button>
-                        </div>
-                        <div className={styles.divBotao}>
-                            <Button type="submit" className={styles.botao} variant="contained">Registro Rápido</Button>
                         </div>
                     </form>
                     <div className={styles.divBotao}>
