@@ -15,8 +15,11 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
+import { useNavigate } from "react-router-dom";
 
 export function Caracteristicas() {
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         document.title = "Caracteristicas"
@@ -61,6 +64,10 @@ export function Caracteristicas() {
             response => {
                 setDadosCaracteristicas(response.data)
             }).catch(error => {
+
+                if (error.status === 401) {
+                    navigate('/')
+                }
                 console.log("Erro ao obter os dados de Caracte: ", error)
             })
         // O Array vazio faz o useEffect ativas apenas ao renderizar pela primeira vez 
