@@ -54,7 +54,7 @@ export function Parceiros() {
             {
                 "categoria": dados.categoria,
                 "nome": dados.nome,
-                "telefone": dados.nome,
+                "telefone": dados.telefone,
                 "email": dados.email,
                 "endereco": dados.endereco,
                 "identificacao": dados.identificacao,
@@ -114,12 +114,14 @@ export function Parceiros() {
         event.preventDefault();
     }
 
-    const updateDados = (novoValor, key) => {
-        console.log("TESTE")
-        console.log(novoValor);
-        let copiaDados = JSON.parse(JSON.stringify(dadosCadastro));
-        copiaDados.key = novoValor;
+    const updateDados = (lista, novoValor, key) => {
+        console.log(lista);
+        let copiaDados = lista;
+        console.log(copiaDados);
+        copiaDados[key] = novoValor;
+        console.log(copiaDados);
         setDadosCadastro(copiaDados);
+        setOperations(operations+1);
         console.log(dadosCadastro);
     };
     
@@ -174,10 +176,8 @@ export function Parceiros() {
                 </div>
                     {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
-                        {console.log(data)}
                         {data.map(item => (
                         <BarraVisualizacao key={item.idParceiro}
-                        funct={setDadosCadastro}
                         children={
                         <>
                         <li>Nome: <br /> {item.nome} </li>
@@ -190,34 +190,29 @@ export function Parceiros() {
                         start_index={2} break_index={5}
                         acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                         func={atualizarParceiro}
-                        dados={item}
+                        dados={dadosCadastro}
                         campos={["Id", "Categoria", "Nome", "Telefone", "E-mail", "Endereço", "CPF/CNPJ"]}
-                        form={
-                            <form onSubmit={(e) => {
-                                          handleSubmit(e);
-                                          atualizarParceiro(dadosCadastro); 
-                                        }} 
-                            id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
+                        form={ <>
                                 <div>    
                                     <h2>Nome</h2>
-                                    <TextField key="nome" required={true} defaultValue={item.nome} onChange={(e) => {updateDados(e.target.value, "nome"); console.log(item.nome)}} 
+                                    <TextField key="nome" required={true} defaultValue={item.nome} onChange={(e) => updateDados(item, e.target.value, "nome")} 
                                     sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
                                     <h2>Telefone</h2>
-                                    <TextField key="telefone" required={true} defaultValue={item.telefone} onChange={(e) => updateDados(e.target.value, "telefone")} 
+                                    <TextField key="telefone" required={true} defaultValue={item.telefone} onChange={(e) => updateDados(item, e.target.value, "telefone")} 
                                     sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
                                     <h2>E-mail</h2>
-                                    <TextField key="email" required={true} defaultValue={item.email} onChange={(e) => updateDados(e.target.value, "email")} 
+                                    <TextField key="email" required={true} defaultValue={item.email} onChange={(e) => updateDados(item, e.target.value, "email")} 
                                     sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
                                 </div>
                                 <div>
                                     <h2>Endereço</h2>
-                                    <TextField key="endereco" required={true} defaultValue={item.endereco} onChange={(e) => updateDados(e.target.value, "endereco")} 
+                                    <TextField key="endereco" required={true} defaultValue={item.endereco} onChange={(e) => updateDados(item, e.target.value, "endereco")} 
                                     sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
                                     <h2>CPF/CNPJ</h2>
-                                    <TextField key="identificacao" required={true} defaultValue={item.identificacao} onChange={(e) => updateDados(e.target.value, "identificacao")} 
+                                    <TextField key="identificacao" required={true} defaultValue={item.identificacao} onChange={(e) => updateDados(item, e.target.value, "identificacao")} 
                                     sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
                                 </div>
-                            </form>
+                                </>
                         }
                         />
                         ))}

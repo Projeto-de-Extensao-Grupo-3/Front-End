@@ -39,16 +39,9 @@ export function JanelaCadastro(props) {
     setOpen(false);
   };
 
-  const updateDados = (index, novoValor) => {
-    let dadosCopia = JSON.parse(JSON.stringify(dados));
-    dadosCopia[index][1] = novoValor;
-    setDados(dadosCopia);
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
   }
-
 
   return (
     <React.Fragment>
@@ -76,7 +69,12 @@ export function JanelaCadastro(props) {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-          {props.form}
+          <form onSubmit={(e) => {handleSubmit(e);
+                                  handleClose();
+                                  props.func(dados); 
+                          }} id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
+            {props.form}
+          </form>
           {/* <form onSubmit={(e) => {
               handleSubmit(e);
               props.func(dados); 

@@ -9,7 +9,6 @@ export function BarraVisualizacao(props) {
 
     useEffect(() => {
         setDados(props.dados)
-        props.funct(dados)
     }, [props.dados])
 
     return(
