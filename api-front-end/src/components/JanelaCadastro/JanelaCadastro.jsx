@@ -53,7 +53,7 @@ export function JanelaCadastro(props) {
         aria-labelledby="customized-dialog-title"
         open={open}
       >
-        <DialogTitle sx={{ m: 0, p: 2, fontSize:'2rem' }} id="customized-dialog-title">
+        <DialogTitle sx={{ m: 0, p: 2, fontSize: '2rem' }} id="customized-dialog-title">
           {props.action}
         </DialogTitle>
         <IconButton
@@ -69,10 +69,12 @@ export function JanelaCadastro(props) {
           <CloseIcon />
         </IconButton>
         <DialogContent dividers>
-          <form onSubmit={(e) => {handleSubmit(e);
-                                  handleClose();
-                                  props.func(dados); 
-                          }} id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
+          <form onSubmit={(e) => {
+            handleSubmit(e);
+            handleClose();
+            console.log(dados)
+            props.func(dados);
+          }} id="form-cadastro" style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             {props.form}
           </form>
           {/* <form onSubmit={(e) => {
@@ -107,10 +109,10 @@ export function JanelaCadastro(props) {
                 ) : (<p>ERRO</p>)}
           </form> */}
         </DialogContent>
-        <DialogActions sx={{display:'flex', justifyContent:'center'}}>
+        <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button type='submit' form='form-cadastro' autoFocus sx={{
-            color:'white', fontSize:'1.5rem', border:'2px solid black', backgroundColor:'blue'
-            }}>
+            color: 'white', fontSize: '1.5rem', border: '2px solid black', backgroundColor: 'blue'
+          }}>
             {props.message}
           </Button>
         </DialogActions>
