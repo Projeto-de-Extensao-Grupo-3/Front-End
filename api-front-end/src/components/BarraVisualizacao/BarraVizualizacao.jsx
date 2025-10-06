@@ -20,9 +20,6 @@ export function BarraVisualizacao(props) {
                         lista={props.lista}
                         func={props.func}
                         dados={dados}
-                        campos={props.campos}
-                        start_index={props.start_index} /*Index inicial para ser considerado ao visualizar os dados*/ 
-                        break_index={props.break_index} /*Index para realizar divisão da tela*/ 
                         children={
                     <EditSquareIcon fontSize="large" color="action" sx={{color: "rgba(255, 255, 255, 1)", cursor: "pointer"}}/>
                     } action={props.acao} message={props.confirm}/></li>

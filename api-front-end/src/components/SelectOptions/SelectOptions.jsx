@@ -10,14 +10,17 @@ export function SelectOptions(props) {
   const [opcoes, setOpcoes] = React.useState(props.lista === undefined ? [] : props.lista);
   const [dados, setDados] = React.useState(props.dados)
   
-  console.log(dados)
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
+    var listaPermissoes = typeof value === 'string' ? value.split(',') : value;
+    var lastElement = opcoes.find(permissao => permissao.descricao === value[value.length-1])
+    listaPermissoes[listaPermissoes.length-1] = lastElement;
+    console.log(listaPermissoes)
     setDados(
-      typeof value === 'string' ? value.split(',') : value,
+      listaPermissoes
     );
   };
 
@@ -31,16 +34,16 @@ export function SelectOptions(props) {
           multiple
           value={dados}
           onChange={handleChange}
-          renderValue={(selected) => selected.map((item) => item).join(', ')}
+          renderValue={(selected) => selected.map((item) => item.descricao).join(', ')}
         >
           {opcoes.map((opcao) => (
-            <MenuItem key={opcao} value={opcao}>
+            <MenuItem key={opcao.idPermissao} value={opcao.descricao}>
               <Checkbox
                 checked={
-                  dados.includes(opcao)
+                  dados.map(item => item.idPermissao).includes(opcao.idPermissao)
                 }
               />
-              <ListItemText primary={opcao} />
+              <ListItemText primary={opcao.descricao} />
             </MenuItem>
           ))}
         </Select>
