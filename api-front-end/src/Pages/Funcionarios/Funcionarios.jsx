@@ -8,6 +8,11 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import styles from "../Parceiros/parceiros.module.css"
 import axios from "axios";
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export function Funcionarios() {
     const [data, setData] = useState([]);
@@ -18,6 +23,8 @@ export function Funcionarios() {
 
     const [dadosAtualizacao, setDadosAtualizacao] = useState([]);
     const [dadosCadastro, setDadosCadastro] = useState({});
+
+    const [showPassword, setShowPassword] = useState(false);
 
     const listarFuncionarios = () => {
         axios.get(`http://localhost:8080/funcionarios`)
@@ -60,11 +67,12 @@ export function Funcionarios() {
     const cadastrarFuncionario = (dados) => {
         axios.post(`http://localhost:8080/funcionarios`,
             {
-                "nome": dados[2][1],
-                "cpf": dados[3],
-                "telefone": dados[4][1],
-                "email": dados[5][1],
-                "senha": dados[6][1]
+                "nome": dados.nome,
+                "cpf": dados.cpf,
+                "telefone": dados.telefone,
+                "email": dados.email,
+                "senha": dados.senha,
+                "permissoes": permissoesAtualizacao
             }
         )
             .then(response => {
@@ -120,6 +128,10 @@ export function Funcionarios() {
         console.log(permissoesAtualizacao);
     };
 
+    const handleClickShowPassword = () => {
+        setShowPassword((prevShowPassword) => !prevShowPassword);
+      };
+
     return (
         <div>
             <Navbar vazio={false} pageNumber={4} />
@@ -135,7 +147,7 @@ export function Funcionarios() {
                                 <Button variant="outlined" size="large" sx={
                                     { p: "1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)" }
                                 }>Cadastrar Funcionário</Button>
-                            } action={`Cadastrar $Funcionário`} message={"Confirmar cadastro"}
+                            } action={`Cadastrar Funcionário`} message={"Confirmar cadastro"}
                             form={
                                 <>
                                     <div>
@@ -150,12 +162,29 @@ export function Funcionarios() {
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                     <div>
-                                        <h2>Endereço</h2>
-                                        <TextField key="endereco" required={true} onChange={(e) => setAtribute(e.target.value, "endereco")}
+                                        <h2>CPF</h2>
+                                        <TextField key="cpf" required={true} onChange={(e) => setAtribute(e.target.value, "cpf")}
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>CPF/CNPJ</h2>
-                                        <TextField key="identificacao" required={true} onChange={(e) => setAtribute(e.target.value, "identificacao")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <h2>Senha</h2>
+                                        <OutlinedInput type={showPassword ? 'text' : 'password'} key="senha" required={true} onChange={(e) => setAtribute(e.target.value, "senha")}
+                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined"
+                                                endAdornment={
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="toggle password visibility"
+                                                            onClick={handleClickShowPassword}
+                                                            edge="end"
+                                                        >
+                                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                }
+                                           />
+                                        <h2>Permissões</h2>
+                                        <SelectOptions lista={permissoes}
+                                            dados={permissoesAtualizacao.map((item) => item.permissao)}
+                                            func={setPermissoesAtualizacao}>
+                                        </SelectOptions>
                                     </div>
                                 </>
                             } />
@@ -191,10 +220,10 @@ export function Funcionarios() {
                                     </div>
                                     <div>
                                         <h2>CPF</h2>
-                                        <TextField key="endereco" required={true} defaultValue={item.cpf} onChange={(e) => updateDados(item, e.target.value, "cpf")}
+                                        <TextField key="cpf" required={true} defaultValue={item.cpf} onChange={(e) => updateDados(item, e.target.value, "cpf")}
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                         <h2>Permissões</h2>
-                                        <SelectOptions lista={permissoes} 
+                                        <SelectOptions lista={permissoes}
                                             dados={item.permissoes.map((dado) => dado.descricao)}
                                             func={setPermissoesAtualizacao}>
 
