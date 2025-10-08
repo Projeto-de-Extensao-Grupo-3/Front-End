@@ -15,13 +15,14 @@ export function SelectOptions(props) {
     const {
       target: { value },
     } = event;
-    var listaPermissoes = typeof value === 'string' ? value.split(',') : value;
-    var lastElement = opcoes.find(permissao => permissao.descricao === value[value.length-1])
-    listaPermissoes[listaPermissoes.length-1] = lastElement;
-    console.log(listaPermissoes)
+    console.log(value)
+    var listaOpcoes = typeof value === 'string' ? value.split(',') : value;
     setDados(
-      listaPermissoes
+      listaOpcoes
     );
+
+    var listaJson = opcoes.filter(opcao => listaOpcoes.includes(opcao.descricao))
+    props.func(listaJson);
   };
 
   return (
@@ -34,13 +35,13 @@ export function SelectOptions(props) {
           multiple
           value={dados}
           onChange={handleChange}
-          renderValue={(selected) => selected.map((item) => item.descricao).join(', ')}
+          renderValue={(selected) => selected.join(', ')}
         >
           {opcoes.map((opcao) => (
             <MenuItem key={opcao.idPermissao} value={opcao.descricao}>
               <Checkbox
                 checked={
-                  dados.map(item => item.idPermissao).includes(opcao.idPermissao)
+                  dados.includes(opcao.descricao)
                 }
               />
               <ListItemText primary={opcao.descricao} />

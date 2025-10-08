@@ -12,6 +12,7 @@ import axios from "axios";
 export function Funcionarios() {
     const [data, setData] = useState([]);
     const [permissoes, setPermissoes] = useState([]);
+    const [permissoesAtualizacao, setPermissoesAtualizacao] = useState([]);
     const [operations, setOperations] = useState(0);
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
@@ -83,7 +84,7 @@ export function Funcionarios() {
                 "telefone": dados.telefone,
                 "email": dados.email,
                 "senha": "",
-                "permissoes": dados.permissao
+                "permissoes": permissoesAtualizacao
             }
         )
             .then(response => {
@@ -116,11 +117,12 @@ export function Funcionarios() {
         copiaDados[index][key] = novoValor;
         setDadosAtualizacao(copiaDados);
         setOperations(operations + 1);
+        console.log(permissoesAtualizacao);
     };
 
     return (
         <div>
-            <Navbar vazio={false} pageNumber={5} />
+            <Navbar vazio={false} pageNumber={4} />
             <div className={styles.main}>
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
@@ -192,7 +194,11 @@ export function Funcionarios() {
                                         <TextField key="endereco" required={true} defaultValue={item.cpf} onChange={(e) => updateDados(item, e.target.value, "cpf")}
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                         <h2>Permissões</h2>
-                                        <SelectOptions lista={permissoes} dados={item.permissoes.map((dado) => ({"idPermissao": dado.idPermissao, "descricao": dado.descricao}))}></SelectOptions>
+                                        <SelectOptions lista={permissoes} 
+                                            dados={item.permissoes.map((dado) => dado.descricao)}
+                                            func={setPermissoesAtualizacao}>
+
+                                        </SelectOptions>
                                     </div>
                                 </>
                                 }
