@@ -1,5 +1,5 @@
 import * as React from 'react';
-import styles from "./Navbar.module.css"
+import styles from "./navbar.module.css"
 import ButtonReact from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
 import burgerIco from "../../assets/white-burger.png"
