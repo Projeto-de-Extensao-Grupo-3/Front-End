@@ -39,4 +39,4 @@ jobs:
           # ARGS para rsync: -rltgoDzvO para cópia recursiva, compressão e outros
           ARGS: "-rltgoDzvO --delete" 
           # SOURCE: O que será copiado. Pode ser o diretório de build (ex: ./dist)
-          SOURCE: "./frontend/dist/"
+          SOURCE: "./api-front-end/dist/"
