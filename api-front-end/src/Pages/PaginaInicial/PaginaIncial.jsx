@@ -17,9 +17,9 @@ import IconButton from '@mui/material/IconButton';
 
 export function PaginaInicial(){
 
-        useEffect(() => {
-            document.title = "Login"
-        })
+    useEffect(() => {
+        document.title = "Login"
+    })
 
     const navigate = useNavigate();
 

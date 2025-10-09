@@ -49,30 +49,19 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField'
 import { useReducer } from "react";
 
+import api from "../../provider/api"
+
 const theme = createTheme(
     ptBR
 )
 
-function reducer (state, action) {
+function reducer(state, action) {
 
     switch (action.type) {
         case 'alterar_atributo': {
             return {
                 ...state,
                 [action.field]: action.value
-            }
-        }
-        case 'swicth_display_filtros': {
-            if (action.value == 'none') {
-                return {
-                    ...state,
-                    displayBarraFiltros: 'flex'
-                }
-            } else {
-                return {
-                    ...state,
-                    displayBarraFiltros: 'none'
-                }
             }
         }
         default: throw new Error("Erro no reducer!");
@@ -151,17 +140,19 @@ export function Historico() {
     useEffect(() => {
         document.title = "Histórico"
     })
-    
-    // TODO: 2, 3, 5, 6, 7, 8, 9
+
+
+    // =========== //
+    // Use Reducer //
+    // =========== // 
+
     const initialState = {
-        // Ocultar barra de filtros
-        displayBarraFiltros: "none",
 
         // Itens relevantes para filtros
         dtInicio: dayjs().subtract(30, 'days'),
         dtFim: dayjs(),
         itensSelecionados: 2,
-        tipoMovimentacao: 2,
+        tipoMovimentacao: 1,
 
         // Paginação da tabela (defaults escolhidos por conveniência ou usabilidade)
         pagina: 0,
@@ -174,21 +165,9 @@ export function Historico() {
 
     const [values, dispatch] = useReducer(reducer, initialState);
 
-    const handleItemSelecionado = (e) => {
-        dispatch({
-            type: 'alterar_atributo',
-            field: 'itensSelecionados',
-            value: e.target.value
-        })
-    }
-
-    // Ambos
-    const [tipoMovimentacao, SetTipoMovimentacao] = useState(2)
-
-    const handleTipoMovimentacao = (e) => {
-        SetTipoMovimentacao(e.target.value)
-        dispatch
-    }
+    // ========= //
+    // Paginação //
+    // ========= //
 
     const [pagina, setPagina] = useState(0)
     const [entradasPorPagina, setEntradasPorPagina] = useState(9)
@@ -196,6 +175,11 @@ export function Historico() {
 
     const handleChangePage = (event, newPage) => {
         setPagina(newPage)
+    }
+    
+    const handleChangeRowsPerPage = (event) => {
+        setEntradasPorPagina(parseInt(event.target.value, 10))
+        setPagina(0)
     }
 
     const buscarDadosTabela = useEffect(() => {
@@ -219,10 +203,27 @@ export function Historico() {
         ])
     }, [])
 
-    const handleChangeRowsPerPage = (event) => {
-        setEntradasPorPagina(parseInt(event.target.value, 10))
-        setPagina(0)
+    const atualizarDadosTabela = () => {
+        // api.get blah blah
+
+        if (tipoMovimentacao == 1) {
+
+            setTuplas([]);
+            array.forEach(dados => {
+                criarTupla(dados.imagem, dados.nome_item, dados.lote, dados.quantidade, dados.destino, dados.horario)
+            });
+        }
     }
+
+    const buscarDadosAutoComplete = () => {
+        api.get("/itens-estoque/filtros").then(
+
+        )
+    }
+
+    // ====================== //
+    // Registrar Movimentação //
+    // ====================== //
 
     const registrarMovimentacao = () => {
         return null;
@@ -232,7 +233,6 @@ export function Historico() {
 
     const handleDisplayPopupChange = (d) => {
         setDiplayPopup(d)
-
     }
 
     return (
@@ -240,7 +240,7 @@ export function Historico() {
 
             <Navbar vazio={false} pageNumber={0} />
             <div className={styles.main} >
-                <div className={styles.barraFiltros} style={{ display: values.displayBarraFiltros }}>
+                <div className={styles.barraFiltros}>
                     <div className={styles.bigBoxData} >
                         <LocalizationProvider
                             localeText={ptBR.components.MuiLocalizationProvider.defaultProps.localeText}
@@ -253,83 +253,51 @@ export function Historico() {
                                         className={styles.data}
                                         label="Início"
                                         value={values.dtInicio}
-                                        onChange={(newValue) => dispatch({type: 'alterar_atributo', field: 'dtInicio', value: newValue})}
+                                        onChange={(newValue) => dispatch({ type: 'alterar_atributo', field: 'dtInicio', value: newValue })}
                                     />
                                     <DatePicker
                                         className={styles.data}
                                         label="Fim"
                                         value={values.dtFim}
-                                        onChange={(newValue) => dispatch({type: 'alterar_atributo', field: 'dtFim', value: newValue})}
+                                        onChange={(newValue) => dispatch({ type: 'alterar_atributo', field: 'dtFim', value: newValue })}
                                     />
                                 </div>
                             </DemoContainer>
                         </LocalizationProvider>
                     </div>
                     <div className={styles.boxSelect}>
-                        <FormControl>
-                            <InputLabel id="label-categoria-slct">Categoria</InputLabel>
-                            <Select 
-                                value={values.itensSelecionados} 
-                                onChange={(e) => {dispatch({type: 'alterar_atributo',field: 'itensSelecionados',value: e.target.value})}} 
-                                labelid="label-categoria-slct" 
-                                label="Categoria">
-                                <MenuItem value={0}>Tecidos</MenuItem>
-                                <MenuItem value={1}>Produtos</MenuItem>
-                                <MenuItem selected value={2}>Ambos</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div>
-                    <div className={styles.boxSelect}>
                         <FormControl >
                             <InputLabel id="label-tipo-slct">Tipo</InputLabel>
-                            <Select value={tipoMovimentacao} onChange={handleTipoMovimentacao} labelId="label-tipo-slct" label="Tipo">
+                            <Select value={values.tipoMovimentacao} onChange={(newValue) => dispatch({ type: 'alterar_atributo', field: 'tipoMovimentacao', value: newValue.target.value })} labelId="label-tipo-slct" label="Tipo">
                                 <MenuItem value={1}>Saída</MenuItem>
                                 <MenuItem value={0}>Entrada</MenuItem>
-                                <MenuItem selected value={2}>Ambos</MenuItem>
                             </Select>
                         </FormControl>
                     </div>
-                    <div className={styles.boxSelect}>
+                    {/* <div className={styles.boxSelect}>
                         <FormControl fullWidth>
                             <InputLabel id="label-item-slct">Itens</InputLabel>
                             <Select value={-1} className={styles.selectCampo} labelId="label-item-slct" label="Itens">
-                                {/* Aqui posteriormente terá uma lógica para os filtros. Agora está estático para propósito de demonstração e desenvolvimento */}
                                 <MenuItem value={-1}>Todos</MenuItem>
                                 <MenuItem value={0}>Algodão azul</MenuItem>
                                 <MenuItem value={1}>Jeans marrom</MenuItem>
                                 <MenuItem value={2}>Cropped Rosa Salmão</MenuItem>
                             </Select>
                         </FormControl>
-                    </div>
-                    <div className={styles.boxSelect}>
-                        <FormControl fullWidth>
-                            <InputLabel id="label-destino-slct">Destino</InputLabel>
-                            <Select value={-1} className={styles.selectCampo} labelId="label-destino-slct" label="Destino">
-                                <MenuItem value={-1}>Todos</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div>
-                    <div className={styles.boxSelect}>
+                    </div> */}
+                    {/* <div className={styles.boxSelect}>
                         <FormControl fullWidth>
                             <InputLabel id="label-lote-slct">Lote</InputLabel>
                             <Select value={-1} className={styles.selectCampo} labelId="label-lote-slct" label="lote">
                                 <MenuItem value={-1}>Todos</MenuItem>
                             </Select>
                         </FormControl>
-                    </div>
-                    <div className={styles.boxConfirmarFiltros}>
-                        <Button variant="contained" style={{ height: "80%" }}>Aplicar Filtros</Button>
-                    </div>
-                </div>
-                <div className={styles.barraAcoes}>
+                    </div> */}
                     <div className={styles.boxButton}>
-                        <Button onClick={(e) => {dispatch({type: 'swicth_display_filtros', value: values.displayBarraFiltros})}} variant="outlined">Ver Filtros</Button>
+                        <Button className={styles.button} variant="contained" onClick={() => handleDisplayPopupChange("flex")}>Registrar Movimentação</Button>
                     </div>
                     <div className={styles.boxButton}>
-                        <Button variant="contained" onClick={() => handleDisplayPopupChange("flex")}>Registrar Movimentação</Button>
-                    </div>
-                    <div className={styles.boxButton}>
-                        <Button variant="contained">Alterar Movimentação</Button>
+                        <Button className={styles.button} variant="contained">Alterar Movimentação</Button>
                     </div>
                 </div>
                 <div className={styles.body}>
@@ -342,8 +310,6 @@ export function Historico() {
                                         <TableCell>Nome do Item</TableCell>
                                         <TableCell>Lote</TableCell>
                                         <TableCell>Quantidade</TableCell>
-                                        <TableCell>Movimento</TableCell>
-                                        <TableCell>Preço</TableCell>
                                         <TableCell>Destino</TableCell>
                                         <TableCell>Horário</TableCell>
                                     </TableRow>
@@ -366,13 +332,7 @@ export function Historico() {
                                                 {tupla.idLote}
                                             </TableCell>
                                             <TableCell>
-                                                {tupla.tipo}
-                                            </TableCell>
-                                            <TableCell>
                                                 {tupla.quantidade}
-                                            </TableCell>
-                                            <TableCell>
-                                                {tupla.preco}
                                             </TableCell>
                                             <TableCell>
                                                 {tupla.destino}
@@ -387,7 +347,7 @@ export function Historico() {
                                     <TableRow>
                                         <TablePagination
                                             align="right"
-                                            rowsPerPageOptions={[6, 9, 12, { label: 'Todas', value: -1 }]}
+                                            rowsPerPageOptions={[6, 9, 12, 15, 18]}
                                             colSpan={8}
 
                                             // Aqui vai ficar um select count eventualmente, devido a lógica
@@ -422,8 +382,8 @@ export function Historico() {
                             <h2 className={styles.tituloPopup}>Registrar Movimentação</h2>
                             <div>
                                 <div className={styles.barraPopup}>
-                                    <TextField label="Buscar Item" style={{width:"60%"}}></TextField>
-                                    <Button onClick={() => handleDisplayPopupChange("none")} variant="contained">Cancelar</Button>
+                                    <TextField label="Buscar Item" style={{ width: "60%" }}></TextField>
+                                    <Button onClick={() => handleDisplayPopupChange("none")} variant="outlined">Cancelar</Button>
                                     <Button onClick={() => handleDisplayPopupChange("none")} variant="contained">Registrar</Button>
                                     {/* <FormControl>
                                         <FormLabel id="id-entrada-saida">Sentido Movimentação</FormLabel>
