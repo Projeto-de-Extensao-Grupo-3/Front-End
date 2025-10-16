@@ -17,7 +17,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 export function Funcionarios() {
     const [data, setData] = useState([]);
     const [permissoes, setPermissoes] = useState([]);
-    const [permissoesAtualizacao, setPermissoesAtualizacao] = useState([]);
+    const [permissoesAtualizacao, setPermissoesAtualizacao] = useState([""]);
     const [operations, setOperations] = useState(0);
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
@@ -92,7 +92,7 @@ export function Funcionarios() {
                 "telefone": dados.telefone,
                 "email": dados.email,
                 "senha": "",
-                "permissoes": permissoesAtualizacao
+                "permissoes": permissoesAtualizacao[0] === "" ? dados.permissoes : permissoesAtualizacao
             }
         )
             .then(response => {
@@ -120,7 +120,9 @@ export function Funcionarios() {
 
     const updateDados = (item, novoValor, key) => {
         console.log(dadosAtualizacao)
+        console.log(item)
         let index = dadosAtualizacao.findIndex(dado => dado.idFuncionario === item.idFuncionario)
+        console.log(index)
         let copiaDados = dadosAtualizacao;
         copiaDados[index][key] = novoValor;
         setDadosAtualizacao(copiaDados);
@@ -141,7 +143,7 @@ export function Funcionarios() {
                         <BarraPesquisa func={buscarFuncionario} busca={"Buscar funcionário por nome"} />
                     </div>
                     <div>
-                        <JanelaCadastro func={cadastrarFuncionario} id={''}
+                        <JanelaCadastro func={cadastrarFuncionario}
                             dados={dadosCadastro}
                             children={
                                 <Button variant="outlined" size="large" sx={
@@ -182,6 +184,8 @@ export function Funcionarios() {
                                            />
                                         <h2>Permissões</h2>
                                         <SelectOptions lista={permissoes}
+                                            chave={"descricao"}
+                                            id={"idPermissao"}
                                             dados={permissoesAtualizacao.map((item) => item.permissao)}
                                             func={setPermissoesAtualizacao}>
                                         </SelectOptions>
@@ -224,6 +228,8 @@ export function Funcionarios() {
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                         <h2>Permissões</h2>
                                         <SelectOptions lista={permissoes}
+                                            chave={"descricao"}
+                                            id={"idPermissao"}
                                             dados={item.permissoes.map((dado) => dado.descricao)}
                                             func={setPermissoesAtualizacao}>
 

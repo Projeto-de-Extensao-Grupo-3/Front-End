@@ -21,7 +21,8 @@ export function SelectOptions(props) {
       listaOpcoes
     );
 
-    var listaJson = opcoes.filter(opcao => listaOpcoes.includes(opcao.descricao))
+    var listaJson = opcoes.filter(opcao => listaOpcoes.includes(opcao[props.chave]))
+    console.log(listaJson)
     props.func(listaJson);
   };
 
@@ -38,13 +39,13 @@ export function SelectOptions(props) {
           renderValue={(selected) => selected.join(', ')}
         >
           {opcoes.map((opcao) => (
-            <MenuItem key={opcao.idPermissao} value={opcao.descricao}>
+            <MenuItem key={opcao[props.id]} value={opcao[props.chave]}>
               <Checkbox
                 checked={
-                  dados.includes(opcao.descricao)
+                  dados.includes(opcao[props.chave])
                 }
               />
-              <ListItemText primary={opcao.descricao} />
+              <ListItemText primary={opcao[props.chave]} />
             </MenuItem>
           ))}
         </Select>

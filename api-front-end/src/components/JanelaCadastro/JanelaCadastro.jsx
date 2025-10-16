@@ -8,9 +8,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import TextField from '@mui/material/TextField';
-import { SelectOptions } from '../SelectOptions/SelectOptions';
-
 
 // REFATORAR -> REMOVER A LÓGICA DE GERAÇÃO DE INPUTS DINÂMICA
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -77,37 +74,6 @@ export function JanelaCadastro(props) {
           }} id="form-cadastro" style={{ display: 'flex', justifyContent: 'space-evenly' }}>
             {props.form}
           </form>
-          {/* <form onSubmit={(e) => {
-              handleSubmit(e);
-              props.func(dados); 
-              handleClose();
-            }} id="form-cadastro" style={{display:'flex', justifyContent:'space-evenly'}}>
-              {dados.length > 0 ? (
-                <div>
-                    { dados.map((item, index) => index >= props.start_index && index < props.break_index ? (
-                      <>
-                        <h2>{props.campos[index]}</h2>
-                        <TextField key={index} required={true} defaultValue={item[1]} onChange={(e) => updateDados(index, e.target.value)} sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-                      </>
-                    ) : <></> )}
-                </div>
-                ) : (<p>ERRO</p>)}
-              {dados.length > 0 ? (
-                <div>
-                    { dados.map((item, index) => index >= props.break_index ? (
-                      <>
-                        <h2>{props.campos[index]}</h2>
-                        { Array.isArray(item[1]) ?
-                          <SelectOptions dados={item[1].map((dado) => dado.descricao)} lista={props.lista}></SelectOptions>
-                          :
-                          <TextField key={index} required={true} defaultValue={item[1]} onChange={(e) => updateDados(index, e.target.value)} 
-                          sx={{width:'35vw', marginBottom:'3rem'}} id="outlined-basic" variant="outlined" />
-                        }
-                      </>
-                    ) : <></> )}
-                </div>
-                ) : (<p>ERRO</p>)}
-          </form> */}
         </DialogContent>
         <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button type='submit' form='form-cadastro' autoFocus sx={{
