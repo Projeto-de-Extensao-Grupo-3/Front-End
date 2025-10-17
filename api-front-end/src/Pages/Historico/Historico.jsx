@@ -55,18 +55,9 @@ const theme = createTheme(
     ptBR
 )
 
-function reducer(state, action) {
-
-    switch (action.type) {
-        case 'alterar_atributo': {
-            return {
-                ...state,
-                [action.field]: action.value
-            }
-        }
-        default: throw new Error("Erro no reducer!");
-    }
-}
+    // =========== //
+    //  Lógica MUI //
+    // =========== //
 
 function PaginarTabela(props) {
 
@@ -124,16 +115,33 @@ function PaginarTabela(props) {
     )
 }
 
-function criarTupla(img, nome, idLote, tipo, quantidade, preco, destino, dtHora) {
-    return { img, nome, idLote, tipo, quantidade, preco, destino, dtHora }
-}
-
 TablePaginationActions.propTypes = {
     count: PropTypes.number.isRequired,
     onPageChange: PropTypes.func.isRequired,
     page: PropTypes.number.isRequired,
     rowsPerPage: PropTypes.number.isRequired,
 };
+
+    // ============ //
+    //    Reducer   //
+    // ============ //
+
+function reducer(state, action) {
+
+    switch (action.type) {
+        case 'alterar_atributo': {
+            return {
+                ...state,
+                [action.field]: action.value
+            }
+        }
+        default: throw new Error("Erro no reducer!");
+    }
+}
+
+    // ============== //
+    //   Export Fun   //
+    // ============== // 
 
 export function Historico() {
 
@@ -154,11 +162,6 @@ export function Historico() {
         itensSelecionados: 2,
         tipoMovimentacao: 1,
 
-        // Paginação da tabela (defaults escolhidos por conveniência ou usabilidade)
-        pagina: 0,
-        entradasPorPagina: 9,
-        tuplas: [],
-
         // Ocultar popup de registrar movimentação
         displayPopup: "none"
     }
@@ -170,64 +173,49 @@ export function Historico() {
     // ========= //
 
     const [pagina, setPagina] = useState(0)
-    const [entradasPorPagina, setEntradasPorPagina] = useState(9)
-    const [tuplas, setTuplas] = useState([])
+    const [entradasPorPagina, setEntradasPorPagina] = useState(2)
 
     const handleChangePage = (event, newPage) => {
         setPagina(newPage)
+        // Por algum motivo, utilizando os hooks o valor anterior é obtido (??)
+        atualizarDadosTabela(newPage, entradasPorPagina)
     }
-    
+
     const handleChangeRowsPerPage = (event) => {
         setEntradasPorPagina(parseInt(event.target.value, 10))
         setPagina(0)
+        atualizarDadosTabela(0, parseInt(event.target.value, 10))
     }
+    
+    // ==================== //
+    //  Bucar Dados Tabela  //
+    // ==================== //
+
+    const [tuplas, setTuplas] = useState([]);
 
     const buscarDadosTabela = useEffect(() => {
         // Eventualemente lógica sinistra do back aqui
-        setTuplas([
-            criarTupla("img", "Camisa Amarela treino", 6, "Entrada", 10, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Vestido Azul Listrado", 6, "Entrada", 8, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Algodão Preto", 6, "Entrada", 2000, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Algodão Listrado Azul", 5, "Entrada", 1400, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Nylon Preto", 5, "Entrada", 1347, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Nylon Amarelo", 1, "Entrada", 1308, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Top Amarelo Acad", 1, "Entrada", 20, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "55% Algodão 45% Nylon Verde Musgo", 1, "Entrada", 500, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Saia Longa Verde", 1, "Entrada", 13, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Nylon Preto", 1, "Entrada", 9, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Shorts Jeans Curto", 1, "Entrada", 13, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Calça Jeans Baggy", 1, "Entrada", 10, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Jeans Simples", 1, "Entrada", 12, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Algodão Amarelo Florido", 1, "Entrada", 1032, 90.0, "Armazém", "dthora"),
-            criarTupla("img", "Algodão Azul Listrado", 1, "Entrada", 2039, 90.0, "Armazém", "dthora")
-        ])
+        atualizarDadosTabela(pagina, entradasPorPagina)
     }, [])
 
-    const atualizarDadosTabela = () => {
-        // api.get blah blah
-
-        if (tipoMovimentacao == 1) {
-
-            setTuplas([]);
-            array.forEach(dados => {
-                criarTupla(dados.imagem, dados.nome_item, dados.lote, dados.quantidade, dados.destino, dados.horario)
-            });
+    const atualizarDadosTabela = (p, l) => {
+        if (values.tipoMovimentacao == 1) {
+            api.get(`/lotes-item-estoque/paginado?page=${p}&limit=${l}`)
+                .then(response => {
+                    let newTuplas = []
+                    response.data.conteudo.forEach(dados => {
+                        newTuplas.push(dados)
+                    });
+                    setTuplas(newTuplas);
+                })
         }
     }
 
-    const buscarDadosAutoComplete = () => {
-        api.get("/itens-estoque/filtros").then(
 
-        )
-    }
-
+            // TDB
     // ====================== //
     // Registrar Movimentação //
     // ====================== //
-
-    const registrarMovimentacao = () => {
-        return null;
-    }
 
     const [displayPopup, setDiplayPopup] = useState("none");
 
@@ -235,9 +223,13 @@ export function Historico() {
         setDiplayPopup(d)
     }
 
+    const registrarMovimentacao = () => {
+        return null;
+    }
+
+
     return (
         <div >
-
             <Navbar vazio={false} pageNumber={0} />
             <div className={styles.main} >
                 <div className={styles.barraFiltros}>
@@ -274,25 +266,6 @@ export function Historico() {
                             </Select>
                         </FormControl>
                     </div>
-                    {/* <div className={styles.boxSelect}>
-                        <FormControl fullWidth>
-                            <InputLabel id="label-item-slct">Itens</InputLabel>
-                            <Select value={-1} className={styles.selectCampo} labelId="label-item-slct" label="Itens">
-                                <MenuItem value={-1}>Todos</MenuItem>
-                                <MenuItem value={0}>Algodão azul</MenuItem>
-                                <MenuItem value={1}>Jeans marrom</MenuItem>
-                                <MenuItem value={2}>Cropped Rosa Salmão</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div> */}
-                    {/* <div className={styles.boxSelect}>
-                        <FormControl fullWidth>
-                            <InputLabel id="label-lote-slct">Lote</InputLabel>
-                            <Select value={-1} className={styles.selectCampo} labelId="label-lote-slct" label="lote">
-                                <MenuItem value={-1}>Todos</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div> */}
                     <div className={styles.boxButton}>
                         <Button className={styles.button} variant="contained" onClick={() => handleDisplayPopupChange("flex")}>Registrar Movimentação</Button>
                     </div>
@@ -301,6 +274,7 @@ export function Historico() {
                     </div>
                 </div>
                 <div className={styles.body}>
+                    <div>pagina: {pagina}</div>
                     <div className={styles.divTabela}>
                         <TableContainer component={Paper}>
                             <Table>
@@ -315,30 +289,25 @@ export function Historico() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {(entradasPorPagina > 0
-                                        ? tuplas.slice(pagina * entradasPorPagina, pagina * entradasPorPagina + entradasPorPagina)
-                                        : tuplas
-                                    ).map((tupla) => (
-                                        <TableRow key={tupla.nome}
-                                        // key terá que ser diferente dps, para ser única
-                                        >
+                                    {tuplas.map((tupla) => (
+                                        <TableRow key={tupla.nomeItem + tupla.idLote}>
                                             <TableCell>
-                                                {tupla.img}
+                                                TO BE DONE
                                             </TableCell>
                                             <TableCell>
-                                                {tupla.nome}
+                                                {tupla.nomeItem}
                                             </TableCell>
                                             <TableCell>
                                                 {tupla.idLote}
                                             </TableCell>
                                             <TableCell>
-                                                {tupla.quantidade}
+                                                {tupla.qtdItem}
                                             </TableCell>
                                             <TableCell>
-                                                {tupla.destino}
+                                                {tupla.nomeParceiro}
                                             </TableCell>
                                             <TableCell>
-                                                {tupla.dtHora}
+                                                {tupla.dataEntrada}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -347,12 +316,12 @@ export function Historico() {
                                     <TableRow>
                                         <TablePagination
                                             align="right"
-                                            rowsPerPageOptions={[6, 9, 12, 15, 18]}
-                                            colSpan={8}
+                                            rowsPerPageOptions={[2, 4, 6]}
+                                            colSpan={6}
 
                                             // Aqui vai ficar um select count eventualmente, devido a lógica
                                             // de paginação
-                                            count={tuplas.length}
+                                            count={6}
                                             rowsPerPage={entradasPorPagina}
                                             page={pagina}
                                             slotProps={{
@@ -375,7 +344,6 @@ export function Historico() {
                 </div>
             </div>
             <div>
-                {/* Popups */}
                 <div className={styles.popupRegistro} style={{ display: displayPopup }}>
                     <div className={styles.blackout} onClick={() => handleDisplayPopupChange("none")}>
                         <Paper className={styles.popupWindow} onClick={(e) => e.stopPropagation()}>
