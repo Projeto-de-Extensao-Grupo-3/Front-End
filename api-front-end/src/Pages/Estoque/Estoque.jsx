@@ -11,7 +11,6 @@ import axios from "axios";
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
 
 export function Estoque() {
     const [itemEstoque, setItemEstoque] = useState("Roupa");
@@ -29,13 +28,20 @@ export function Estoque() {
     const [categoriaAtualizacao, setCategoriaAtualizacao] = useState("");
     const [categoriaCadastro, setCategoriaCadastro] = useState("");
 
+    const [notificarAtualizacao, setNotificarAtualizacao] = useState("");
+
     const [dadosAtualizacao, setDadosAtualizacao] = useState([]);
     const [dadosCadastro, setDadosCadastro] = useState({});
+
+    const [imagem, setImagem] = useState([]);
+    const [imagePreview, setImagePreview] = useState("");
+
+    let imagemCadastro;
 
     const listarItensEstoque = () => {
         axios.get(`http://localhost:8080/itens-estoque/categorias?tipo=${itemEstoque}`)
             .then(response => {
-                //console.log(response.data);
+                console.log(response.data);
                 setData(response.data.reverse());
                 if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data.reverse());
             })
@@ -89,8 +95,74 @@ export function Estoque() {
         }
     }
 
+    function gerarNomeImagem() {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        const charactersLength = characters.length;
+        for (let i = 0; i < 32; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+    const uploadImagemS3 = () => {
+        let urlImagem;
+        const nomeImagem = gerarNomeImagem();
+        axios.post(`http://localhost:8080/s3/upload/${nomeImagem}.jpg`, imagem, {
+            headers: {
+                'Content-Type': imagem.type,
+            },
+        })
+            .then(response => {
+                urlImagem = response.data;
+                console.log(urlImagem);
+                cadastrarImagem(urlImagem);
+                setOperations(operations + 1);
+            })
+            .catch(error => {
+                console.error('Erro ao realizar upload da imagem:', error);
+            });
+    }
+
+    const atualizarImagemS3 = (urlImagemCadastrada) => {    
+        const nomeImagem = urlImagemCadastrada.match("(?<=com/).*$")[0];
+        console.log(nomeImagem)
+        axios.post(`http://localhost:8080/s3/upload/${nomeImagem}`, imagem, {
+            headers: {
+                'Content-Type': imagem.type,
+            },
+        })
+            .then(response => {
+                const urlImagem = response.data;
+                console.log(urlImagem);
+                setOperations(operations + 1);
+            })
+            .catch(error => {
+                console.error('Erro ao realizar atualização da imagem:', error);
+            });
+    }
+
+    const cadastrarImagem = (urlImagem) => {
+        axios.post('http://localhost:8080/imagens',
+            {
+                "url": urlImagem
+            }
+        )
+            .then(response => {
+                console.log(response.data);
+                imagemCadastro = response.data;
+                console.log(imagemCadastro);
+                cadastrarItemEstoque();
+            })
+            .catch(error => {
+                console.error('Erro ao realizar cadastro da imagem:', error);
+            });
+    }
+
     const atualizarItemEstoque = (dados) => {
-        const categoriaCadastrar = categorias.filter(categoria => categoria.nome == dados.subcategoria[0].nome);
+        console.log(dados)
+        console.log(dadosAtualizacao)
+        atualizarImagemS3(dados.imagem.url)
         const caracteristicasCadastro = caracteristicasAtualizacao[0] === "" ? dados.caracteristicas : caracteristicasAtualizacao
         const caracteristicasIds = caracteristicasCadastro.map(item => { const { nome, ...ids } = item; return ids })
         console.log(`{
@@ -99,17 +171,18 @@ export function Estoque() {
                 "peso": ${dados.peso},
                 "qtdMinimo": ${dados.qtdMinimo},
                 "qtdArmazenado": ${dados.qtdArmazenado},
+                "notificar": ${dados.notificar},
                 "categoria": {
-                    "idCategoria": ${categoriaCadastrar[0].idCategoria}
+                    "idCategoria": ${dados.categoria.idCategoria}
                 },
                 "caracteristicas": ${JSON.stringify(caracteristicasIds)},
                 "plateleira": {
                     "idPrateleira": ${dados.prateleira}
                 },
-                "preco": 0.00,
+                "preco": ${dados.preco},
                 "imagem": {
-                    "idImagem": 1,
-                    "url": "https://cdn.awsli.com.br/600x700/143/143951/produto/32328172/7fa3e6d61c.jpg"
+                    "idImagem": ${dados.imagem.id},
+                    "url": ${dados.imagem.url}
                 }
             }`)
         axios.put(`http://localhost:8080/itens-estoque/${dados.idItemEstoque}`,
@@ -119,21 +192,23 @@ export function Estoque() {
                 "peso": dados.peso,
                 "qtdMinimo": dados.qtdMinimo,
                 "qtdArmazenado": dados.qtdArmazenado,
+                "notificar": dados.notificar,
                 "categoria": {
-                    "idCategoria": categoriaCadastro[0].id
+                    "idCategoria": dados.categoria.idCategoria
                 },
                 "caracteristicas": caracteristicasIds,
                 "plateleira": {
                     "idPrateleira": dados.prateleira
                 },
-                "preco": 0.00,
+                "preco": dados.preco,
                 "imagem": {
-                    "idImagem": 1,
-                    "url": "https://cdn.awsli.com.br/600x700/143/143951/produto/32328172/7fa3e6d61c.jpg"
+                    "idImagem": dados.imagem.id,
+                    "url": dados.imagem.url
                 }
             }
         )
             .then(response => {
+                setDadosAtualizacao([]);
                 console.log(response.data);
                 setOperations(operations + 1);
             })
@@ -142,52 +217,56 @@ export function Estoque() {
             });
     }
 
-    const cadastrarItemEstoque = (dados) => {
+    const cadastrarItemEstoque = () => {
         const categoriaCadastrar = categorias.filter(categoria => categoria.nome == categoriaCadastro);
         console.log(categoriaCadastrar)
-        const caracteristicasCadastro = caracteristicasAtualizacao[0] === "" ? dados.caracteristicas : caracteristicasAtualizacao
+        const caracteristicasCadastro = caracteristicasAtualizacao[0] === "" ? dadosCadastro.caracteristicas : caracteristicasAtualizacao
         const caracteristicasIds = caracteristicasCadastro.map(item => { const { nome, ...ids } = item; return ids })
+
         console.log(`{
-                "descricao": "${dados.descricao}",
-                "complemento": "${dados.complemento}",
-                "peso": ${dados.peso},
-                "qtdMinimo": ${dados.qtdMinimo},
-                "qtdArmazenado": ${dados.qtdArmazenado},
+                "descricao": "${dadosCadastro.descricao}",
+                "complemento": "${dadosCadastro.complemento}",
+                "peso": ${dadosCadastro.peso},
+                "qtdMinimo": ${dadosCadastro.qtdMinimo},
+                "qtdArmazenado": ${dadosCadastro.qtdArmazenado},
+                "notificar": ${dadosCadastro.notificar},
                 "categoria": {
                     "idCategoria": ${categoriaCadastrar[0].id}
                 },
                 "caracteristicas": ${JSON.stringify(caracteristicasIds)},
                 "plateleira": {
-                    "idPrateleira": ${dados.prateleira}
+                    "idPrateleira": ${dadosCadastro.prateleira}
                 },
                 "preco": 0.00,
                 "imagem": {
-                    "idImagem": 1,
-                    "url": "https://cdn.awsli.com.br/600x700/143/143951/produto/32328172/7fa3e6d61c.jpg"
+                    "idImagem": ${imagemCadastro.id},
+                    "url":${imagemCadastro.url}
                 }
             }`)
         axios.post(`http://localhost:8080/itens-estoque`,
             {
-                "descricao": dados.descricao,
-                "complemento": dados.complemento,
-                "peso": dados.peso,
-                "qtdMinimo": dados.qtdMinimo,
-                "qtdArmazenado": dados.qtdArmazenado,
+                "descricao": dadosCadastro.descricao,
+                "complemento": dadosCadastro.complemento,
+                "peso": dadosCadastro.peso,
+                "qtdMinimo": dadosCadastro.qtdMinimo,
+                "qtdArmazenado": dadosCadastro.qtdArmazenado,
+                "notificar": dadosCadastro.notificar,
                 "categoria": {
                     "idCategoria": categoriaCadastrar[0].id
                 },
                 "caracteristicas": caracteristicasIds,
                 "plateleira": {
-                    "idPrateleira": dados.prateleira
+                    "idPrateleira": dadosCadastro.prateleira
                 },
                 "preco": 0.00,
                 "imagem": {
-                    "idImagem": 1,
-                    "url": "https://cdn.awsli.com.br/600x700/143/143951/produto/32328172/7fa3e6d61c.jpg"
+                    "idImagem": imagemCadastro.id,
+                    "url": imagemCadastro.url
                 }
             }
         )
             .then(response => {
+                setDadosAtualizacao([]);
                 console.log(response.data);
                 setOperations(operations + 1);
             })
@@ -229,7 +308,9 @@ export function Estoque() {
         let index = dadosAtualizacao.findIndex(dado => dado.idItemEstoque === item.idItemEstoque)
         let copiaDados = dadosAtualizacao;
         copiaDados[index][key] = novoValor;
+        console.log(dadosAtualizacao)
         setDadosAtualizacao(copiaDados);
+        console.log(dadosAtualizacao)
         setOperations(operations + 1);
     };
 
@@ -242,6 +323,23 @@ export function Estoque() {
         setCategoriaCadastro(e.target.value);
     };
 
+    const handleNotificarChange = (item, e, key) => {
+        setNotificarAtualizacao(e.target.value);
+        //updateDados(item, e.target.value, key)
+    };
+
+    const limparCampos = () => {
+        setImagePreview("");
+    }
+
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        setImagePreview(URL.createObjectURL(file));
+        console.log(file.name);
+        setImagem(file);
+        console.log(imagem)
+    }
+
     return (
         <div>
             <Navbar vazio={false} pageNumber={1} />
@@ -252,8 +350,9 @@ export function Estoque() {
                         <BarraPesquisa func={buscarItemEstoque} busca={pesquisa} />
                     </div>
                     <div>
-                        <JanelaCadastro func={cadastrarItemEstoque}
-                        dados={dadosCadastro}
+                        <JanelaCadastro func={uploadImagemS3}
+                            limparCampos={limparCampos}
+                            dados={dadosCadastro}
                             children={
                                 <Button variant="outlined" size="large" sx={
                                     { p: "1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)" }
@@ -277,6 +376,21 @@ export function Estoque() {
                                         <h2>Qtd. Armazenado</h2>
                                         <TextField key="qtdArmazenado" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdArmazenado")}
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        {itemEstoque === "Roupa" ? (
+                                            <>
+                                                <h2>Receber notificações</h2>
+                                                <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                                    labelId="select-notificar"
+                                                    id="select-notificar"
+                                                    value={dadosCadastro.notificar === undefined ? "" : dadosCadastro.notificar}
+                                                    onChange={(e) => setAtribute(e.target.value, "notificar")}
+                                                >
+                                                    <MenuItem key={"true"} value={true}>Sim</MenuItem>
+                                                    <MenuItem key={"false"} value={false}>Não</MenuItem>
+                                                </Select>
+                                            </>
+                                        ) : <></>
+                                        }
                                     </div>
                                     <div>
                                         <h2>Categoria</h2>
@@ -304,8 +418,11 @@ export function Estoque() {
                                         <TextField key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                         <h2>Imagem</h2>
-                                        <TextField key="imagem" required={true} onChange={(e) => setAtribute(e.target.value, "imagem")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <Button variant="contained" component="label">
+                                            Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
+                                        </Button>
+                                        <br />
+                                        <img style={{ width: "80%" }} src={imagePreview} alt="" />
                                     </div>
                                 </>
                             } />
@@ -345,15 +462,29 @@ export function Estoque() {
                                             <h2>Qtd. Armazenado</h2>
                                             <TextField key="qtdArmazenado" required={true} defaultValue={item.qtdArmazenado} onChange={(e) => updateDados(item, Number(e.target.value), "qtdArmazenado")}
                                                 sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                            {itemEstoque === "Roupa" ? (
+                                                <>
+                                                    <h2>Receber notificações</h2>
+                                                    <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                                        labelId="select-notificar"
+                                                        id="select-notificar"
+                                                        value={notificarAtualizacao === "" ? item.notificar : notificarAtualizacao}
+                                                        onChange={(e) => handleNotificarChange(item, e, "notificar")}
+                                                    >
+                                                        <MenuItem key={"true"} value={true}>Sim</MenuItem>
+                                                        <MenuItem key={"false"} value={false}>Não</MenuItem>
+                                                    </Select>
+                                                </>
+                                            ) : <></>
+                                            }
                                         </div>
                                         <div>
                                             <h2>Categoria</h2>
                                             <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
                                                 labelId="select-categoria"
                                                 id="select-categoria"
-                                                value={categoriaAtualizacao != "" ? categoriaAtualizacao : item.subcategoria.nome}
-                                                onChange={(e) => handleCategoriaChange(item, e, "subcategoria")}
-                                                label="Age"
+                                                value={categoriaAtualizacao != "" ? categoriaAtualizacao : item.categoria.nome}
+                                                onChange={(e) => handleCategoriaChange(item, e, "categoria")}
                                             >
                                                 {categorias.map(categoria => (
                                                     <MenuItem key={categoria.id} value={categoria.nome}>{categoria.nome}</MenuItem>
@@ -374,8 +505,11 @@ export function Estoque() {
                                             <TextField key="preco" required={true} defaultValue={item.preco} onChange={(e) => updateDados(item, Number(e.target.value), "preco")}
                                                 sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                             <h2>Imagem</h2>
-                                            <TextField key="imagem" required={true} defaultValue={item.imagem.url} onChange={(e) => updateDados(item, e.target.value, "imagem")}
-                                                sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                            <Button variant="contained" component="label">
+                                                Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
+                                            </Button>
+                                            <br />
+                                            <img style={{ width: "80%" }} src={imagePreview === "" ? item.imagem.url : imagePreview} alt="" />
                                         </div>
                                     </>
                                 }

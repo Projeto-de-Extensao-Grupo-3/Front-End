@@ -33,6 +33,8 @@ export function JanelaCadastro(props) {
     setOpen(true);
   };
   const handleClose = () => {
+    console.log("close")
+    if (props.limparCampos !== undefined) props.limparCampos();
     setOpen(false);
   };
 
