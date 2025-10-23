@@ -274,7 +274,6 @@ export function Historico() {
                     </div>
                 </div>
                 <div className={styles.body}>
-                    <div>pagina: {pagina}</div>
                     <div className={styles.divTabela}>
                         <TableContainer component={Paper}>
                             <Table>

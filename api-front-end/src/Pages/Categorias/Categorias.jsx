@@ -25,7 +25,9 @@ export function Categorias() {
 
 
     const [popupAdicionarAberto, setPopupAdicionarAberto] = useState(false)
+    const [popupRemoverAberto, setPopupRemoverAberto] = useState(false)
     const [popupEscolhido, setPopupEscolhido] = useState()
+    const [popupRemoverEscolhido, setPopupRemoverEscolhido] = useState()
 
     const handlePopupAdicionarAbrir = (escolhido) => {
         setPopupEscolhido(escolhido)
@@ -36,8 +38,16 @@ export function Categorias() {
         setPopupAdicionarAberto(false)
     }
 
+    const handlePopupRemoverAbrir = (escolhido) => {
+        setPopupRemoverEscolhido(escolhido)
+        setPopupRemoverAberto(true)
+    }
+
+    const handlePopupRemoverFechar = () => {
+        setPopupAdicionarAberto(false)
+    }
+
     const cadastrarCategoria = (event) => {
-        event.preventDefault()
         const formData = new FormData(event.currentTarget)
         const formJson = Object.fromEntries(formData.entries())
         const nome = formJson.nomeCategoria
@@ -58,42 +68,68 @@ export function Categorias() {
             })
         }
         if (!duplicado) {
-            cadastrarRoupa(nome)
-            handlePopupAdicionarFechar()
+            if (popupEscolhido == "Roupa") {
+                api.post("categorias", {
+                    "nome": nome,
+                    "categoriaPai": {
+                        "idCategoria": 2
+                    }
+                }).catch(error => {
+                    console.log("Erro ao cadastrar Categoria: ", error)
+                })
+                handlePopupAdicionarFechar()
+            } else if (popupEscolhido == "Tecido") { // if como failsafe
+                api.post("categorias", {
+                    "nome": nome,
+                    "categoriaPai": {
+                        "idCategoria": 1
+                    }
+                }).catch(error => {
+                    console.log("Erro ao cadastrar Categoria: ", error)
+                })
+                handlePopupAdicionarFechar()
+            }
         }
     }
 
-    const cadastrarRoupa = (nome) => {
-        axios.post("http://localhost:8080/categorias", {
-            "nome": nome,
-            "categoriaPai": {
-                "idCategoria": 2
-            }
-        }).catch(error => {
-            console.log("Erro ao cadastrar Categoria: ", error)
-        })
-        reload()
+    const removerCategoria = (event) => {
+        const formData = new FormData(event.currentTarget)
+        const formJson = Object.fromEntries(formData.entries())
+        const id = formJson.idCategoria
+
+        if (popupEscolhido == "Roupa") {
+            api.delete(`categorias/${id}`)
+            handlePopupAdicionarFechar()
+        } else if (popupEscolhido == "Tecido") { // if como failsafe
+            api.delete(`categorias/${id}`)
+            handlePopupAdicionarFechar()
+        }
+
     }
+
 
     const [dadosTecido, setDadosTecido] = useState([])
     const [dadosRoupa, setDadosRoupa] = useState([])
 
-    const reload = useEffect(() => {
-        api.get("http://localhost:8080/categorias/tipo/tecido").then(
+    // O Array vazio faz o useEffect ativas apenas ao renderizar pela primeira vez 
+    const initialState = useEffect(() => getDados, [])
+
+    const getDados = () => {
+        api.get("categorias/tipo/tecido").then(
             response => {
                 setDadosTecido(response.data)
             }).catch(error => {
                 console.log("Erro ao obter os dados de Tecidos: ", error)
             })
 
-        api.get("http://localhost:8080/categorias/tipo/roupa").then(
+        api.get("categorias/tipo/roupa").then(
             response => {
                 setDadosRoupa(response.data)
             }).catch(error => {
                 console.log("Erro ao obter os dados de Roupas: ", error)
             })
-        // O Array vazio faz o useEffect ativas apenas ao renderizar pela primeira vez 
-    }, [])
+    }
+
 
     return (
         <div>
@@ -134,11 +170,34 @@ export function Categorias() {
                 </div>
             </div>
             <Dialog open={popupAdicionarAberto}>
-
                 <DialogTitle>Adiconar nova categoria de {popupEscolhido}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Digite o nome da nova categoria
+                    </DialogContentText>
+                    <br />
+                    <form onSubmit={cadastrarCategoria} id='formAddCategoria'>
+                        <TextField
+                            autoFocus
+                            required
+                            name="nomeCategoria"
+                            label="Nome da Categoria"
+                            fullWidth
+                        />
+                    </form>
+                    <br />
+                    <Alert severity='error' id='alert-cadastro' style={{ display: "none" }}>Nome indisponível</Alert>
+                    <DialogActions>
+                        <Button onClick={() => handlePopupAdicionarFechar()}>Cancelar</Button>
+                        <Button type='submit' form="formAddCategoria">Cadastrar</Button>
+                    </DialogActions>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={popupRemoverAberto}>
+                <DialogTitle>Remover categoria de {popupEscolhido}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Escolha a categoria a ser removida
                     </DialogContentText>
                     <br />
                     <form onSubmit={cadastrarCategoria} id='formAddCategoria'>

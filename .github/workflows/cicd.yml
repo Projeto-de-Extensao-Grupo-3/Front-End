@@ -25,8 +25,6 @@ jobs:
         run: |
              npm install
              npm run build --if-present 
-             cp dockerfile dist/dockerfile
-             cp compose.yaml dist/compose.yaml
              # Se sua app não precisar de build, remova esta etapa
         working-directory: ./api-front-end
 
