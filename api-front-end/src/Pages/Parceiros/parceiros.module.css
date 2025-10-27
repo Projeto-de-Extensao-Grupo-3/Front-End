@@ -35,7 +35,7 @@
 }
 
 .barra_gerenciamento {
-    width: 95%;
+    width: 93vw;
     margin: 3rem;
     display: flex;
     justify-content: space-between;
@@ -43,7 +43,7 @@
 }
 
 .barra_pesquisa {
-    width: 60%;
+    width: 70rem;
 }
 
 .lista_parceiros {

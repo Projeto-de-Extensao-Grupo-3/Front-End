@@ -21,12 +21,14 @@ export function Parceiros() {
     const [dadosAtualizacao, setDadosAtualizacao] = useState([]);
     const [dadosCadastro, setDadosCadastro] = useState({});
 
+    const hostBack = import.meta.env.VITE_APP_BACK_HOST;
+
     const listarParceiros = () => {
-        axios.get(`http://localhost:8080/parceiros/listagem/${parceiro}`)
+        axios.get(`http://${hostBack}:8080/parceiros/listagem/${parceiro}`)
             .then(response => {
-                setData(response.data.reverse());
+                setData(response.data);
                 console.log(data)
-                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data.reverse());
+                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -34,7 +36,7 @@ export function Parceiros() {
     }
 
     const buscarParceiro = (nome) => {
-        axios.get(`http://localhost:8080/parceiros/${parceiro}/nome?nome=${nome}`)
+        axios.get(`http://${hostBack}:8080/parceiros/${parceiro}/nome?nome=${nome}`)
             .then(response => {
                 console.log(response.data);
                 if (response.data.length === 0) {
@@ -52,7 +54,7 @@ export function Parceiros() {
 
     const atualizarParceiro = (dados) => {
         console.log(dados);
-        axios.put(`http://localhost:8080/parceiros/${dados.id}`,
+        axios.put(`http://${hostBack}:8080/parceiros/${dados.id}`,
             {
                 "categoria": parceiro,
                 "nome": dados.nome,
@@ -73,7 +75,7 @@ export function Parceiros() {
 
     const cadastrarParceiro = (dados) => {
         console.log(dados);
-        axios.post(`http://localhost:8080/parceiros`,
+        axios.post(`http://${hostBack}:8080/parceiros`,
             {
                 "categoria": parceiro,
                 "nome": dados.nome,

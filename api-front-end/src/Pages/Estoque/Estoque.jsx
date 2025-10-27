@@ -36,14 +36,16 @@ export function Estoque() {
     const [imagem, setImagem] = useState([]);
     const [imagePreview, setImagePreview] = useState("");
 
+    const hostBack = import.meta.env.VITE_APP_BACK_HOST;
+
     let imagemCadastro;
 
     const listarItensEstoque = () => {
-        axios.get(`http://localhost:8080/itens-estoque/categorias?tipo=${itemEstoque}`)
+        axios.get(`http://${hostBack}:8080/itens-estoque/categorias?tipo=${itemEstoque}`)
             .then(response => {
                 console.log(response.data);
-                setData(response.data.reverse());
-                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data.reverse());
+                setData(response.data);
+                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -51,7 +53,7 @@ export function Estoque() {
     }
 
     const listarCaracteristicas = () => {
-        axios.get(`http://localhost:8080/categorias/tipo/Característica`)
+        axios.get(`http://${hostBack}:8080/categorias/tipo/Característica`)
             .then(response => {
                 const listaCaracteristicas = response.data;
                 setCaracteristicas(listaCaracteristicas.map(caracteristica => {
@@ -65,7 +67,7 @@ export function Estoque() {
     }
 
     const listarCategorias = () => {
-        axios.get(`http://localhost:8080/categorias/tipo/${itemEstoque}`)
+        axios.get(`http://${hostBack}:8080/categorias/tipo/${itemEstoque}`)
             .then(response => {
                 console.log(response.data);
                 setCategorias(response.data);
@@ -79,7 +81,7 @@ export function Estoque() {
         if (descricao == "") {
             listarItensEstoque();
         } else {
-            axios.get(`http://localhost:8080/itens-estoque/filtros?descricao=${descricao}`)
+            axios.get(`http://${hostBack}:8080/itens-estoque/${itemEstoque}/filtros?descricao=${descricao}`)
                 .then(response => {
                     console.log(response.data);
                     if (response.data.length === 0) {
@@ -108,7 +110,7 @@ export function Estoque() {
     const uploadImagemS3 = () => {
         let urlImagem;
         const nomeImagem = gerarNomeImagem();
-        axios.post(`http://localhost:8080/s3/upload/${nomeImagem}.jpg`, imagem, {
+        axios.post(`http://${hostBack}:8080/s3/upload/${nomeImagem}.jpg`, imagem, {
             headers: {
                 'Content-Type': imagem.type,
             },
@@ -127,7 +129,7 @@ export function Estoque() {
     const atualizarImagemS3 = (urlImagemCadastrada) => {    
         const nomeImagem = urlImagemCadastrada.match("(?<=com/).*$")[0];
         console.log(nomeImagem)
-        axios.post(`http://localhost:8080/s3/upload/${nomeImagem}`, imagem, {
+        axios.post(`http://${hostBack}:8080/s3/upload/${nomeImagem}`, imagem, {
             headers: {
                 'Content-Type': imagem.type,
             },
@@ -143,7 +145,7 @@ export function Estoque() {
     }
 
     const cadastrarImagem = (urlImagem) => {
-        axios.post('http://localhost:8080/imagens',
+        axios.post('http://${hostBack}:8080/imagens',
             {
                 "url": urlImagem
             }
@@ -185,7 +187,7 @@ export function Estoque() {
                     "url": ${dados.imagem.url}
                 }
             }`)
-        axios.put(`http://localhost:8080/itens-estoque/${dados.idItemEstoque}`,
+        axios.put(`http://${hostBack}:8080/itens-estoque/${dados.idItemEstoque}`,
             {
                 "descricao": dados.descricao,
                 "complemento": dados.complemento,
@@ -243,7 +245,7 @@ export function Estoque() {
                     "url":${imagemCadastro.url}
                 }
             }`)
-        axios.post(`http://localhost:8080/itens-estoque`,
+        axios.post(`http://${hostBack}:8080/itens-estoque`,
             {
                 "descricao": dadosCadastro.descricao,
                 "complemento": dadosCadastro.complemento,
@@ -355,7 +357,7 @@ export function Estoque() {
                             dados={dadosCadastro}
                             children={
                                 <Button variant="outlined" size="large" sx={
-                                    { p: "1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)" }
+                                    { p: "1rem 3vw 1rem 3vw", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)" }
                                 }>Cadastrar {categoria}</Button>
                             } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                             form={
@@ -422,7 +424,7 @@ export function Estoque() {
                                             Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
                                         </Button>
                                         <br />
-                                        <img style={{ width: "80%" }} src={imagePreview} alt="" />
+                                        <img style={{ width: "10em" }} src={imagePreview} alt="" />
                                     </div>
                                 </>
                             } />
@@ -509,7 +511,7 @@ export function Estoque() {
                                                 Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
                                             </Button>
                                             <br />
-                                            <img style={{ width: "80%" }} src={imagePreview === "" ? item.imagem.url : imagePreview} alt="" />
+                                            <img style={{ width: "10rem" }} src={imagePreview === "" ? item.imagem.url : imagePreview} alt="" />
                                         </div>
                                     </>
                                 }

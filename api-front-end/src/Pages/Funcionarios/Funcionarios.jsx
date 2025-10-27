@@ -26,12 +26,14 @@ export function Funcionarios() {
 
     const [showPassword, setShowPassword] = useState(false);
 
+    const hostBack = import.meta.env.VITE_APP_BACK_HOST;
+
     const listarFuncionarios = () => {
-        axios.get(`http://localhost:8080/funcionarios`)
+        axios.get(`http://${hostBack}:8080/funcionarios`)
             .then(response => {
                 console.log(response.data);
-                setData(response.data.reverse());
-                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data.reverse());
+                setData(response.data);
+                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -39,7 +41,7 @@ export function Funcionarios() {
     }
 
     const listarPermissoes = () => {
-        axios.get(`http://localhost:8080/permissoes`)
+        axios.get(`http://${hostBack}:8080/permissoes`)
             .then(response => {
                 setPermissoes(response.data);
             })
@@ -49,7 +51,7 @@ export function Funcionarios() {
     }
 
     const buscarFuncionario = (nome) => {
-        axios.get(`http://localhost:8080/funcionarios/busca?nome=${nome}`)
+        axios.get(`http://${hostBack}:8080/funcionarios/busca?nome=${nome}`)
             .then(response => {
                 console.log(response.data);
                 if (response.data.length === 0) {
@@ -65,7 +67,7 @@ export function Funcionarios() {
     }
 
     const cadastrarFuncionario = (dados) => {
-        axios.post(`http://localhost:8080/funcionarios`,
+        axios.post(`http://${hostBack}:8080/funcionarios`,
             {
                 "nome": dados.nome,
                 "cpf": dados.cpf,
@@ -85,7 +87,7 @@ export function Funcionarios() {
     }
 
     const atualizarFuncionario = (dados) => {
-        axios.put(`http://localhost:8080/funcionarios/${dados.idFuncionario}`,
+        axios.put(`http://${hostBack}:8080/funcionarios/${dados.idFuncionario}`,
             {
                 "nome": dados.nome,
                 "cpf": dados.cpf,
