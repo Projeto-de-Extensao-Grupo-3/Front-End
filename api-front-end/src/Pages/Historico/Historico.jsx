@@ -173,7 +173,7 @@ export function Historico() {
     // ========= //
 
     const [pagina, setPagina] = useState(0)
-    const [entradasPorPagina, setEntradasPorPagina] = useState(2)
+    const [entradasPorPagina, setEntradasPorPagina] = useState(9)
 
     const handleChangePage = (event, newPage) => {
         setPagina(newPage)
@@ -192,9 +192,9 @@ export function Historico() {
     // ==================== //
 
     const [tuplas, setTuplas] = useState([]);
+    const [tamanho, setTamanho] = useState(0);
 
     const buscarDadosTabela = useEffect(() => {
-        // Eventualemente lógica sinistra do back aqui
         atualizarDadosTabela(pagina, entradasPorPagina)
     }, [])
 
@@ -202,15 +202,15 @@ export function Historico() {
         if (values.tipoMovimentacao == 1) {
             api.get(`/lotes-item-estoque/paginado?page=${p}&limit=${l}`)
                 .then(response => {
-                    let newTuplas = []
+                    let newTuplas = [];
                     response.data.conteudo.forEach(dados => {
-                        newTuplas.push(dados)
+                        newTuplas.push(dados);
                     });
                     setTuplas(newTuplas);
+                    setTamanho(response.data.totalRegistros);
                 })
         }
     }
-
 
             // TDB
     // ====================== //
@@ -233,30 +233,6 @@ export function Historico() {
             <Navbar vazio={false} pageNumber={0} />
             <div className={styles.main} >
                 <div className={styles.barraFiltros}>
-                    <div className={styles.bigBoxData} >
-                        <LocalizationProvider
-                            localeText={ptBR.components.MuiLocalizationProvider.defaultProps.localeText}
-                            dateAdapter={AdapterDayjs}
-                            adapterLocale="en-gb"
-                        >
-                            <DemoContainer components={['DatePicker', 'DatePicker']}>
-                                <div className={styles.boxData}>
-                                    <DatePicker
-                                        className={styles.data}
-                                        label="Início"
-                                        value={values.dtInicio}
-                                        onChange={(newValue) => dispatch({ type: 'alterar_atributo', field: 'dtInicio', value: newValue })}
-                                    />
-                                    <DatePicker
-                                        className={styles.data}
-                                        label="Fim"
-                                        value={values.dtFim}
-                                        onChange={(newValue) => dispatch({ type: 'alterar_atributo', field: 'dtFim', value: newValue })}
-                                    />
-                                </div>
-                            </DemoContainer>
-                        </LocalizationProvider>
-                    </div>
                     <div className={styles.boxSelect}>
                         <FormControl >
                             <InputLabel id="label-tipo-slct">Tipo</InputLabel>
@@ -267,11 +243,14 @@ export function Historico() {
                         </FormControl>
                     </div>
                     <div className={styles.boxButton}>
-                        <Button className={styles.button} variant="contained" onClick={() => handleDisplayPopupChange("flex")}>Registrar Movimentação</Button>
+                        <Button className={styles.button} variant="contained" onClick={() => handleDisplayPopupChange("flex")}>Registrar Entrada de Item</Button>
                     </div>
                     <div className={styles.boxButton}>
-                        <Button className={styles.button} variant="contained">Alterar Movimentação</Button>
+                        <Button className={styles.button} variant="contained">Registrar Saída de Item</Button>
                     </div>
+                    {/* <div className={styles.boxButton}>
+                        <Button className={styles.button} variant="contained">Alterar Movimentação</Button>
+                    </div> */}
                 </div>
                 <div className={styles.body}>
                     <div className={styles.divTabela}>
@@ -291,7 +270,7 @@ export function Historico() {
                                     {tuplas.map((tupla) => (
                                         <TableRow key={tupla.nomeItem + tupla.idLote}>
                                             <TableCell>
-                                                TO BE DONE
+                                                <img src={tupla.url} className={styles.boxImagem}/>
                                             </TableCell>
                                             <TableCell>
                                                 {tupla.nomeItem}
@@ -315,12 +294,8 @@ export function Historico() {
                                     <TableRow>
                                         <TablePagination
                                             align="right"
-                                            rowsPerPageOptions={[2, 4, 6]}
-                                            colSpan={6}
-
-                                            // Aqui vai ficar um select count eventualmente, devido a lógica
-                                            // de paginação
-                                            count={6}
+                                            rowsPerPageOptions={[6, 9, 12]}
+                                            count={tamanho} // select count aqui?
                                             rowsPerPage={entradasPorPagina}
                                             page={pagina}
                                             slotProps={{
@@ -352,18 +327,15 @@ export function Historico() {
                                     <TextField label="Buscar Item" style={{ width: "60%" }}></TextField>
                                     <Button onClick={() => handleDisplayPopupChange("none")} variant="outlined">Cancelar</Button>
                                     <Button onClick={() => handleDisplayPopupChange("none")} variant="contained">Registrar</Button>
-                                    {/* <FormControl>
+                                    <FormControl>
                                         <FormLabel id="id-entrada-saida">Sentido Movimentação</FormLabel>
                                         <RadioGroup defaultValue="entrada" aria-labelledby="id-entrada-saida">
                                             <FormControlLabel value="entrada" control={<Radio />} label="Entrada" />
                                             <FormControlLabel value="saida" control={<Radio />} label="Saída" />
                                         </RadioGroup>
-                                    </FormControl> */}
-                                </div>
-                                <div></div>
-                            </div>
-                            <div>
 
+                                    </FormControl>
+                                </div>
                             </div>
                         </Paper>
                     </div>
