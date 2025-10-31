@@ -7,10 +7,10 @@ import { Options } from "../../components/Options/Options";
 import { SelectOptions } from '../../components/SelectOptions/SelectOptions';
 import Button from '@mui/material/Button';
 import styles from "../Parceiros/parceiros.module.css"
-import axios from "axios";
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import api from "../../provider/api"
 
 export function Estoque() {
     const [itemEstoque, setItemEstoque] = useState("Roupa");
@@ -28,20 +28,22 @@ export function Estoque() {
     const [categoriaAtualizacao, setCategoriaAtualizacao] = useState("");
     const [categoriaCadastro, setCategoriaCadastro] = useState("");
 
+    const [prateleiras, setPrateleiras] = useState([]);
+    const [prateleiraAtualizacao, setPrateleiraAtualizacao] = useState("");
+    const [prateleiraCadastro, setPrateleiraCadastro] = useState("");
+
     const [notificarAtualizacao, setNotificarAtualizacao] = useState("");
 
     const [dadosAtualizacao, setDadosAtualizacao] = useState([]);
     const [dadosCadastro, setDadosCadastro] = useState({});
 
     const [imagem, setImagem] = useState([]);
-    const [imagePreview, setImagePreview] = useState("");
-
-    const hostBack = import.meta.env.VITE_APP_BACK_HOST;
+    const [imagePreview, setImagePreview] = useState(null);
 
     let imagemCadastro;
 
     const listarItensEstoque = () => {
-        axios.get(`http://${hostBack}:8080/itens-estoque/categorias?tipo=${itemEstoque}`)
+        api.get(`itens-estoque/categorias?tipo=${itemEstoque}`)
             .then(response => {
                 console.log(response.data);
                 setData(response.data);
@@ -53,7 +55,7 @@ export function Estoque() {
     }
 
     const listarCaracteristicas = () => {
-        axios.get(`http://${hostBack}:8080/categorias/tipo/Característica`)
+        api.get(`categorias/tipo/Característica`)
             .then(response => {
                 const listaCaracteristicas = response.data;
                 setCaracteristicas(listaCaracteristicas.map(caracteristica => {
@@ -66,8 +68,19 @@ export function Estoque() {
             });
     }
 
+    const listarPrateleiras = () => {
+        api.get(`prateleiras`)
+            .then(response => {
+                console.log(response.data);
+                setPrateleiras(response.data);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
     const listarCategorias = () => {
-        axios.get(`http://${hostBack}:8080/categorias/tipo/${itemEstoque}`)
+        api.get(`categorias/tipo/${itemEstoque}`)
             .then(response => {
                 console.log(response.data);
                 setCategorias(response.data);
@@ -81,7 +94,7 @@ export function Estoque() {
         if (descricao == "") {
             listarItensEstoque();
         } else {
-            axios.get(`http://${hostBack}:8080/itens-estoque/${itemEstoque}/filtros?descricao=${descricao}`)
+            api.get(`itens-estoque/${itemEstoque}/filtros?descricao=${descricao}`)
                 .then(response => {
                     console.log(response.data);
                     if (response.data.length === 0) {
@@ -110,7 +123,7 @@ export function Estoque() {
     const uploadImagemS3 = () => {
         let urlImagem;
         const nomeImagem = gerarNomeImagem();
-        axios.post(`http://${hostBack}:8080/s3/upload/${nomeImagem}.jpg`, imagem, {
+        api.post(`s3/upload/${nomeImagem}.jpg`, imagem, {
             headers: {
                 'Content-Type': imagem.type,
             },
@@ -126,10 +139,10 @@ export function Estoque() {
             });
     }
 
-    const atualizarImagemS3 = (urlImagemCadastrada) => {    
+    const atualizarImagemS3 = (urlImagemCadastrada) => {
         const nomeImagem = urlImagemCadastrada.match("(?<=com/).*$")[0];
         console.log(nomeImagem)
-        axios.post(`http://${hostBack}:8080/s3/upload/${nomeImagem}`, imagem, {
+        api.post(`s3/upload/${nomeImagem}`, imagem, {
             headers: {
                 'Content-Type': imagem.type,
             },
@@ -145,7 +158,7 @@ export function Estoque() {
     }
 
     const cadastrarImagem = (urlImagem) => {
-        axios.post('http://${hostBack}:8080/imagens',
+        api.post('imagens',
             {
                 "url": urlImagem
             }
@@ -187,7 +200,7 @@ export function Estoque() {
                     "url": ${dados.imagem.url}
                 }
             }`)
-        axios.put(`http://${hostBack}:8080/itens-estoque/${dados.idItemEstoque}`,
+        api.put(`itens-estoque/${dados.idItemEstoque}`,
             {
                 "descricao": dados.descricao,
                 "complemento": dados.complemento,
@@ -245,7 +258,7 @@ export function Estoque() {
                     "url":${imagemCadastro.url}
                 }
             }`)
-        axios.post(`http://${hostBack}:8080/itens-estoque`,
+        api.post(`itens-estoque`,
             {
                 "descricao": dadosCadastro.descricao,
                 "complemento": dadosCadastro.complemento,
@@ -279,6 +292,7 @@ export function Estoque() {
 
     useEffect(() => {
         listarItensEstoque();
+        listarPrateleiras();
         listarCaracteristicas();
         listarCategorias();
         setLoadMsg("Carregando dados...");
@@ -323,6 +337,15 @@ export function Estoque() {
 
     const handleCategoriaCadastroChange = (e) => {
         setCategoriaCadastro(e.target.value);
+    };
+
+    const handlePrateleiraCadastroChange = (e) => {
+        setPrateleiraCadastro(e.target.value);
+    };
+
+    const handlePrateleiraChange = (item, e, key) => {
+        setPrateleiraAtualizacao(e.target.value);
+        updateDados(item, prateleiras.filter(prateleira => prateleira.codigo == e.target.value), key)
     };
 
     const handleNotificarChange = (item, e, key) => {
@@ -414,8 +437,16 @@ export function Estoque() {
                                             func={setCaracteristicasAtualizacao}>
                                         </SelectOptions>
                                         <h2>Prateleira</h2>
-                                        <TextField key="prateleira" required={true} onChange={(e) => setAtribute(Number(e.target.value), "prateleira")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                            labelId="select-prateleira"
+                                            id="select-prateleira"
+                                            value={prateleiraCadastro}
+                                            onChange={(e) => handlePrateleiraCadastroChange(e)}
+                                            label="Age">
+                                            {prateleiras.map(prateleira => (
+                                                <MenuItem key={prateleira.id} value={prateleira.codigo}>{prateleira.codigo}</MenuItem>
+                                            ))}
+                                        </Select>
                                         <h2>Preço</h2>
                                         <TextField key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
@@ -501,8 +532,16 @@ export function Estoque() {
                                                 func={setCaracteristicasAtualizacao}>
                                             </SelectOptions>
                                             <h2>Prateleira</h2>
-                                            <TextField key="prateleira" required={true} defaultValue={item.prateleira} onChange={(e) => updateDados(item, Number(e.target.value), "prateleira")}
-                                                sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                            <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                                labelId="select-prateleira"
+                                                id="select-prateleira"
+                                                value={prateleiraAtualizacao != "" ? prateleiraAtualizacao : item.prateleira.codigo}
+                                                onChange={(e) => handlePrateleiraChange(item, e, "prateleira")}
+                                            >
+                                                {prateleiras.map(prateleira => (
+                                                    <MenuItem key={prateleira.id} value={prateleira.codigo}>{prateleira.codigo}</MenuItem>
+                                                ))}
+                                            </Select>
                                             <h2>Preço</h2>
                                             <TextField key="preco" required={true} defaultValue={item.preco} onChange={(e) => updateDados(item, Number(e.target.value), "preco")}
                                                 sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
@@ -515,6 +554,39 @@ export function Estoque() {
                                         </div>
                                     </>
                                 }
+                                info={
+                                    <>
+                                        <div>
+                                            <h2>Descrição:</h2>
+                                            <p key="descricao" style={{ width: '100%', marginBottom: '2rem' }}>{item.descricao}</p>
+                                            <h2>Complemento:</h2>
+                                            <p key="complemento" style={{ width: '100%', marginBottom: '2rem' }}>{item.complemento}</p>
+                                            <h2>Peso:</h2>
+                                            <p key="peso" style={{ width: '100%', marginBottom: '2rem' }}>{item.peso}</p>
+                                            <h2>Qtd. mínimo:</h2>
+                                            <p key="qtdMinimo" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdMinimo}</p>
+                                            <h2>Qtd. Armazenado:</h2>
+                                            <p key="qtdArmazenado" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdArmazenado}</p>
+                                            {itemEstoque === "Roupa" ? (<>
+                                                <h2>Receber notificações</h2>
+                                                <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === 0 ? "Não" : "Sim"}</p> </>) : null}
+                                        </div>
+                                        <div>
+                                            <h2>Categoria:</h2>
+                                            <p style={{ width: '100%', marginBottom: '2rem' }}>{item.categoria.nome}</p>
+                                            <h2>Características:</h2>
+                                            {item.caracteristicas.map((dado) => <p>{dado.nome}</p>)}
+                                            <h2 style={{ marginTop: '2rem' }}>Prateleira</h2>
+                                            <p style={{ width: '100%', marginBottom: '2rem' }}>{item.prateleira.codigo}</p>
+                                            <h2>Preço:</h2>
+                                            <p style={{ width: '100%', marginBottom: '2rem' }}>{item.preco}</p>
+                                            <h2>Imagem:</h2>
+                                            <img src={item.imagem.url} style={{ height: "8rem" }} />
+                                        </div>
+                                    </>
+                                }
+                                title={`Informações ${atualizarDados}`}
+                                altura={"60vh"}
                             />
                         ))}
                     </div>

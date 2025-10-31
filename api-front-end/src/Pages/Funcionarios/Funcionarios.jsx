@@ -7,12 +7,13 @@ import { SelectOptions } from '../../components/SelectOptions/SelectOptions';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import styles from "../Parceiros/parceiros.module.css"
-import axios from "axios";
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import api from "../../provider/api"
+import axios from 'axios';
 
 export function Funcionarios() {
     const [data, setData] = useState([]);
@@ -26,10 +27,8 @@ export function Funcionarios() {
 
     const [showPassword, setShowPassword] = useState(false);
 
-    const hostBack = import.meta.env.VITE_APP_BACK_HOST;
-
     const listarFuncionarios = () => {
-        axios.get(`http://${hostBack}:8080/funcionarios`)
+        api.get(`funcionarios`)
             .then(response => {
                 console.log(response.data);
                 setData(response.data);
@@ -41,7 +40,7 @@ export function Funcionarios() {
     }
 
     const listarPermissoes = () => {
-        axios.get(`http://${hostBack}:8080/permissoes`)
+        api.get(`permissoes`)
             .then(response => {
                 setPermissoes(response.data);
             })
@@ -51,7 +50,7 @@ export function Funcionarios() {
     }
 
     const buscarFuncionario = (nome) => {
-        axios.get(`http://${hostBack}:8080/funcionarios/busca?nome=${nome}`)
+        api.get(`funcionarios/busca?nome=${nome}`)
             .then(response => {
                 console.log(response.data);
                 if (response.data.length === 0) {
@@ -67,7 +66,7 @@ export function Funcionarios() {
     }
 
     const cadastrarFuncionario = (dados) => {
-        axios.post(`http://${hostBack}:8080/funcionarios`,
+        api.post(`funcionarios`,
             {
                 "nome": dados.nome,
                 "cpf": dados.cpf,
@@ -87,7 +86,7 @@ export function Funcionarios() {
     }
 
     const atualizarFuncionario = (dados) => {
-        axios.put(`http://${hostBack}:8080/funcionarios/${dados.idFuncionario}`,
+        api.put(`funcionarios/${dados.idFuncionario}`,
             {
                 "nome": dados.nome,
                 "cpf": dados.cpf,
@@ -134,7 +133,7 @@ export function Funcionarios() {
 
     const handleClickShowPassword = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
-      };
+    };
 
     return (
         <div>
@@ -172,18 +171,18 @@ export function Funcionarios() {
                                         <h2>Senha</h2>
                                         <OutlinedInput type={showPassword ? 'text' : 'password'} key="senha" required={true} onChange={(e) => setAtribute(e.target.value, "senha")}
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined"
-                                                endAdornment={
-                                                    <InputAdornment position="end">
-                                                        <IconButton
-                                                            aria-label="toggle password visibility"
-                                                            onClick={handleClickShowPassword}
-                                                            edge="end"
-                                                        >
-                                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                }
-                                           />
+                                            endAdornment={
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={handleClickShowPassword}
+                                                        edge="end"
+                                                    >
+                                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            }
+                                        />
                                         <h2>Permissões</h2>
                                         <SelectOptions lista={permissoes}
                                             chave={"descricao"}
@@ -239,6 +238,26 @@ export function Funcionarios() {
                                     </div>
                                 </>
                                 }
+                                info={
+                                    <>
+                                        <div>
+                                            <h2>Nome:</h2>
+                                            <p key="nome" style={{ width: '100%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined">{item.nome}</p>
+                                            <h2>Telefone:</h2>
+                                            <p key="telefone" style={{ width: '100%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined">{item.telefone}</p>
+                                            <h2>E-mail:</h2>
+                                            <p key="email" style={{ width: '100%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined">{item.email}</p>
+                                        </div>
+                                        <div>
+                                            <h2>CPF:</h2>
+                                            <p key="cpf" style={{ width: '100%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined">{item.cpf}</p>
+                                            <h2>Permissões:</h2>
+                                            {item.permissoes.map((dado) => <p>{dado.descricao}</p>)}
+                                        </div>
+                                    </>
+                                }
+                                title={`Informações do funcionário`}
+                                altura={"35vh"}
                             />
                         ))}
                     </div>

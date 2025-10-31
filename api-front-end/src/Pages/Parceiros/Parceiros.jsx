@@ -7,7 +7,7 @@ import { Options } from "../../components/Options/Options";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import styles from "./parceiros.module.css"
-import axios from "axios";
+import api from "../../provider/api"
 
 export function Parceiros() {
     const [parceiro, setParceiro] = useState("costureira");
@@ -21,10 +21,8 @@ export function Parceiros() {
     const [dadosAtualizacao, setDadosAtualizacao] = useState([]);
     const [dadosCadastro, setDadosCadastro] = useState({});
 
-    const hostBack = import.meta.env.VITE_APP_BACK_HOST;
-
     const listarParceiros = () => {
-        axios.get(`http://${hostBack}:8080/parceiros/listagem/${parceiro}`)
+        api.get(`parceiros/listagem/${parceiro}`)
             .then(response => {
                 setData(response.data);
                 console.log(data)
@@ -36,7 +34,7 @@ export function Parceiros() {
     }
 
     const buscarParceiro = (nome) => {
-        axios.get(`http://${hostBack}:8080/parceiros/${parceiro}/nome?nome=${nome}`)
+        api.get(`parceiros/${parceiro}/nome?nome=${nome}`)
             .then(response => {
                 console.log(response.data);
                 if (response.data.length === 0) {
@@ -54,7 +52,7 @@ export function Parceiros() {
 
     const atualizarParceiro = (dados) => {
         console.log(dados);
-        axios.put(`http://${hostBack}:8080/parceiros/${dados.id}`,
+        api.put(`parceiros/${dados.id}`,
             {
                 "categoria": parceiro,
                 "nome": dados.nome,
@@ -75,7 +73,7 @@ export function Parceiros() {
 
     const cadastrarParceiro = (dados) => {
         console.log(dados);
-        axios.post(`http://${hostBack}:8080/parceiros`,
+        api.post(`parceiros`,
             {
                 "categoria": parceiro,
                 "nome": dados.nome,
@@ -214,6 +212,24 @@ export function Parceiros() {
                                     </div>
                                 </>
                                 }
+                                info={<>
+                                    <div>
+                                        <h2>Nome:</h2>
+                                        <p key="nome" style={{ width: '100%', marginBottom: '2rem' }}> {item.nome}</p>
+                                        <h2>Telefone:</h2>
+                                        <p key="telefone" style={{ width: '100%', marginBottom: '2rem' }}> {item.telefone}</p>
+                                        <h2>E-mail:</h2>
+                                        <p key="email" style={{ width: '100%', marginBottom: '2rem' }}> {item.email}</p>
+                                    </div>
+                                    <div>
+                                        <h2>Endereço:</h2>
+                                        <p key="endereco" style={{ width: '100%', marginBottom: '2rem' }}> {item.endereco}</p>
+                                        <h2>CPF/CNPJ:</h2>
+                                        <p key="identificacao" style={{ width: '100%', marginBottom: '2rem' }}> {item.identificacao}</p>
+                                    </div>
+                                </>}
+                                title={`Informações ${atualizarDados}`}
+                                altura={"35vh"}
                             />
                         ))}
                     </div>
