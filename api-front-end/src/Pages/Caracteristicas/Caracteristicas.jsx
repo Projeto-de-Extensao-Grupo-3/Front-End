@@ -16,6 +16,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 export function Caracteristicas() {
 
@@ -60,7 +61,7 @@ export function Caracteristicas() {
     const [dadosCaracteristicas, setDadosCaracteristicas] = useState([])
 
     const reload = useEffect(() => {
-        api.get("http://localhost:8080/categorias/tipo/caracteristica").then(
+        axios.get("/api/categorias/tipo/caracteristica").then(
             response => {
                 setDadosCaracteristicas(response.data)
             }).catch(error => {

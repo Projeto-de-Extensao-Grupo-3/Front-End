@@ -50,6 +50,7 @@ import TextField from '@mui/material/TextField'
 import { useReducer } from "react";
 
 import api from "../../provider/api"
+import axios from 'axios';
 
 const theme = createTheme(
     ptBR
@@ -200,7 +201,7 @@ export function Historico() {
 
     const atualizarDadosTabela = (p, l) => {
         if (values.tipoMovimentacao == 1) {
-            api.get(`/lotes-item-estoque/paginado?page=${p}&limit=${l}`)
+            axios.get(`/api/lotes-item-estoque/paginado?page=${p}&limit=${l}`)
                 .then(response => {
                     let newTuplas = [];
                     response.data.conteudo.forEach(dados => {

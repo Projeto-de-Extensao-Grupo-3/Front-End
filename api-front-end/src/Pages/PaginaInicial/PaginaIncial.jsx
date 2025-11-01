@@ -14,6 +14,7 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
+import axios from 'axios';
 
 export function PaginaInicial(){
 
@@ -36,7 +37,7 @@ export function PaginaInicial(){
         // Eventualmente, a requisição para o back será feita aqui. Por enquanto, apenas redirecionamento sem validação
         // Será necessário diferenciar entre registro rápido e login normal (corte de escopo?)
         
-        api.post('/funcionarios/login', {
+        axios.post('/api/funcionarios/login', {
             email: email,
             senha: senha
         }, {

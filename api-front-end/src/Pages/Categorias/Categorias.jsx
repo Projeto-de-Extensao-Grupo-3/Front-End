@@ -69,7 +69,7 @@ export function Categorias() {
         }
         if (!duplicado) {
             if (popupEscolhido == "Roupa") {
-                api.post("categorias", {
+                axios.post("/api/categorias", {
                     "nome": nome,
                     "categoriaPai": {
                         "idCategoria": 2
@@ -79,7 +79,7 @@ export function Categorias() {
                 })
                 handlePopupAdicionarFechar()
             } else if (popupEscolhido == "Tecido") { // if como failsafe
-                api.post("categorias", {
+                axios.post("/api/categorias", {
                     "nome": nome,
                     "categoriaPai": {
                         "idCategoria": 1
@@ -98,10 +98,10 @@ export function Categorias() {
         const id = formJson.idCategoria
 
         if (popupEscolhido == "Roupa") {
-            api.delete(`categorias/${id}`)
+            axios.delete(`/api/categorias/${id}`)
             handlePopupAdicionarFechar()
         } else if (popupEscolhido == "Tecido") { // if como failsafe
-            api.delete(`categorias/${id}`)
+            axios.delete(`/api/categorias/${id}`)
             handlePopupAdicionarFechar()
         }
 
@@ -115,14 +115,14 @@ export function Categorias() {
     const initialState = useEffect(() => getDados, [])
 
     const getDados = () => {
-        api.get("categorias/tipo/tecido").then(
+        axios.get("/api/categorias/tipo/tecido").then(
             response => {
                 setDadosTecido(response.data)
             }).catch(error => {
                 console.log("Erro ao obter os dados de Tecidos: ", error)
             })
 
-        api.get("categorias/tipo/roupa").then(
+        axios.get("/api/categorias/tipo/roupa").then(
             response => {
                 setDadosRoupa(response.data)
             }).catch(error => {
