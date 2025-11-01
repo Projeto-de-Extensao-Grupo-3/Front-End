@@ -12,7 +12,6 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import api from "../../provider/api"
 import axios from 'axios';
 
 export function Funcionarios() {
@@ -28,7 +27,7 @@ export function Funcionarios() {
     const [showPassword, setShowPassword] = useState(false);
 
     const listarFuncionarios = () => {
-        api.get(`funcionarios`)
+        axios.get(`/api/funcionarios`)
             .then(response => {
                 console.log(response.data);
                 setData(response.data);
@@ -40,7 +39,7 @@ export function Funcionarios() {
     }
 
     const listarPermissoes = () => {
-        api.get(`permissoes`)
+        axios.get(`/api/permissoes`)
             .then(response => {
                 setPermissoes(response.data);
             })
@@ -50,7 +49,7 @@ export function Funcionarios() {
     }
 
     const buscarFuncionario = (nome) => {
-        api.get(`funcionarios/busca?nome=${nome}`)
+        axios.get(`/api/funcionarios/busca?nome=${nome}`)
             .then(response => {
                 console.log(response.data);
                 if (response.data.length === 0) {
@@ -66,7 +65,7 @@ export function Funcionarios() {
     }
 
     const cadastrarFuncionario = (dados) => {
-        api.post(`funcionarios`,
+        axios.post(`/api/funcionarios`,
             {
                 "nome": dados.nome,
                 "cpf": dados.cpf,
@@ -86,7 +85,7 @@ export function Funcionarios() {
     }
 
     const atualizarFuncionario = (dados) => {
-        api.put(`funcionarios/${dados.idFuncionario}`,
+        axios.put(`/api/funcionarios/${dados.idFuncionario}`,
             {
                 "nome": dados.nome,
                 "cpf": dados.cpf,

@@ -10,7 +10,7 @@ import styles from "../Parceiros/parceiros.module.css"
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import api from "../../provider/api"
+import axios from 'axios';
 
 export function Estoque() {
     const [itemEstoque, setItemEstoque] = useState("Roupa");
@@ -43,7 +43,7 @@ export function Estoque() {
     let imagemCadastro;
 
     const listarItensEstoque = () => {
-        api.get(`itens-estoque/categorias?tipo=${itemEstoque}`)
+        axios.get(`/api/itens-estoque/categorias?tipo=${itemEstoque}`)
             .then(response => {
                 console.log(response.data);
                 setData(response.data);
@@ -55,7 +55,7 @@ export function Estoque() {
     }
 
     const listarCaracteristicas = () => {
-        api.get(`categorias/tipo/Característica`)
+        axios.get(`/api/categorias/tipo/Característica`)
             .then(response => {
                 const listaCaracteristicas = response.data;
                 setCaracteristicas(listaCaracteristicas.map(caracteristica => {
@@ -69,7 +69,7 @@ export function Estoque() {
     }
 
     const listarPrateleiras = () => {
-        api.get(`prateleiras`)
+        axios.get(`/api/prateleiras`)
             .then(response => {
                 console.log(response.data);
                 setPrateleiras(response.data);
@@ -80,7 +80,7 @@ export function Estoque() {
     }
 
     const listarCategorias = () => {
-        api.get(`categorias/tipo/${itemEstoque}`)
+        axios.get(`/api/categorias/tipo/${itemEstoque}`)
             .then(response => {
                 console.log(response.data);
                 setCategorias(response.data);
@@ -94,7 +94,7 @@ export function Estoque() {
         if (descricao == "") {
             listarItensEstoque();
         } else {
-            api.get(`itens-estoque/${itemEstoque}/filtros?descricao=${descricao}`)
+            axios.get(`/api/itens-estoque/${itemEstoque}/filtros?descricao=${descricao}`)
                 .then(response => {
                     console.log(response.data);
                     if (response.data.length === 0) {
@@ -123,7 +123,7 @@ export function Estoque() {
     const uploadImagemS3 = () => {
         let urlImagem;
         const nomeImagem = gerarNomeImagem();
-        api.post(`s3/upload/${nomeImagem}.jpg`, imagem, {
+        axios.post(`/api/s3/upload/${nomeImagem}.jpg`, imagem, {
             headers: {
                 'Content-Type': imagem.type,
             },
@@ -142,7 +142,7 @@ export function Estoque() {
     const atualizarImagemS3 = (urlImagemCadastrada) => {
         const nomeImagem = urlImagemCadastrada.match("(?<=com/).*$")[0];
         console.log(nomeImagem)
-        api.post(`s3/upload/${nomeImagem}`, imagem, {
+        axios.post(`/api/s3/upload/${nomeImagem}`, imagem, {
             headers: {
                 'Content-Type': imagem.type,
             },
@@ -158,7 +158,7 @@ export function Estoque() {
     }
 
     const cadastrarImagem = (urlImagem) => {
-        api.post('imagens',
+        axios.post('/api/imagens',
             {
                 "url": urlImagem
             }
@@ -200,7 +200,7 @@ export function Estoque() {
                     "url": ${dados.imagem.url}
                 }
             }`)
-        api.put(`itens-estoque/${dados.idItemEstoque}`,
+        axios.put(`/api/itens-estoque/${dados.idItemEstoque}`,
             {
                 "descricao": dados.descricao,
                 "complemento": dados.complemento,
@@ -258,7 +258,7 @@ export function Estoque() {
                     "url":${imagemCadastro.url}
                 }
             }`)
-        api.post(`itens-estoque`,
+        axios.post(`/api/itens-estoque`,
             {
                 "descricao": dadosCadastro.descricao,
                 "complemento": dadosCadastro.complemento,

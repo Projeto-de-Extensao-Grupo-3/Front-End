@@ -7,7 +7,7 @@ import { Options } from "../../components/Options/Options";
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import styles from "./parceiros.module.css"
-import api from "../../provider/api"
+import axios from 'axios';
 
 export function Parceiros() {
     const [parceiro, setParceiro] = useState("costureira");
@@ -22,7 +22,7 @@ export function Parceiros() {
     const [dadosCadastro, setDadosCadastro] = useState({});
 
     const listarParceiros = () => {
-        api.get(`parceiros/listagem/${parceiro}`)
+        axios.get(`/api/parceiros/listagem/${parceiro}`)
             .then(response => {
                 setData(response.data);
                 console.log(data)
@@ -34,7 +34,7 @@ export function Parceiros() {
     }
 
     const buscarParceiro = (nome) => {
-        api.get(`parceiros/${parceiro}/nome?nome=${nome}`)
+        axios.get(`/api/parceiros/${parceiro}/nome?nome=${nome}`)
             .then(response => {
                 console.log(response.data);
                 if (response.data.length === 0) {
@@ -52,7 +52,7 @@ export function Parceiros() {
 
     const atualizarParceiro = (dados) => {
         console.log(dados);
-        api.put(`parceiros/${dados.id}`,
+        axios.put(`/api/parceiros/${dados.id}`,
             {
                 "categoria": parceiro,
                 "nome": dados.nome,
@@ -73,7 +73,7 @@ export function Parceiros() {
 
     const cadastrarParceiro = (dados) => {
         console.log(dados);
-        api.post(`parceiros`,
+        axios.post(`/api/parceiros`,
             {
                 "categoria": parceiro,
                 "nome": dados.nome,
