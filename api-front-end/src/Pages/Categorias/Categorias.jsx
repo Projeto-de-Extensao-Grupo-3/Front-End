@@ -16,6 +16,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import axios from "axios";
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 export function Categorias() {
 
@@ -28,6 +30,7 @@ export function Categorias() {
     const [popupRemoverAberto, setPopupRemoverAberto] = useState(false)
     const [popupEscolhido, setPopupEscolhido] = useState()
     const [popupRemoverEscolhido, setPopupRemoverEscolhido] = useState()
+    const [id, setId] = useState(0);
 
     const handlePopupAdicionarAbrir = (escolhido) => {
         setPopupEscolhido(escolhido)
@@ -44,7 +47,11 @@ export function Categorias() {
     }
 
     const handlePopupRemoverFechar = () => {
-        setPopupAdicionarAberto(false)
+        setPopupRemoverAberto(false)
+    }
+
+    const handleSelectCategoria = (event) => {
+        setId(event.target.value)
     }
 
     const cadastrarCategoria = (event) => {
@@ -96,11 +103,18 @@ export function Categorias() {
         const formData = new FormData(event.currentTarget)
         const formJson = Object.fromEntries(formData.entries())
         const id = formJson.idCategoria
+        event.preventDefault()
+        
+        if (id == 0) {
+            document.getElementById('alert-cadastro').style.display = "flex"
+            return;
+        }
 
-        if (popupEscolhido == "Roupa") {
+        console.log(id)
+        if (popupRemoverEscolhido == "Roupa") {
             axios.delete(`/api/categorias/${id}`)
             handlePopupAdicionarFechar()
-        } else if (popupEscolhido == "Tecido") { // if como failsafe
+        } else if (popupRemoverEscolhido == "Tecido") { // if como failsafe
             axios.delete(`/api/categorias/${id}`)
             handlePopupAdicionarFechar()
         }
@@ -149,7 +163,7 @@ export function Categorias() {
                     </Paper>
                     <div className={styles.divBotoes}>
                         <Button onClick={() => handlePopupAdicionarAbrir("Roupa")} variant='contained'>Adicionar Categoria</Button>
-                        <Button variant='contained'>Remover Categoria</Button>
+                        <Button onClick={() => handlePopupRemoverAbrir("Roupa")} variant='contained'>Remover Categoria</Button>
                     </div>
                 </div>
                 <div className={styles.listCategorias}>
@@ -165,7 +179,7 @@ export function Categorias() {
                     </Paper>
                     <div className={styles.divBotoes}>
                         <Button onClick={() => handlePopupAdicionarAbrir("Tecido")} variant='contained'>Adicionar Categoria</Button>
-                        <Button variant='contained'>Remover Categoria</Button>
+                        <Button onClick={() => handlePopupRemoverAbrir("Tecido")} variant='contained'>Remover Categoria</Button>
                     </div>
                 </div>
             </div>
@@ -194,26 +208,25 @@ export function Categorias() {
                 </DialogContent>
             </Dialog>
             <Dialog open={popupRemoverAberto}>
-                <DialogTitle>Remover categoria de {popupEscolhido}</DialogTitle>
+                <DialogTitle>Remover categoria de {popupRemoverEscolhido}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Escolha a categoria a ser removida
                     </DialogContentText>
                     <br />
-                    <form onSubmit={cadastrarCategoria} id='formAddCategoria'>
-                        <TextField
-                            autoFocus
-                            required
-                            name="nomeCategoria"
-                            label="Nome da Categoria"
-                            fullWidth
-                        />
+                    <form onSubmit={removerCategoria} id='formRemoverCategoria'>
+                        <Select value={id} name={'idCategoria'} onChange={(event) => handleSelectCategoria(event)}  >
+                            <MenuItem disabled value={0}>Escolha uma Categoria</MenuItem>
+                            {popupRemoverEscolhido == 'Roupa' ? 
+                            dadosRoupa.map((categoria) => (<MenuItem key={categoria.id} value={categoria.id}>{categoria.nome}</MenuItem>)) 
+                            : dadosTecido.map((categoria) => (<MenuItem value={categoria.id}>{categoria.nome}</MenuItem>))}
+                        </Select>
                     </form>
                     <br />
-                    <Alert severity='error' id='alert-cadastro' style={{ display: "none" }}>Nome indisponível</Alert>
+                    <Alert severity='error' id='alert-cadastro' style={{ display: "none" }}>Escolha uma categoria</Alert>
                     <DialogActions>
-                        <Button onClick={() => handlePopupAdicionarFechar()}>Cancelar</Button>
-                        <Button type='submit' form="formAddCategoria">Cadastrar</Button>
+                        <Button onClick={() => handlePopupRemoverFechar()}>Cancelar</Button>
+                        <Button type='submit' form="formRemoverCategoria">Remover</Button>
                     </DialogActions>
                 </DialogContent>
             </Dialog>

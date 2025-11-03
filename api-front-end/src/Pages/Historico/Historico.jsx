@@ -2,12 +2,6 @@ import { useEffect, useState } from "react"
 import { Navbar } from "../../components/Navbar/Navbar"
 import styles from "./historico.module.css"
 
-// código baseado de: https://mui.com/x/react-date-pickers/date-picker/
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-
 // Limpar localização após conversa com duarte
 import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import { ptBR } from '@mui/x-date-pickers/locales';
@@ -123,23 +117,6 @@ PaginarTabela.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-    // ============ //
-    //    Reducer   //
-    // ============ //
-
-function reducer(state, action) {
-
-    switch (action.type) {
-        case 'alterar_atributo': {
-            return {
-                ...state,
-                [action.field]: action.value
-            }
-        }
-        default: throw new Error("Erro no reducer!");
-    }
-}
-
     // ============== //
     //   Export Fun   //
     // ============== // 
@@ -150,24 +127,11 @@ export function Historico() {
         document.title = "Histórico"
     })
 
+    const [tipoMovimentacao, setTipoMovimentacao] = useState(0);
 
-    // =========== //
-    // Use Reducer //
-    // =========== // 
-
-    const initialState = {
-
-        // Itens relevantes para filtros
-        dtInicio: dayjs().subtract(30, 'days'),
-        dtFim: dayjs(),
-        itensSelecionados: 2,
-        tipoMovimentacao: 1,
-
-        // Ocultar popup de registrar movimentação
-        displayPopup: "none"
+    const handleTipoMovimentacao = (event) => {
+        setTipoMovimentacao(event.target.value)
     }
-
-    const [values, dispatch] = useReducer(reducer, initialState);
 
     // ========= //
     // Paginação //
@@ -179,13 +143,11 @@ export function Historico() {
     const handleChangePage = (event, newPage) => {
         setPagina(newPage)
         // Por algum motivo, utilizando os hooks o valor anterior é obtido (??)
-        atualizarDadosTabela(newPage, entradasPorPagina)
     }
 
     const handleChangeRowsPerPage = (event) => {
         setEntradasPorPagina(parseInt(event.target.value, 10))
         setPagina(0)
-        atualizarDadosTabela(0, parseInt(event.target.value, 10))
     }
     
     // ==================== //
@@ -195,25 +157,32 @@ export function Historico() {
     const [tuplas, setTuplas] = useState([]);
     const [tamanho, setTamanho] = useState(0);
 
-    const buscarDadosTabela = useEffect(() => {
-        atualizarDadosTabela(pagina, entradasPorPagina)
-    }, [])
+    const atualizarDadosTabela = useEffect(() => {
 
-    const atualizarDadosTabela = (p, l) => {
-        if (values.tipoMovimentacao == 1) {
-            axios.get(`/api/lotes-item-estoque/paginado?page=${p}&limit=${l}`)
-                .then(response => {
-                    let newTuplas = [];
-                    response.data.conteudo.forEach(dados => {
-                        newTuplas.push(dados);
-                    });
-                    setTuplas(newTuplas);
-                    setTamanho(response.data.totalRegistros);
-                })
+        if (tipoMovimentacao == 0) {
+            axios.get(`/api/lotes-item-estoque/paginado?page=${pagina}&limit=${entradasPorPagina}`)
+            .then(response => {
+                let newTuplas = [];
+                response.data.conteudo.forEach(dados => {
+                    newTuplas.push(dados);
+                });
+                setTuplas(newTuplas);
+                setTamanho(response.data.totalRegistros);
+            })
+        } else {
+            axios.get(`/api/lotes-item-estoque/paginadoSaida?page=${pagina}&limit=${entradasPorPagina}`)
+            .then(response => {
+                let newTuplas = [];
+                response.data.conteudo.forEach(dados => {
+                    newTuplas.push(dados);
+                });
+                setTuplas(newTuplas);
+                setTamanho(response.data.totalRegistros);
+            })
         }
-    }
-
-            // TDB
+    }, [entradasPorPagina, pagina, tipoMovimentacao])
+    
+    // TDB
     // ====================== //
     // Registrar Movimentação //
     // ====================== //
@@ -237,7 +206,7 @@ export function Historico() {
                     <div className={styles.boxSelect}>
                         <FormControl >
                             <InputLabel id="label-tipo-slct">Tipo</InputLabel>
-                            <Select value={values.tipoMovimentacao} onChange={(newValue) => dispatch({ type: 'alterar_atributo', field: 'tipoMovimentacao', value: newValue.target.value })} labelId="label-tipo-slct" label="Tipo">
+                            <Select value={tipoMovimentacao} onChange={(event) => handleTipoMovimentacao(event)} labelId="label-tipo-slct" label="Tipo">
                                 <MenuItem value={1}>Saída</MenuItem>
                                 <MenuItem value={0}>Entrada</MenuItem>
                             </Select>
@@ -249,9 +218,6 @@ export function Historico() {
                     <div className={styles.boxButton}>
                         <Button className={styles.button} variant="contained">Registrar Saída de Item</Button>
                     </div>
-                    {/* <div className={styles.boxButton}>
-                        <Button className={styles.button} variant="contained">Alterar Movimentação</Button>
-                    </div> */}
                 </div>
                 <div className={styles.body}>
                     <div className={styles.divTabela}>
@@ -263,7 +229,7 @@ export function Historico() {
                                         <TableCell>Nome do Item</TableCell>
                                         <TableCell>Lote</TableCell>
                                         <TableCell>Quantidade</TableCell>
-                                        <TableCell>Destino</TableCell>
+                                        <TableCell>{tipoMovimentacao == 0 ? "Origem" : "Destino"}</TableCell>
                                         <TableCell>Horário</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -286,7 +252,7 @@ export function Historico() {
                                                 {tupla.nomeParceiro}
                                             </TableCell>
                                             <TableCell>
-                                                {tupla.dataEntrada}
+                                                {tipoMovimentacao == 0 ? dayjs(tupla.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(tupla.saidaEstoque).format('HH:mm:ss DD/MM/YY')}
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -296,7 +262,7 @@ export function Historico() {
                                         <TablePagination
                                             align="right"
                                             rowsPerPageOptions={[6, 9, 12]}
-                                            count={tamanho} // select count aqui?
+                                            count={tamanho}
                                             rowsPerPage={entradasPorPagina}
                                             page={pagina}
                                             slotProps={{
