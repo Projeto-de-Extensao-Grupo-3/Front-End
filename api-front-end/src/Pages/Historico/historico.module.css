@@ -153,6 +153,10 @@
     height: 50px;
 }
 
+.btnPaginas {
+    width: 300px;
+}
+
 @media (max-width: 600px) {
     .popupWindow {
     width: 80%;
