@@ -143,37 +143,37 @@ export function Historico() {
 
         if (tipoMovimentacao == 0) {
             axios.get(`/api/lotes-item-estoque/paginado?page=${pagina}&limit=${entradasPorPagina}`)
-            .then(response => {
-                let newTuplas = [];
-                response.data.conteudo.forEach(dados => {
-                    newTuplas.push(dados);
-                });
-                setTuplas(newTuplas);
-                setTamanho(response.data.totalRegistros);
-            })
+                .then(response => {
+                    let newTuplas = [];
+                    response.data.conteudo.forEach(dados => {
+                        newTuplas.push(dados);
+                    });
+                    setTuplas(newTuplas);
+                    setTamanho(response.data.totalRegistros);
+                })
         } else {
             axios.get(`/api/lotes-item-estoque/paginadoSaida?page=${pagina}&limit=${entradasPorPagina}`)
-            .then(response => {
-                let newTuplas = [];
-                response.data.conteudo.forEach(dados => {
-                    newTuplas.push(dados);
-                });
-                setTuplas(newTuplas);
-                setTamanho(response.data.totalRegistros);
-            })
+                .then(response => {
+                    let newTuplas = [];
+                    response.data.conteudo.forEach(dados => {
+                        newTuplas.push(dados);
+                    });
+                    setTuplas(newTuplas);
+                    setTamanho(response.data.totalRegistros);
+                })
         }
     }, [entradasPorPagina, pagina, tipoMovimentacao]);
-    
-    
+
+
     const handleDisplayPopupChange = (d) => {
         setDiplayPopup(d);
     };
-    
+
     const [displayPopup, setDiplayPopup] = useState("none");
     const [dadosItensSimples, setdadosItensSimples] = useState([]);
     const [itensParaRegistrar, setItensParaRegostrar] = useState([]);
 
-    const obterDadosParaRegistrarEntrada = useEffect(() => {
+    const obterDadosRegistrarEntrada = useEffect(() => {
         if (displayPopup == 'none') {
             setdadosItensSimples([]);
             return;
@@ -184,14 +184,54 @@ export function Historico() {
             });
     }, [displayPopup]);
 
-    const handleItemEntrada = (event) => {
+    const handleItem = (event) => {
         var aux = itensParaRegistrar;
-        aux.push({
-            "quantidade": 1,
-            "preco": 1.00,
-            "itemEstoque": event.target.value
-        })
+        // Se for entrada de item
+        if (displayPopup != 'none') {
+            aux.push({
+                "data": dayjs(),
+                "quantidade": 1,
+                "preco": 1.00,
+                "itemEstoque": event.target.value
+            })
+        } else {
+            aux.push({
+                "data": dayjs().format('YYYY-MM-DD'),
+                "hora": dayjs().format('HH:mm:ss'),
+                "quantidade": 1,
+                "preco": 1.00,
+                "responsal": {
+                    "idFuncionario": 1 // Temos de pegar o id do usuário de alguma maneira...
+                },
+                "loteItemEstoque": {
+                    "idLoteItemEstoque": 1
+                },
+                "costureira": null
+            })
+        }
+        
+        
+        
+        aux.length > 0 ? setAuxSelectItensSaida(-1) : setAuxSelectItensSaida(0)
     }
+
+    const [displayPopupSaida, setDisplayPopupSaida] = useState("none");
+    const [auxSelectItensSaida, setAuxSelectItensSaida] = useState(0);
+
+    const handleDisplayPopupChangeSaida = (d) => {
+        setDisplayPopupSaida(d);
+    };
+
+    const obterDadosRegistrarSaida = useEffect(() => {
+        if (displayPopupSaida == 'none') {
+            setdadosItensSimples([]);
+            return;
+        }
+        axios.get(`/api/lotes/lotesEmEstoque`)
+            .then(response => {
+                setdadosItensSimples(response.data);
+            });
+    }, [displayPopupSaida]);
 
     const registrarMovimentacao = () => {
         return null;
@@ -216,7 +256,7 @@ export function Historico() {
                         <Button className={styles.button} variant="contained" onClick={() => handleDisplayPopupChange("flex")}>Registrar Entrada de Item</Button>
                     </div>
                     <div className={styles.boxButton}>
-                        <Button className={styles.button} variant="contained">Registrar Saída de Item</Button>
+                        <Button className={styles.button} variant="contained" onClick={() => handleDisplayPopupChangeSaida("flex")}>Registrar Saída de Item</Button>
                     </div>
                 </div>
                 <div className={styles.body}>
@@ -236,9 +276,9 @@ export function Historico() {
                                 <TableBody>
                                     {tuplas.map((tupla) => (
                                         <TableRow key={tupla.nomeItem + tupla.idLote}>
-                                            <TableCell><img src={tupla.url} className={styles.boxImagem}/></TableCell>
+                                            <TableCell><img src={tupla.url} className={styles.boxImagem} /></TableCell>
                                             <TableCell>{tupla.nomeItem}</TableCell>
-                                            <TableCell>{tupla.idLote}</TableCell> 
+                                            <TableCell>{tupla.idLote}</TableCell>
                                             <TableCell>{tupla.qtdItem}</TableCell>
                                             <TableCell>{tupla.nomeParceiro}</TableCell>
                                             <TableCell>
@@ -281,11 +321,11 @@ export function Historico() {
                             <h2 className={styles.tituloPopup}>Registrar Movimentação</h2>
                             <div>
                                 <div className={styles.barraPopup}>
-                                    <Select value={0} onChange={(event) => handleItemEntrada(event)}>
+                                    <Select value={0} onChange={(event) => handleItem(event)}>
                                         <MenuItem value={0} disabled>Selecione um Item</MenuItem>
                                         {dadosItensSimples.map((dadoItem) => (
-                                        <MenuItem value={dadoItem.id}>{dadoItem.descricao}</MenuItem>
-                                    ))}
+                                            <MenuItem value={dadoItem.id}>{dadoItem.descricao}</MenuItem>
+                                        ))}
                                     </Select>
                                     <Button onClick={() => handleDisplayPopupChange("none")} variant="contained">Adicionar Item</Button>
                                     <Button onClick={() => handleDisplayPopupChange("none")} variant="outlined">Cancelar</Button>
@@ -293,6 +333,33 @@ export function Historico() {
                                 <FormControl>
                                     <FormLabel id="id-entrada-saida">Itens para registro:</FormLabel>
                                 </FormControl>
+                            </div>
+                        </Paper>
+                    </div>
+                </div>
+                <div className={styles.popupRegistro} style={{ display: displayPopupSaida }}>
+                    <div className={styles.blackout} onClick={() => handleDisplayPopupChangeSaida("none")}>
+                        <Paper className={styles.popupWindow} onClick={(e) => e.stopPropagation()}>
+                            <h2 className={styles.tituloPopup}>Registrar Saída de Itens</h2>
+                            <div>
+                                <div className={styles.barraPopup}>
+                                    <Select value={auxSelectItensSaida} onChange={(event) => handleItem(event)}>
+                                        <MenuItem value={0} disabled>Selecione um Item</MenuItem>
+                                        <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
+                                        {dadosItensSimples.map((dadoItem) => (
+                                            <MenuItem value={'' + dadoItem.idLote + dadoItem.idItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem>
+                                        ))}
+                                    </Select>
+                                    <Button onClick={() => handleDisplayPopupChangeSaida("none")} variant="contained">Adicionar Item</Button>
+                                    <Button onClick={() => handleDisplayPopupChangeSaida("none")} variant="outlined">Cancelar</Button>
+                                </div>
+                                <div id="id-entrada-saida">Itens para registro:</div>
+                                {itensParaRegistrar.map((item) => (
+                                    <div key={'' + item.idLote + item.idItem}>
+                                        Lote: {item.idLote}
+
+                                    </div>    
+                                ))}
                             </div>
                         </Paper>
                     </div>
