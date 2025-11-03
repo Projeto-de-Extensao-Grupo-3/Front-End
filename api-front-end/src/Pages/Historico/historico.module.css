@@ -100,12 +100,6 @@
     justify-content: center;
 }
 
-@media (min-width: 600px) {
-    .teste {
-        display: none;
-    }
-}
-
 .popupRegistro {
     display: none;
     position: absolute;
@@ -133,6 +127,8 @@
     padding: 20px;
 }
 
+
+
 .tituloPopup {
     display: flex;
     justify-content: flex-start;
@@ -155,4 +151,14 @@
 .boxImagem {
     width: 50px;
     height: 50px;
+}
+
+@media (max-width: 600px) {
+    .popupWindow {
+    width: 80%;
+    height: 60%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
 }

@@ -79,7 +79,7 @@ export function Categorias() {
                 axios.post("/api/categorias", {
                     "nome": nome,
                     "categoriaPai": {
-                        "idCategoria": 2
+                    "idCategoria": 2
                     }
                 }).catch(error => {
                     console.log("Erro ao cadastrar Categoria: ", error)
@@ -89,7 +89,7 @@ export function Categorias() {
                 axios.post("/api/categorias", {
                     "nome": nome,
                     "categoriaPai": {
-                        "idCategoria": 1
+                    "idCategoria": 1
                     }
                 }).catch(error => {
                     console.log("Erro ao cadastrar Categoria: ", error)

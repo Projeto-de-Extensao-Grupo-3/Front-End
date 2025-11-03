@@ -43,20 +43,15 @@ import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField'
 import { useReducer } from "react";
 
-import api from "../../provider/api"
 import axios from 'axios';
 
 const theme = createTheme(
     ptBR
-)
-
-    // =========== //
-    //  Lógica MUI //
-    // =========== //
+);
 
 function PaginarTabela(props) {
 
-    const theme = useTheme()
+    const theme = useTheme();
 
     const { count, page, rowsPerPage, onPageChange } = props;
 
@@ -107,8 +102,8 @@ function PaginarTabela(props) {
                 {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
             </IconButton>
         </Box>
-    )
-}
+    );
+};
 
 PaginarTabela.propTypes = {
     count: PropTypes.number.isRequired,
@@ -117,47 +112,34 @@ PaginarTabela.propTypes = {
     rowsPerPage: PropTypes.number.isRequired,
 };
 
-    // ============== //
-    //   Export Fun   //
-    // ============== // 
-
 export function Historico() {
 
     useEffect(() => {
         document.title = "Histórico"
-    })
+    });
 
     const [tipoMovimentacao, setTipoMovimentacao] = useState(0);
 
     const handleTipoMovimentacao = (event) => {
         setTipoMovimentacao(event.target.value)
-    }
+    };
 
-    // ========= //
-    // Paginação //
-    // ========= //
-
-    const [pagina, setPagina] = useState(0)
-    const [entradasPorPagina, setEntradasPorPagina] = useState(9)
+    const [pagina, setPagina] = useState(0);
+    const [entradasPorPagina, setEntradasPorPagina] = useState(9);
 
     const handleChangePage = (event, newPage) => {
         setPagina(newPage)
-        // Por algum motivo, utilizando os hooks o valor anterior é obtido (??)
-    }
+    };
 
     const handleChangeRowsPerPage = (event) => {
         setEntradasPorPagina(parseInt(event.target.value, 10))
         setPagina(0)
-    }
-    
-    // ==================== //
-    //  Bucar Dados Tabela  //
-    // ==================== //
+    };
 
     const [tuplas, setTuplas] = useState([]);
     const [tamanho, setTamanho] = useState(0);
 
-    const atualizarDadosTabela = useEffect(() => {
+    const obterDadosTabela = useEffect(() => {
 
         if (tipoMovimentacao == 0) {
             axios.get(`/api/lotes-item-estoque/paginado?page=${pagina}&limit=${entradasPorPagina}`)
@@ -180,22 +162,40 @@ export function Historico() {
                 setTamanho(response.data.totalRegistros);
             })
         }
-    }, [entradasPorPagina, pagina, tipoMovimentacao])
+    }, [entradasPorPagina, pagina, tipoMovimentacao]);
     
-    // TDB
-    // ====================== //
-    // Registrar Movimentação //
-    // ====================== //
-
-    const [displayPopup, setDiplayPopup] = useState("none");
-
+    
     const handleDisplayPopupChange = (d) => {
-        setDiplayPopup(d)
+        setDiplayPopup(d);
+    };
+    
+    const [displayPopup, setDiplayPopup] = useState("none");
+    const [dadosItensSimples, setdadosItensSimples] = useState([]);
+    const [itensParaRegistrar, setItensParaRegostrar] = useState([]);
+
+    const obterDadosParaRegistrarEntrada = useEffect(() => {
+        if (displayPopup == 'none') {
+            setdadosItensSimples([]);
+            return;
+        }
+        axios.get(`/api/itens-estoque/itensResumidos`)
+            .then(response => {
+                setdadosItensSimples(response.data);
+            });
+    }, [displayPopup]);
+
+    const handleItemEntrada = (event) => {
+        var aux = itensParaRegistrar;
+        aux.push({
+            "quantidade": 1,
+            "preco": 1.00,
+            "itemEstoque": event.target.value
+        })
     }
 
     const registrarMovimentacao = () => {
         return null;
-    }
+    };
 
 
     return (
@@ -236,21 +236,11 @@ export function Historico() {
                                 <TableBody>
                                     {tuplas.map((tupla) => (
                                         <TableRow key={tupla.nomeItem + tupla.idLote}>
-                                            <TableCell>
-                                                <img src={tupla.url} className={styles.boxImagem}/>
-                                            </TableCell>
-                                            <TableCell>
-                                                {tupla.nomeItem}
-                                            </TableCell>
-                                            <TableCell>
-                                                {tupla.idLote}
-                                            </TableCell> 
-                                            <TableCell>
-                                                {tupla.qtdItem}
-                                            </TableCell>
-                                            <TableCell>
-                                                {tupla.nomeParceiro}
-                                            </TableCell>
+                                            <TableCell><img src={tupla.url} className={styles.boxImagem}/></TableCell>
+                                            <TableCell>{tupla.nomeItem}</TableCell>
+                                            <TableCell>{tupla.idLote}</TableCell> 
+                                            <TableCell>{tupla.qtdItem}</TableCell>
+                                            <TableCell>{tupla.nomeParceiro}</TableCell>
                                             <TableCell>
                                                 {tipoMovimentacao == 0 ? dayjs(tupla.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(tupla.saidaEstoque).format('HH:mm:ss DD/MM/YY')}
                                             </TableCell>
@@ -291,18 +281,18 @@ export function Historico() {
                             <h2 className={styles.tituloPopup}>Registrar Movimentação</h2>
                             <div>
                                 <div className={styles.barraPopup}>
-                                    <TextField label="Buscar Item" style={{ width: "60%" }}></TextField>
+                                    <Select value={0} onChange={(event) => handleItemEntrada(event)}>
+                                        <MenuItem value={0} disabled>Selecione um Item</MenuItem>
+                                        {dadosItensSimples.map((dadoItem) => (
+                                        <MenuItem value={dadoItem.id}>{dadoItem.descricao}</MenuItem>
+                                    ))}
+                                    </Select>
+                                    <Button onClick={() => handleDisplayPopupChange("none")} variant="contained">Adicionar Item</Button>
                                     <Button onClick={() => handleDisplayPopupChange("none")} variant="outlined">Cancelar</Button>
-                                    <Button onClick={() => handleDisplayPopupChange("none")} variant="contained">Registrar</Button>
-                                    <FormControl>
-                                        <FormLabel id="id-entrada-saida">Sentido Movimentação</FormLabel>
-                                        <RadioGroup defaultValue="entrada" aria-labelledby="id-entrada-saida">
-                                            <FormControlLabel value="entrada" control={<Radio />} label="Entrada" />
-                                            <FormControlLabel value="saida" control={<Radio />} label="Saída" />
-                                        </RadioGroup>
-
-                                    </FormControl>
                                 </div>
+                                <FormControl>
+                                    <FormLabel id="id-entrada-saida">Itens para registro:</FormLabel>
+                                </FormControl>
                             </div>
                         </Paper>
                     </div>
