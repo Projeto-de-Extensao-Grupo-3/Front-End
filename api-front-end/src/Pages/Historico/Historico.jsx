@@ -116,7 +116,7 @@ function PaginarTabela(props) {
     )
 }
 
-TablePaginationActions.propTypes = {
+PaginarTabela.propTypes = {
     count: PropTypes.number.isRequired,
     onPageChange: PropTypes.func.isRequired,
     page: PropTypes.number.isRequired,
@@ -278,7 +278,7 @@ export function Historico() {
                                             </TableCell>
                                             <TableCell>
                                                 {tupla.idLote}
-                                            </TableCell>
+                                            </TableCell> 
                                             <TableCell>
                                                 {tupla.qtdItem}
                                             </TableCell>
@@ -309,7 +309,7 @@ export function Historico() {
                                             }}
                                             onPageChange={handleChangePage}
                                             onRowsPerPageChange={handleChangeRowsPerPage}
-                                            ActionsComponent={TablePaginationActions}
+                                            ActionsComponent={PaginarTabela}
                                         />
                                     </TableRow>
                                 </TableFooter>
