@@ -12,6 +12,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import axios from 'axios';
 
 export function Funcionarios() {
@@ -33,6 +34,12 @@ export function Funcionarios() {
 
     // Variável para mostrar/ocultar senha no cadastro
     const [showPassword, setShowPassword] = useState(false);
+
+    // Variáveis para alertas
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("");
 
     /*=====================================================================*/
 
@@ -91,10 +98,27 @@ export function Funcionarios() {
         )
             .then(response => {
                 console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Cadastro realizado com sucesso!");
+                setAlertMessage(`Os dados do funcionário foram cadastrados com sucesso.`);
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
                 setOperations(operations + 1);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
+                if (error.response.status === 409) {
+                    setAlertType("warning");
+                    setAlertTitle("Cadastro já existente!");
+                    setAlertMessage(`Já existe um funcionário cadastrado com o e-mail e/ou CPF informados.`);
+                } else {
+                    setAlertType("error");
+                    setAlertTitle("Erro ao realizar cadastro!");
+                    setAlertMessage(`Ocorreu um erro ao cadastrar as informações do funcionário. Entre em contato com o suporte.`);
+                }
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
+                setOperations(operations + 1);
             });
     }
 
@@ -111,10 +135,21 @@ export function Funcionarios() {
         )
             .then(response => {
                 console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Dados atualizados com sucesso!");
+                setAlertMessage(`As informações do funcionário foram atualizadas com sucesso.`);
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
                 setOperations(operations + 1);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
+                setAlertType("error");
+                setAlertTitle("Erro ao atualizar dados!");
+                setAlertMessage(`Ocorreu um erro ao atualizar as informações do funcionário. Entre em contato com o suporte.`);
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
+                setOperations(operations + 1);
             });
     }
 
@@ -151,6 +186,17 @@ export function Funcionarios() {
     const handleClickShowPassword = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
     };
+
+    // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
+    useEffect(() => {
+        if (alertOpen) {
+            console.log("ALERT OPENED");
+            const timer = setTimeout(() => {
+                setAlertOpen(false);
+            }, 10000);
+            return () => clearTimeout(timer);
+        }
+    }, [alertOpen]);
 
     /*======================================================================*/
 
@@ -214,6 +260,7 @@ export function Funcionarios() {
                             } />
                     </div>
                 </div>
+                <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
                 {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
                         {data.map(item => (
