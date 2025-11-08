@@ -8,24 +8,46 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import styles from "./parceiros.module.css"
 import axios from 'axios';
+import AlertDialog from '../../components/AlertDialog/AlertDialog';
 
 export function Parceiros() {
+
+    /*============================= Variáveis ============================*/
+
+    // Tipo de parceiro mostrado na página (costureira ou fornecedor)
     const [parceiro, setParceiro] = useState("costureira");
     const [pesquisa, setPesquisa] = useState("Buscar costureira");
     const [categoria, setCategoria] = useState("Nova Costureira");
     const [atualizarDados, setAtualizarDados] = useState("da costureira");
-    const [data, setData] = useState([]);
-    const [operations, setOperations] = useState(0);
+
+    // Mensagem de carregamento enquanto dados não são carregados
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
-    const [dadosAtualizacao, setDadosAtualizacao] = useState([]);
-    const [dadosCadastro, setDadosCadastro] = useState({});
+    // Variáveis para dados
+    const [data, setData] = useState([]); // Dados da costureira/fornecedor obtidos na listagem
+    const [dadosAtualizacao, setDadosAtualizacao] = useState([]); // Guarda os dados que serão atualizados no PUT
+    const [dadosCadastro, setDadosCadastro] = useState({}); // Guarda os dados que serão cadastrados no POST
 
+    // Controla refresh da página a cada operação
+    const [operations, setOperations] = useState(0); 
+
+    // Variáveis para alertas
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("");
+
+    /*=====================================================================*/
+
+
+    /*=============================== Funções ==============================*/
+
+    // Funções para requisições na API
     const listarParceiros = () => {
         axios.get(`/api/parceiros/listagem/${parceiro}`)
             .then(response => {
                 setData(response.data);
-                console.log(data)
+                console.log(response.data)
                 if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data);
             })
             .catch(error => {
@@ -64,10 +86,21 @@ export function Parceiros() {
         )
             .then(response => {
                 console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Dados atualizados com sucesso!");
+                setAlertMessage(`As informações ${atualizarDados} foram atualizadas com sucesso.`);
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
                 setOperations(operations + 1);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
+                setAlertType("error");
+                setAlertTitle("Erro ao atualizar dados!");
+                setAlertMessage(`Ocorreu um erro ao atualizar as informações ${atualizarDados}. Entre em contato com o suporte.`);
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
+                setOperations(operations + 1);
             });
     }
 
@@ -85,25 +118,46 @@ export function Parceiros() {
         )
             .then(response => {
                 console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Cadastro realizado com sucesso!");
+                setAlertMessage(`Os dados ${atualizarDados} foram cadastrados com sucesso.`);
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
                 setOperations(operations + 1);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
+                if (error.response.status === 409) {
+                    setAlertType("warning");
+                    setAlertTitle("Cadastro já existente!");
+                    setAlertMessage(`Já existe um mesmo cadastro com o e-mail e/ou CNPJ/CPF informados.`);
+                } else {
+                    setAlertType("error");
+                    setAlertTitle("Erro ao realizar cadastro!");
+                    setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${atualizarDados}. Entre em contato com o suporte.`);
+                }
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
+                setOperations(operations + 1);
             });
     }
 
+    // Lista parceiros ao carregar a página e após operações
     useEffect(() => {
         listarParceiros();
         setLoadMsg("Carregando dados...");
     }, [parceiro, operations]);
 
+    // Atualiza informações da tela conforme o tipo de parceiro selecionado
     const atualizarInfoTela = (tela) => {
         if (tela == "costureira") {
+            setDadosAtualizacao([]);
             setParceiro("costureira");
             setPesquisa("Buscar costureira");
             setCategoria("Nova Costureira");
             setAtualizarDados("da costureira");
         } else if (tela == "fornecedor") {
+            setDadosAtualizacao([]);
             setParceiro("fornecedor");
             setPesquisa("Buscar fornecedor");
             setCategoria("Novo Fornecedor");
@@ -111,10 +165,7 @@ export function Parceiros() {
         }
     }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-    }
-
+    // Seta os atributos do parceiro para cadastro
     const setAtribute = (valor, key) => {
         let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro;
         copiaDados[key] = valor;
@@ -123,14 +174,28 @@ export function Parceiros() {
         console.log(dadosCadastro);
     }
 
+    // Seta os dados do parceiro para atualização
     const updateDados = (item, novoValor, key) => {
         console.log(dadosAtualizacao)
-        let index = dadosAtualizacao.findIndex(dado => dado.id === item.id)
+        let index = dadosAtualizacao.findIndex(dado => dado.id === item.id) // Busca o parceiro por ID na lista de parceiros em "dadosAtualizacao"
         let copiaDados = dadosAtualizacao;
-        copiaDados[index][key] = novoValor;
+        copiaDados[index][key] = novoValor; // Atualiza o atributo com base no index do parceiro e na chave do atributo
         setDadosAtualizacao(copiaDados);
         setOperations(operations + 1);
     };
+
+    // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
+    useEffect(() => {
+        if (alertOpen) {
+            console.log("ALERT OPENED");
+            const timer = setTimeout(() => {
+                setAlertOpen(false);
+            }, 10000);
+            return () => clearTimeout(timer);
+        }
+    }, [alertOpen]);
+
+    /*======================================================================*/
 
     return (
         <div>
@@ -174,6 +239,7 @@ export function Parceiros() {
                             } />
                     </div>
                 </div>
+                <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
                 {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
                         {data.map(item => (

@@ -15,17 +15,31 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import axios from 'axios';
 
 export function Funcionarios() {
-    const [data, setData] = useState([]);
-    const [permissoes, setPermissoes] = useState([]);
-    const [permissoesAtualizacao, setPermissoesAtualizacao] = useState([""]);
-    const [operations, setOperations] = useState(0);
+
+    /*============================= Variáveis ============================*/
+
+    // Mensagem de carregamento enquanto dados não são carregados
     const [loadMsg, setLoadMsg] = useState("Carregando dados...");
 
-    const [dadosAtualizacao, setDadosAtualizacao] = useState([]);
-    const [dadosCadastro, setDadosCadastro] = useState({});
+    // Variáveis para dados
+    const [data, setData] = useState([]); // Dados dos funcionários obtidos na listagem
+    const [permissoes, setPermissoes] = useState([]); // Lista de permissões disponíveis
+    const [permissoesAtualizacao, setPermissoesAtualizacao] = useState([""]); // Permissões selecionadas para atualização
+    const [dadosAtualizacao, setDadosAtualizacao] = useState([]); // Guarda os dados que serão atualizados no PUT
+    const [dadosCadastro, setDadosCadastro] = useState({}); // Guarda os dados que serão cadastrados no POST
 
+    // Controla refresh da página a cada operação
+    const [operations, setOperations] = useState(0); 
+
+    // Variável para mostrar/ocultar senha no cadastro
     const [showPassword, setShowPassword] = useState(false);
 
+    /*=====================================================================*/
+
+
+    /*=============================== Funções ==============================*/
+
+    // Funções para requisições na API
     const listarFuncionarios = () => {
         axios.get(`/api/funcionarios`)
             .then(response => {
@@ -92,7 +106,7 @@ export function Funcionarios() {
                 "telefone": dados.telefone,
                 "email": dados.email,
                 "senha": "",
-                "permissoes": permissoesAtualizacao[0] === "" ? dados.permissoes : permissoesAtualizacao
+                "permissoes": permissoesAtualizacao[0] === "" ? dados.permissoes : permissoesAtualizacao // Se não foram selecionadas novas permissões, mantém as antigas
             }
         )
             .then(response => {
@@ -104,12 +118,14 @@ export function Funcionarios() {
             });
     }
 
+    // Lista funcionários e permissões ao carregar a página e após operações
     useEffect(() => {
         listarFuncionarios();
         listarPermissoes();
         setLoadMsg("Carregando dados...");
     }, [operations]);
 
+    // Seta os atributos do funcionário para cadastro
     const setAtribute = (valor, key) => {
         let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro;
         copiaDados[key] = valor;
@@ -118,21 +134,25 @@ export function Funcionarios() {
         console.log(dadosCadastro);
     }
 
+    // Seta os dados do funcionário para atualização
     const updateDados = (item, novoValor, key) => {
         console.log(dadosAtualizacao)
         console.log(item)
-        let index = dadosAtualizacao.findIndex(dado => dado.idFuncionario === item.idFuncionario)
+        let index = dadosAtualizacao.findIndex(dado => dado.idFuncionario === item.idFuncionario) // Busca o funcionário por ID na lista de parceiros em "dadosAtualizacao"
         console.log(index)
         let copiaDados = dadosAtualizacao;
-        copiaDados[index][key] = novoValor;
+        copiaDados[index][key] = novoValor; // Atualiza o atributo com base no index do parceiro e na chave do atributo
         setDadosAtualizacao(copiaDados);
         setOperations(operations + 1);
         console.log(permissoesAtualizacao);
     };
 
+    // Mostra/oculta senha no cadastro
     const handleClickShowPassword = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
     };
+
+    /*======================================================================*/
 
     return (
         <div>

@@ -126,7 +126,7 @@ export function Categorias() {
     const [dadosRoupa, setDadosRoupa] = useState([])
 
     // O Array vazio faz o useEffect ativas apenas ao renderizar pela primeira vez 
-    const initialState = useEffect(() => getDados, [])
+    const initialState = useEffect(() => {getDados();}, [])
 
     const getDados = () => {
         axios.get("/api/categorias/tipo/tecido").then(
