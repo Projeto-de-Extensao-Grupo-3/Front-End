@@ -243,7 +243,7 @@ export function Estoque() {
                 "complemento": "${dadosCadastro.complemento}",
                 "peso": ${dadosCadastro.peso},
                 "qtdMinimo": ${dadosCadastro.qtdMinimo},
-                "qtdArmazenado": ${dadosCadastro.qtdArmazenado},
+                "qtdArmazenado": 0.0,
                 "notificar": ${dadosCadastro.notificar},
                 "categoria": {
                     "idCategoria": ${categoriaCadastrar[0].id}
@@ -264,7 +264,7 @@ export function Estoque() {
                 "complemento": dadosCadastro.complemento,
                 "peso": dadosCadastro.peso,
                 "qtdMinimo": dadosCadastro.qtdMinimo,
-                "qtdArmazenado": dadosCadastro.qtdArmazenado,
+                "qtdArmazenado": 0.0,
                 "notificar": dadosCadastro.notificar,
                 "categoria": {
                     "idCategoria": categoriaCadastrar[0].id
@@ -273,7 +273,7 @@ export function Estoque() {
                 "plateleira": {
                     "idPrateleira": dadosCadastro.prateleira
                 },
-                "preco": 0.00,
+                "preco": dadosCadastro.preco,
                 "imagem": {
                     "idImagem": imagemCadastro.id,
                     "url": imagemCadastro.url
@@ -398,9 +398,6 @@ export function Estoque() {
                                         <h2>Qtd. mínimo</h2>
                                         <TextField key="qtdMinimo" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdMinimo")}
                                             sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Qtd. Armazenado</h2>
-                                        <TextField key="qtdArmazenado" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdArmazenado")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                         {itemEstoque === "Roupa" ? (
                                             <>
                                                 <h2>Receber notificações</h2>
@@ -491,9 +488,6 @@ export function Estoque() {
                                                 sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                             <h2>Qtd. mínimo</h2>
                                             <TextField key="qtdMinimo" required={true} defaultValue={item.qtdMinimo} onChange={(e) => updateDados(item, Number(e.target.value), "qtdMinimo")}
-                                                sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                            <h2>Qtd. Armazenado</h2>
-                                            <TextField key="qtdArmazenado" required={true} defaultValue={item.qtdArmazenado} onChange={(e) => updateDados(item, Number(e.target.value), "qtdArmazenado")}
                                                 sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
                                             {itemEstoque === "Roupa" ? (
                                                 <>

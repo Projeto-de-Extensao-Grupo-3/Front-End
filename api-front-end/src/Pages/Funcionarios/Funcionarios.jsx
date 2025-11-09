@@ -59,7 +59,7 @@ export function Funcionarios() {
             });
     }
 
-    const listarPermissoes = () => {
+    const listarPermissoes = () => { // É necessário listar permissões para popular o select no cadastro/atualização
         axios.get(`/api/permissoes`)
             .then(response => {
                 setPermissoes(response.data);
@@ -153,6 +153,37 @@ export function Funcionarios() {
             });
     }
 
+    const deletarFuncionario = (id, nome) => {
+        axios.delete(`/api/funcionarios/${id}`)
+            .then(response => {
+                console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Remoção bem sucedida!");
+                setAlertMessage(`Os dados de ${nome} foram apagados com sucesso.`);
+                setAlertOpen(true);
+                setOperations(operations + 1);
+            })
+            .catch(error => {
+                console.error('Erro ao deletar funcionário:', error);
+                if (error.response.status === 409) {
+                    setAlertType("warning");
+                    setAlertTitle("Remoção não permitida!");
+                    setAlertMessage(`Não é possível apagar os dados de ${nome}, pois está referenciado(a) em outras partes do sistema.`);
+                } else {
+                    setAlertType("error");
+                    setAlertTitle("Erro ao apagar dados!");
+                    setAlertMessage(`Ocorreu um erro ao remover as informações de ${nome}. Entre em contato com o suporte.`);
+                }
+                setAlertOpen(true);
+                setOperations(operations + 1);
+            });
+    }
+
+    /*=====================================================================*/
+
+
+    /*============================ Funções gerais =========================*/
+
     // Lista funcionários e permissões ao carregar a página e após operações
     useEffect(() => {
         listarFuncionarios();
@@ -162,7 +193,7 @@ export function Funcionarios() {
 
     // Seta os atributos do funcionário para cadastro
     const setAtribute = (valor, key) => {
-        let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro;
+        let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro; // Cria uma cópia dos dados de cadastro ou um objeto vazio se ainda não houver dados
         copiaDados[key] = valor;
         setDadosCadastro(copiaDados);
         setOperations(operations + 1);
@@ -276,6 +307,8 @@ export function Funcionarios() {
                                     </>}
                                 acao={`Atualizar dados do funcionário`} confirm={"Confirmar alterações"}
                                 func={atualizarFuncionario}
+                                dadoTitle={item.nome}
+                                deleteFunc={() => deletarFuncionario(item.idFuncionario, item.nome)}
                                 dados={dadosAtualizacao[dadosAtualizacao.findIndex(dado => dado.idFuncionario === item.idFuncionario)]}
                                 form={<>
                                     <div>

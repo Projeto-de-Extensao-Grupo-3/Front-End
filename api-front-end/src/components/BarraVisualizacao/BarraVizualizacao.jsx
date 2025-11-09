@@ -40,6 +40,8 @@ export function BarraVisualizacao(props) {
                         children={
                             <ClearIcon fontSize="large" color="action" sx={{ color: "rgba(169, 78, 78, 1)", cursor: "pointer" }}/>
                         }
+                        deleteFunc={props.deleteFunc}
+                        dadoTitle={props.dadoTitle}
                     />
             </ul>
         </div>

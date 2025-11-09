@@ -29,7 +29,7 @@ export function Parceiros() {
     const [dadosCadastro, setDadosCadastro] = useState({}); // Guarda os dados que serão cadastrados no POST
 
     // Controla refresh da página a cada operação
-    const [operations, setOperations] = useState(0); 
+    const [operations, setOperations] = useState(0);
 
     // Variáveis para alertas
     const [alertOpen, setAlertOpen] = useState(false);
@@ -142,6 +142,37 @@ export function Parceiros() {
             });
     }
 
+    const deletarParceiro = (id, nome) => {
+        axios.delete(`/api/parceiros/${id}`)
+            .then(response => {
+                console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Remoção bem sucedida!");
+                setAlertMessage(`Os dados de ${nome} foram apagados com sucesso.`);
+                setAlertOpen(true);
+                setOperations(operations + 1);
+            })
+            .catch(error => {
+                console.error('Erro ao deletar parceiro:', error);
+                if (error.response.status === 409) {
+                    setAlertType("warning");
+                    setAlertTitle("Remoção não permitida!");
+                    setAlertMessage(`Não é possível apagar os dados de ${nome}, pois está referenciado(a) em outras partes do sistema.`);
+                } else {
+                    setAlertType("error");
+                    setAlertTitle("Erro ao apagar dados!");
+                    setAlertMessage(`Ocorreu um erro ao remover as informações de ${nome}. Entre em contato com o suporte.`);
+                }
+                setAlertOpen(true);
+                setOperations(operations + 1);
+            });
+    }
+
+    /*=====================================================================*/
+
+
+    /*============================ Funções gerais =========================*/
+
     // Lista parceiros ao carregar a página e após operações
     useEffect(() => {
         listarParceiros();
@@ -167,7 +198,7 @@ export function Parceiros() {
 
     // Seta os atributos do parceiro para cadastro
     const setAtribute = (valor, key) => {
-        let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro;
+        let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro; // Cria uma cópia dos dados de cadastro ou um objeto vazio se ainda não houver dados
         copiaDados[key] = valor;
         setDadosCadastro(copiaDados);
         setOperations(operations + 1);
@@ -255,6 +286,8 @@ export function Parceiros() {
                                     </>}
                                 acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                                 func={atualizarParceiro}
+                                dadoTitle={item.nome}
+                                deleteFunc={() => deletarParceiro(item.id, item.nome)}
                                 dados={dadosAtualizacao[dadosAtualizacao.findIndex(dado => dado.id === item.id)]}
                                 form={<>
                                     <div>

@@ -19,6 +19,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 export function JanelaDeletar(props) {
     const [open, setOpen] = React.useState(false);
+    const [confirmButtonDisabled, setConfirmButtonDisabled] = React.useState(true);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -26,6 +27,15 @@ export function JanelaDeletar(props) {
     const handleClose = () => {
         setOpen(false);
     };
+
+    const handleInputChange = (event) => {
+        const inputValue = event.target.value;
+        if (inputValue === "excluir permanentemente") {
+            setConfirmButtonDisabled(false);
+        } else {
+            setConfirmButtonDisabled(true);
+        }
+    }
 
     return (
         <React.Fragment>
@@ -37,8 +47,8 @@ export function JanelaDeletar(props) {
                 aria-labelledby="customized-dialog-title"
                 open={open}
             >
-                <DialogTitle sx={{ m: 0, p: 2, fontSize: '1.5rem', textAlign: 'center' }} id="customized-dialog-title">
-                    Deseja apagar permanentemente os dados?
+                <DialogTitle sx={{ m: 3, p: 2, fontSize: '1.5rem', textAlign: 'center' }} id="customized-dialog-title">
+                    Deseja apagar permanentemente os dados de {props.dadoTitle}?
                 </DialogTitle>
                 <IconButton
                     aria-label="close"
@@ -53,21 +63,22 @@ export function JanelaDeletar(props) {
                     <CloseIcon />
                 </IconButton>
                 <DialogContent dividers>
-                    <div id="form-cadastro" style={{ height: `25vh`, width: '40vw', display: 'flex', flexDirection: 'column', padding: '1rem' }}>
+                    <div id="form-cadastro" style={{ height: `25vh`, width: '90%', display: 'flex', flexDirection: 'column', padding: '1rem' }}>
                         <p>Para apagar, digite <b>excluir permanentemente</b> no campo abaixo:</p>
                         <br />
-                        <TextField required={true} variant="outlined" placeholder={"excluir permanentemente"}></TextField>
+                        <TextField required={true} variant="outlined" placeholder={"excluir permanentemente"}
+                            onChange={handleInputChange} />
                         <div style={{ width: '100%', display: 'flex', justifyContent: 'space-evenly', marginTop: '2rem' }}>
-                            <Button onClick={handleClose} sx={{color: 'white', fontSize: '1.2rem', border: '2px solid black', backgroundColor: 'red'}}>
+                            <Button onClick={handleClose} sx={{ color: 'white', fontSize: '1.2rem', border: '2px solid black', backgroundColor: 'rgba(180, 62, 62, 1)' }}>
                                 Cancelar
                             </Button>
-                            <Button onClick={handleClose} sx={{color: 'white', fontSize: '1.2rem', border: '2px solid black', backgroundColor: 'blue'}}>
-                                Confirmar
-                            </Button>
-                        </div>
+                            <Button disabled={confirmButtonDisabled} onClick={() => { props.deleteFunc(); handleClose() }} sx={{"&.Mui-disabled": {background: "#537d9dff", color: "#aba7a7ff", border: '1px solid black' }, color: 'white', fontSize: '1.2rem', border: '2px solid black', backgroundColor: 'rgba(68, 132, 199, 1)' }}>
+                            Confirmar
+                        </Button>
                     </div>
-                </DialogContent>
-            </BootstrapDialog>
-        </React.Fragment>
+                </div>
+            </DialogContent>
+        </BootstrapDialog>
+        </React.Fragment >
     );
 }
