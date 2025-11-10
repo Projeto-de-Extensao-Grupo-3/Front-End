@@ -35,12 +35,10 @@ import LastPageIcon from '@mui/icons-material/LastPage';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import FormLabel from '@mui/material/FormLabel';
 
 import TextField from '@mui/material/TextField'
+
 import { useReducer } from "react";
 
 import axios from 'axios';
@@ -123,17 +121,56 @@ function reducer(state, action) {
         }
         case 'saida_add': {
             var index = state.itensDisponiveis.indexOf(action.value);
-            console.log(index);
             if (index > -1) {
-                action.value.quantidade = 1;
+                action.value.quantidadeNova = 1;
+                action.value.precoNovo = Number(action.value.precoItem).toFixed(2);
                 return {
                     ...state,
                     itensDisponiveis: state.itensDisponiveis.splice(index, 1),
                     itensParaRegistrar: state.itensParaRegistrar.push(action.value)
                 }
             } else {
-                console.log("Item já registrado");
-                return {...state};
+                return { ...state };
+            }
+        }
+        case 'saida_del': {
+            var index = state.itensParaRegistrar.indexOf(action.value);
+            if (index > -1) {
+                delete action.value.quantidadeNova;
+                return {
+                    ...state,
+                    itensDisponiveis: state.itensDisponiveis.push(action.value),
+                    itensParaRegistrar: state.itensParaRegistrar.splice(index, 1)
+                }
+            } else {
+                return { ...state };
+            }
+        }
+        case 'saida_update': {
+            var index = state.itensParaRegistrar.indexOf(action.value)
+            if (index < 0 || isNaN(Number(action.newValue))) {
+                return { ...state };
+            }
+            var oldValue = action.value.precoNovo;
+            action.newValue = Number(action.newValue);
+            console.log(action.newValue)
+            if (index < 0 || isNaN(action.newValue) || action.newValue < 0) {
+                console.log("ui")
+                return { ...state };
+            }
+            if (action.atribute != 'quantidade') {
+                action.value.precoNovo = action.newValue;
+            } else if (action.newValue > Number(action.value.qtdItem)) {
+                return { ...state };
+            } else {
+                action.value.quantidadeNova = action.newValue;
+            }
+
+            var auxItensParaRegistrar = state.itensParaRegistrar;
+            auxItensParaRegistrar[index] = action.value;
+            return {
+                ...state,
+                itensParaRegistrar: auxItensParaRegistrar
             }
         }
         default: throw new Error("Erro no reducer!");
@@ -145,18 +182,21 @@ export function Historico() {
     const initialState = {
 
         tipoMovimentacao: 0,
-        
+
         pagina: 0,
         entradasPorPagina: 9,
         tamanho: 0,
         tuplas: [],
-        
+
         itensParaRegistrar: [],
         itensDisponiveis: [],
-        
+
+        parceiros: [],
+        idParceiroEscolhido: -1,
+
         displayPopup: "none",
         tipoItem: 0,
-        
+
         displayPopupSaida: "none",
         auxSelectItensSaida: 0,
 
@@ -169,12 +209,12 @@ export function Historico() {
     });
 
     const handleChangePage = (event, newPage) => {
-        dispatch({type: 'simples', field: 'pagina', value: newPage});
+        dispatch({ type: 'simples', field: 'pagina', value: newPage });
     };
 
     const handleChangeRowsPerPage = (event) => {
-        dispatch({type: 'simples', field: 'entradasPorPagina', value: event.target.value});
-        dispatch({type: 'simples', field: 'pagina', value: 0});
+        dispatch({ type: 'simples', field: 'entradasPorPagina', value: event.target.value });
+        dispatch({ type: 'simples', field: 'pagina', value: 0 });
     };
 
     const obterDadosTabela = useEffect(() => {
@@ -183,32 +223,30 @@ export function Historico() {
             axios.get(`/api/lotes-item-estoque/paginado?page=${values.pagina}&limit=${values.entradasPorPagina}`)
                 .then(response => {
                     let newTuplas = [];
-                    response.data.conteudo.forEach(dados => {newTuplas.push(dados)});
-                    dispatch({type: 'simples', field: 'tuplas', value: newTuplas});
+                    response.data.conteudo.forEach(dados => { newTuplas.push(dados) });
+                    dispatch({ type: 'simples', field: 'tuplas', value: newTuplas });
                     newTuplas = null;
-                    dispatch({type: 'simples', field: 'tamanho', value: response.data.totalRegistros});
+                    dispatch({ type: 'simples', field: 'tamanho', value: response.data.totalRegistros });
                 })
         } else {
             axios.get(`/api/lotes-item-estoque/paginadoSaida?page=${values.pagina}&limit=${values.entradasPorPagina}`)
                 .then(response => {
                     let newTuplas = [];
-                    response.data.conteudo.forEach(dados => {newTuplas.push(dados)});
-                    dispatch({type: 'simples', field: 'tuplas', value: newTuplas});
+                    response.data.conteudo.forEach(dados => { newTuplas.push(dados) });
+                    dispatch({ type: 'simples', field: 'tuplas', value: newTuplas });
                     newTuplas = null;
-                    dispatch({type: 'simples', field: 'tamanho', value: response.data.totalRegistros});
+                    dispatch({ type: 'simples', field: 'tamanho', value: response.data.totalRegistros });
                 })
         }
     }, [values.entradasPorPagina, values.pagina, values.tipoMovimentacao]);
 
-    const [itensParaRegistrar, setItensParaRegostrar] = useState([]);
-
     const obterDadosRegistrarEntrada = useEffect(() => {
         if (values.displayPopup == 'none') {
-            dispatch({type: 'simples', field: 'itensDisponiveis', value: []})
+            dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] })
             return;
         }
         axios.get(`/api/itens-estoque/itensResumidos`)
-            .then(response => {dispatch({type: 'simples', field: 'itensDisponiveis', value: response.data})});
+            .then(response => { dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data }) });
     }, [values.displayPopup]);
 
     const handleItem = (event) => {
@@ -235,23 +273,21 @@ export function Historico() {
                 },
                 "costureira": null
             })
-            aux.length > 0 ? dispatch({type: 'simples', field: 'auxSelectItensSaida', value: -1}) : dispatch({type: 'simples', field: 'auxSelectItensSaida', value: 0})
+            aux.length > 0 ? dispatch({ type: 'simples', field: 'auxSelectItensSaida', value: -1 }) : dispatch({ type: 'simples', field: 'auxSelectItensSaida', value: 0 })
         }
-    }
-
-    const handleAddItemSaida = (event) => {
-        dispatch({type: 'saida_add',  value: event.target.value});
-        console.log(values)
     }
 
     const obterDadosRegistrarSaida = useEffect(() => {
         if (values.displayPopupSaida == 'none') {
-            dispatch({type: 'simples', field: 'itensDisponiveis', value: []});
-            dispatch({type: 'simples', field: 'itensParaRegistrar', value: []});
+            dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] });
+            dispatch({ type: 'simples', field: 'itensParaRegistrar', value: [] });
             return;
         }
         axios.get(`/api/lotes/lotesEmEstoque`)
-            .then(response => {dispatch({type: 'simples', field: 'itensDisponiveis', value: response.data})});
+            .then(response => { dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data }) });
+
+        axios.get(`/api/parceiros/listagem/costureira`) // Quando enpoint existir, colocar de todos
+            .then(response => { dispatch({ type: 'simples', field: 'parceiros', value: response.data }) });
     }, [values.displayPopupSaida]);
 
     const registrarMovimentacao = () => {
@@ -267,17 +303,17 @@ export function Historico() {
                     <div className={styles.boxSelect}>
                         <FormControl >
                             <InputLabel id="label-tipo-slct">Tipo</InputLabel>
-                            <Select value={values.tipoMovimentacao} onChange={(event) => dispatch({type: 'simples', field: 'tipoMovimentacao', value: event.target.value})} labelId="label-tipo-slct" label="Tipo">
+                            <Select value={values.tipoMovimentacao} onChange={(event) => dispatch({ type: 'simples', field: 'tipoMovimentacao', value: event.target.value })} labelId="label-tipo-slct" label="Tipo">
                                 <MenuItem value={0}>Entrada</MenuItem>
                                 <MenuItem value={1}>Saída</MenuItem>
                             </Select>
                         </FormControl>
                     </div>
                     <div className={styles.boxButton}>
-                        <Button className={styles.button} variant="contained" onClick={() => dispatch({type: 'simples', field: 'displayPopup', value: 'flex'})}>Registrar Entrada de Item</Button>
+                        <Button className={styles.button} variant="contained" onClick={() => dispatch({ type: 'simples', field: 'displayPopup', value: 'flex' })}>Registrar Entrada de Item</Button>
                     </div>
                     <div className={styles.boxButton}>
-                        <Button className={styles.button} variant="contained" onClick={() => dispatch({type: 'simples', field: 'displayPopupSaida', value: 'flex'})}>Registrar Saída de Item</Button>
+                        <Button className={styles.button} variant="contained" onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'flex' })}>Registrar Saída de Item</Button>
                     </div>
                 </div>
                 <div className={styles.body}>
@@ -323,7 +359,8 @@ export function Historico() {
                                                         'aria-label': 'Entradas por Página',
                                                     },
                                                     native: true,
-                                                }}}
+                                                }
+                                            }}
                                             onPageChange={(event, newPage) => handleChangePage(event, newPage)}
                                             onRowsPerPageChange={(event) => handleChangeRowsPerPage(event)}
                                             ActionsComponent={(props) => PaginarTabela(props)}
@@ -337,12 +374,12 @@ export function Historico() {
             </div>
             <div>
                 <div className={styles.popupRegistro} style={{ display: values.displayPopup }}>
-                    <div className={styles.blackout} onClick={() => dispatch({type: 'simples', field: 'displayPopup', value: 'none'})}>
+                    <div className={styles.blackout} onClick={() => dispatch({ type: 'simples', field: 'displayPopup', value: 'none' })}>
                         <Paper className={styles.popupWindow} onClick={(e) => e.stopPropagation()}>
                             <h2 className={styles.tituloPopup}>Registrar Movimentação</h2>
                             <div>
                                 <div className={styles.barraPopup}>
-                                    <Select value={values.tipoItem} onChange={(event) => dispatch({type: 'simples', field: 'tipoItem', value: event.target.value})}>
+                                    <Select value={values.tipoItem} onChange={(event) => dispatch({ type: 'simples', field: 'tipoItem', value: event.target.value })}>
                                         <MenuItem value={0} disabled>Tipo de Item</MenuItem>
                                         <MenuItem value={1}>Roupas</MenuItem>
                                         <MenuItem value={2}>Tecidos</MenuItem>
@@ -353,8 +390,8 @@ export function Historico() {
                                             <MenuItem value={dadoItem.id}>{dadoItem.descricao}</MenuItem>
                                         ))}
                                     </Select> */}
-                                    <Button onClick={() => dispatch({type: 'simples', field: 'displayPopup', value: 'none'})} variant="contained">Adicionar Item</Button>
-                                    <Button onClick={() => dispatch({type: 'simples', field: 'displayPopup', value: 'none'})} variant="outlined">Cancelar</Button>
+                                    <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopup', value: 'none' })} variant="contained">Adicionar Item</Button>
+                                    <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopup', value: 'none' })} variant="outlined">Cancelar</Button>
                                 </div>
                                 <FormControl>
                                     <FormLabel id="id-entrada-saida">Itens para registro:</FormLabel>
@@ -364,45 +401,81 @@ export function Historico() {
                     </div>
                 </div>
                 <div className={styles.popupRegistro} style={{ display: values.displayPopupSaida }}>
-                    <div className={styles.blackout} onClick={() => dispatch({type: 'simples', field: 'displayPopupSaida', value: 'none'})}>
+                    <div className={styles.blackout} onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })}>
                         <Paper className={styles.popupWindow} onClick={(e) => e.stopPropagation()}>
                             <h2 className={styles.tituloPopup}>Registrar Saída de Itens</h2>
                             <div>
                                 <div className={styles.barraPopup}>
-                                    <Select value={values.auxSelectItensSaida} onChange={(event) => handleAddItemSaida(event)}>
+                                    <Select value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'saida_add', value: event.target.value })}>
                                         <MenuItem value={0} disabled>Selecione um Item</MenuItem>
                                         <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
                                         {values.itensDisponiveis.map((dadoItem) => (
                                             <MenuItem value={dadoItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem>
                                         ))}
                                     </Select>
-                                    <Button onClick={() => dispatch({type: 'simples', field: 'displayPopupSaida', value: 'none'})} variant="contained">Adicionar Item</Button>
-                                    <Button onClick={() => dispatch({type: 'simples', field: 'displayPopupSaida', value: 'none'})} variant="outlined">Cancelar</Button>
-                                </div>
-                                <div id="id-entrada-saida">Itens para registro:</div>
-                                <TableContainer>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Lote</TableCell>
-                                            <TableCell>Item</TableCell>
-                                            <TableCell>Quantidade</TableCell>
-                                            <TableCell>{"Preço (total)"}</TableCell>
-                                            <TableCell>Tirar Item</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {values.itensParaRegistrar.map((item) => (
-                                            <TableRow key={item.idLoteItemEstoque}>
-                                                <TableCell>{item.idLote}</TableCell>
-                                                <TableCell>{item.nomeItem}</TableCell>
-                                                <TableCell>{item.quantidade}</TableCell>
-                                                <TableCell>{item.precoItem}</TableCell>
-                                                <TableCell>
-                                                    <Button onClick={() => handleRemoverItem(item)}>Remover Item</Button>
-                                                </TableCell>
-                                            </TableRow>
+                                    <Select value={values.idParceiroEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'idParceiroEscolhido', value: event.target.value })}>
+                                        <MenuItem value={-1}>Nenhum (venda)</MenuItem>
+                                        {values.parceiros.map((parceiro) => (
+                                            <MenuItem value={parceiro.id}>{parceiro.nome}</MenuItem>
                                         ))}
-                                    </TableBody>
+                                    </Select>
+                                    <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })} variant="contained">Confirmar Itens</Button>
+                                    <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })} variant="outlined">Cancelar</Button>
+                                </div>
+                                <br />
+                                <h2 id="id-entrada-saida">Itens para registro:</h2>
+                                <TableContainer>
+                                    <Table>
+
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Lote</TableCell>
+                                                <TableCell>Item</TableCell>
+                                                <TableCell>Quantidade</TableCell>
+                                                <TableCell>Preço (total)</TableCell>
+                                                <TableCell>Tirar Item</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {values.itensParaRegistrar.map((item) => (
+                                                <TableRow key={item.idLoteItemEstoque}>
+                                                    <TableCell>{item.idLote}</TableCell>
+                                                    <TableCell>{item.nomeItem}</TableCell>
+                                                    <TableCell>
+                                                        <TextField
+                                                            label="Quantidade"
+                                                            value={item.quantidadeNova}
+                                                            onChange={(e) =>
+                                                                dispatch({
+                                                                    type: 'saida_update',
+                                                                    value: item,
+                                                                    atribute: 'quantidade',
+                                                                    newValue: e.target.value
+                                                                })
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <TextField
+                                                            label="Preço"
+                                                            value={item.precoNovo}
+                                                            onChange={(e) =>
+                                                                dispatch({
+                                                                    type: 'saida_update',
+                                                                    value: item,
+                                                                    atribute: 'preço',
+                                                                    newValue: e.target.value
+                                                                })
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button onClick={() => dispatch({ type: 'saida_del', value: item })}>Remover Item</Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
                                 </TableContainer>
                             </div>
                         </Paper>
