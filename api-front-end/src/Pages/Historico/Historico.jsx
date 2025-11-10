@@ -1,22 +1,24 @@
-import { useEffect, useState } from "react"
+import { useReducer, useEffect, useState } from "react"
 import { Navbar } from "../../components/Navbar/Navbar"
 import styles from "./historico.module.css"
 
-// Limpar localização após conversa com duarte
-import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
-import { ptBR } from '@mui/x-date-pickers/locales';
 import 'dayjs/locale/en-gb';
+import dayjs from "dayjs";
 
-// Select baseado em: https://mui.com/material-ui/react-select/
+import PropTypes from 'prop-types';
+
+import axios from 'axios';
+
+import { NumericFormat } from 'react-number-format';
+
+// @MUI
+import { ptBR } from '@mui/x-date-pickers/locales';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import dayjs from "dayjs";
-
 import Button from '@mui/material/Button';
-
-// Tabela
+import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -26,22 +28,14 @@ import TablePagination from '@mui/material/TablePagination';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Paper, TablePaginationActions } from "@mui/material";
-// import { useTheme } from '@mui/material/styles'; 
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import Box from '@mui/material/Box';
-import PropTypes from 'prop-types';
-
 import FormLabel from '@mui/material/FormLabel';
-
 import TextField from '@mui/material/TextField'
-
-import { useReducer } from "react";
-
-import axios from 'axios';
 
 const theme = createTheme(
     ptBR
@@ -123,6 +117,9 @@ function reducer(state, action) {
             var index = state.itensDisponiveis.indexOf(action.value);
             if (index > -1) {
                 action.value.quantidadeNova = 1;
+                if (!action.value.isRoupa) {
+                    action.value.quantidadeNova+=99; // começar em 100 gramas
+                }
                 action.value.precoNovo = Number(action.value.precoItem).toFixed(2);
                 return {
                     ...state,
@@ -148,17 +145,12 @@ function reducer(state, action) {
         }
         case 'saida_update': {
             var index = state.itensParaRegistrar.indexOf(action.value)
-            if (index < 0 || isNaN(Number(action.newValue))) {
-                return { ...state };
-            }
-            var oldValue = action.value.precoNovo;
             action.newValue = Number(action.newValue);
-            console.log(action.newValue)
             if (index < 0 || isNaN(action.newValue) || action.newValue < 0) {
-                console.log("ui")
                 return { ...state };
             }
             if (action.atribute != 'quantidade') {
+                console.log(action.newValue)
                 action.value.precoNovo = action.newValue;
             } else if (action.newValue > Number(action.value.qtdItem)) {
                 return { ...state };
@@ -188,6 +180,8 @@ export function Historico() {
         tamanho: 0,
         tuplas: [],
 
+        brightnessMain: '100%',
+
         itensParaRegistrar: [],
         itensDisponiveis: [],
 
@@ -207,6 +201,15 @@ export function Historico() {
     useEffect(() => {
         document.title = "Histórico"
     });
+
+    const handleBlackout = useEffect(() => {
+        if (values.displayPopupSaida == 'none') {
+            dispatch({type: 'simples', field: 'brightnessMain', value: '100%'})
+        } else {
+            dispatch({type: 'simples', field: 'brightnessMain', value: '50%'})
+        }
+        console.log(values.brightnessMain)
+    }, [values.displayPopupSaida])
 
     const handleChangePage = (event, newPage) => {
         dispatch({ type: 'simples', field: 'pagina', value: newPage });
@@ -298,7 +301,7 @@ export function Historico() {
     return (
         <div >
             <Navbar vazio={false} pageNumber={0} />
-            <div className={styles.main} >
+            <div className={styles.main} style={{filter: `brightness(${values.brightnessMain})`}}>
                 <div className={styles.barraFiltros}>
                     <div className={styles.boxSelect}>
                         <FormControl >
@@ -318,6 +321,8 @@ export function Historico() {
                 </div>
                 <div className={styles.body}>
                     <div className={styles.divTabela}>
+                        <h1>Dados de {values.tipoMovimentacao == 0 ? 'Entrada' : 'Saída' } de Estoque</h1>
+                        <br />
                         <TableContainer component={Paper}>
                             <Table>
                                 <TableHead>
@@ -406,27 +411,32 @@ export function Historico() {
                             <h2 className={styles.tituloPopup}>Registrar Saída de Itens</h2>
                             <div>
                                 <div className={styles.barraPopup}>
-                                    <Select value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'saida_add', value: event.target.value })}>
-                                        <MenuItem value={0} disabled>Selecione um Item</MenuItem>
-                                        <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
-                                        {values.itensDisponiveis.map((dadoItem) => (
-                                            <MenuItem value={dadoItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem>
-                                        ))}
-                                    </Select>
-                                    <Select value={values.idParceiroEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'idParceiroEscolhido', value: event.target.value })}>
-                                        <MenuItem value={-1}>Nenhum (venda)</MenuItem>
-                                        {values.parceiros.map((parceiro) => (
-                                            <MenuItem value={parceiro.id}>{parceiro.nome}</MenuItem>
-                                        ))}
-                                    </Select>
-                                    <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })} variant="contained">Confirmar Itens</Button>
-                                    <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })} variant="outlined">Cancelar</Button>
+                                    <div className={styles.selectsPopup}>
+                                        <Select value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'saida_add', value: event.target.value })}>
+                                            <MenuItem value={0} disabled>Selecione um Item</MenuItem>
+                                            <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
+                                            {values.itensDisponiveis.map((dadoItem) => (
+                                                <MenuItem value={dadoItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem>
+                                            ))}
+                                        </Select>
+                                        <FormControl>
+                                            <InputLabel id="labelDestino">Destino dos Itens</InputLabel>
+                                            <Select labelId="labelDestino" label="Destino dos Itens" value={values.idParceiroEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'idParceiroEscolhido', value: event.target.value })}>
+                                                <MenuItem value={-1}>Cliente (venda)</MenuItem>
+                                                {values.parceiros.map((parceiro) => (
+                                                    <MenuItem value={parceiro.id}>{parceiro.nome} (Parceira)</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                    <div className={styles.btnCancelarPopup}>
+                                        <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })} variant="outlined">Cancelar</Button>
+                                    </div>
                                 </div>
                                 <br />
                                 <h2 id="id-entrada-saida">Itens para registro:</h2>
-                                <TableContainer>
-                                    <Table>
-
+                                <TableContainer sx={{maxHeight: '600px'}}>
+                                    <Table stickyHeader>
                                         <TableHead>
                                             <TableRow>
                                                 <TableCell>Lote</TableCell>
@@ -442,9 +452,9 @@ export function Historico() {
                                                     <TableCell>{item.idLote}</TableCell>
                                                     <TableCell>{item.nomeItem}</TableCell>
                                                     <TableCell>
-                                                        <TextField
-                                                            label="Quantidade"
+                                                        <NumericFormat 
                                                             value={item.quantidadeNova}
+                                                            customInput={TextField}
                                                             onChange={(e) =>
                                                                 dispatch({
                                                                     type: 'saida_update',
@@ -453,12 +463,13 @@ export function Historico() {
                                                                     newValue: e.target.value
                                                                 })
                                                             }
+                                                            suffix={item.isRoupa ? ' unidade(s)' : ' gramas'}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
-                                                        <TextField
-                                                            label="Preço"
+                                                        <NumericFormat 
                                                             value={item.precoNovo}
+                                                            customInput={TextField}
                                                             onChange={(e) =>
                                                                 dispatch({
                                                                     type: 'saida_update',
@@ -467,6 +478,7 @@ export function Historico() {
                                                                     newValue: e.target.value
                                                                 })
                                                             }
+                                                            prefix="R$ "
                                                         />
                                                     </TableCell>
                                                     <TableCell>
@@ -477,6 +489,9 @@ export function Historico() {
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
+                            </div>
+                            <div className={styles.btnConfirmarPopup}>
+                                <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })} variant="contained">Confirmar</Button>
                             </div>
                         </Paper>
                     </div>
