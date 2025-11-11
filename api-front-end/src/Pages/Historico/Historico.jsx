@@ -146,18 +146,10 @@ function reducer(state, action) {
         case 'saida_update': {
             var index = state.itensParaRegistrar.indexOf(action.value)
             action.newValue = Number(action.newValue);
-            if (index < 0 || isNaN(action.newValue) || action.newValue < 0) {
+            if (index < 0 || isNaN(action.newValue) || action.newValue < 0 || action.newValue > Number(action.value.qtdItem)) {
                 return { ...state };
             }
-            if (action.atribute != 'quantidade') {
-                console.log(action.newValue)
-                action.value.precoNovo = action.newValue;
-            } else if (action.newValue > Number(action.value.qtdItem)) {
-                return { ...state };
-            } else {
-                action.value.quantidadeNova = action.newValue;
-            }
-
+            action.value.quantidadeNova = action.newValue;
             var auxItensParaRegistrar = state.itensParaRegistrar;
             auxItensParaRegistrar[index] = action.value;
             return {
@@ -187,6 +179,7 @@ export function Historico() {
 
         parceiros: [],
         idParceiroEscolhido: -1,
+        motivo: '',
 
         displayPopup: "none",
         tipoItem: 0,
@@ -208,7 +201,6 @@ export function Historico() {
         } else {
             dispatch({type: 'simples', field: 'brightnessMain', value: '50%'})
         }
-        console.log(values.brightnessMain)
     }, [values.displayPopupSaida])
 
     const handleChangePage = (event, newPage) => {
@@ -252,34 +244,6 @@ export function Historico() {
             .then(response => { dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data }) });
     }, [values.displayPopup]);
 
-    const handleItem = (event) => {
-        var aux = itensParaRegistrar;
-        // Se for entrada de item
-        if (values.displayPopup != 'none') {
-            aux.push({
-                "data": dayjs(),
-                "quantidade": 1,
-                "preco": 1.00,
-                "itemEstoque": event.target.value
-            })
-        } else {
-            aux.push({
-                "data": dayjs().format('YYYY-MM-DD'),
-                "hora": dayjs().format('HH:mm:ss'),
-                "quantidade": 1,
-                "preco": 1.00,
-                "responsal": {
-                    "idFuncionario": 1 // Temos de pegar o id do usuário de alguma maneira...
-                },
-                "loteItemEstoque": {
-                    "idLoteItemEstoque": 1
-                },
-                "costureira": null
-            })
-            aux.length > 0 ? dispatch({ type: 'simples', field: 'auxSelectItensSaida', value: -1 }) : dispatch({ type: 'simples', field: 'auxSelectItensSaida', value: 0 })
-        }
-    }
-
     const obterDadosRegistrarSaida = useEffect(() => {
         if (values.displayPopupSaida == 'none') {
             dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] });
@@ -293,7 +257,27 @@ export function Historico() {
             .then(response => { dispatch({ type: 'simples', field: 'parceiros', value: response.data }) });
     }, [values.displayPopupSaida]);
 
-    const registrarMovimentacao = () => {
+    const handleRegistrarSaida = () => {
+        var auxRegistrarSaida = [];
+        values.itensParaRegistrar.forEach( (item) => 
+            axios.post(`/api/saidas-estoque`, {
+                data: dayjs().format('YYYY-MM-DD'),
+                hora: dayjs().format('HH:mm:ss'),
+                qtdSaida: item.quantidadeNova,
+                motivoSaida: values.motivo,
+                responsavel: {
+                    idFuncionario: 1 // Como faremos para obter esse atributo?
+                },
+                loteItemEstoque: {
+                    idLoteItemEstoque: item.idLoteItemEstoque
+                },
+                costureira: values.idParceiroEscolhido != -1 ? values.idParceiroEscolhido : null
+            }).then(response => {
+                dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })
+                alert("Itens registrados!")
+                location.reload();
+            })
+        )
         return null;
     };
 
@@ -328,20 +312,20 @@ export function Historico() {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>Imagem</TableCell>
+                                        <TableCell>Quantidade</TableCell>
                                         <TableCell>Nome do Item</TableCell>
                                         <TableCell>Lote</TableCell>
-                                        <TableCell>Quantidade</TableCell>
                                         <TableCell>{values.tipoMovimentacao == 0 ? "Origem" : "Destino"}</TableCell>
                                         <TableCell>Horário</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
                                     {values.tuplas.map((tupla) => (
-                                        <TableRow key={tupla.nomeItem + tupla.idLote}>
+                                        <TableRow key={''+ tupla.nomeItem + tupla.idLote + (values.tipoMovimentacao == 0 ? dayjs(tupla.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(tupla.saidaEstoque).format('HH:mm:ss DD/MM/YY'))}>
                                             <TableCell><img src={tupla.url} className={styles.boxImagem} /></TableCell>
+                                            <TableCell>{tupla.qtdItem}</TableCell>
                                             <TableCell>{tupla.nomeItem}</TableCell>
                                             <TableCell>{tupla.idLote}</TableCell>
-                                            <TableCell>{tupla.qtdItem}</TableCell>
                                             <TableCell>{tupla.nomeParceiro}</TableCell>
                                             <TableCell>
                                                 {values.tipoMovimentacao == 0 ? dayjs(tupla.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(tupla.saidaEstoque).format('HH:mm:ss DD/MM/YY')}
@@ -442,7 +426,6 @@ export function Historico() {
                                                 <TableCell>Lote</TableCell>
                                                 <TableCell>Item</TableCell>
                                                 <TableCell>Quantidade</TableCell>
-                                                <TableCell>Preço (total)</TableCell>
                                                 <TableCell>Tirar Item</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -467,21 +450,6 @@ export function Historico() {
                                                         />
                                                     </TableCell>
                                                     <TableCell>
-                                                        <NumericFormat 
-                                                            value={item.precoNovo}
-                                                            customInput={TextField}
-                                                            onChange={(e) =>
-                                                                dispatch({
-                                                                    type: 'saida_update',
-                                                                    value: item,
-                                                                    atribute: 'preço',
-                                                                    newValue: e.target.value
-                                                                })
-                                                            }
-                                                            prefix="R$ "
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
                                                         <Button onClick={() => dispatch({ type: 'saida_del', value: item })}>Remover Item</Button>
                                                     </TableCell>
                                                 </TableRow>
@@ -491,7 +459,12 @@ export function Historico() {
                                 </TableContainer>
                             </div>
                             <div className={styles.btnConfirmarPopup}>
-                                <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })} variant="contained">Confirmar</Button>
+                                <TextField 
+                                    label="Motivo de saída (opcional)"
+                                    value={values.motivo}
+                                    onChange={(event) => dispatch({type: 'simples', field: 'motivo', value: event.target.value})}
+                                />
+                                <Button onClick={() => handleRegistrarSaida()} variant="contained">Confirmar</Button>
                             </div>
                         </Paper>
                     </div>
