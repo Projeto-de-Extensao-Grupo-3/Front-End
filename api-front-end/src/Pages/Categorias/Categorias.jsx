@@ -18,6 +18,7 @@ import Alert from '@mui/material/Alert';
 import axios from "axios";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import AlertDialog from '../../components/AlertDialog/AlertDialog';
 
 export function Categorias() {
 
@@ -26,10 +27,18 @@ export function Categorias() {
     })
 
 
+     // Variáveis para alertas
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("");
+
     const [popupAdicionarAberto, setPopupAdicionarAberto] = useState(false)
     const [popupRemoverAberto, setPopupRemoverAberto] = useState(false)
     const [popupEscolhido, setPopupEscolhido] = useState()
     const [popupRemoverEscolhido, setPopupRemoverEscolhido] = useState()
+    const [popupAtualizarAberto, setPopupAtualizarAberto] = useState(false);
+
     const [id, setId] = useState(0);
 
     const handlePopupAdicionarAbrir = (escolhido) => {
@@ -49,6 +58,16 @@ export function Categorias() {
     const handlePopupRemoverFechar = () => {
         setPopupRemoverAberto(false)
     }
+
+    const handlePopupAtualizarAbrir = (tipo) => {
+    setPopupEscolhido(tipo);
+    setPopupAtualizarAberto(true);
+    }
+
+    const handlePopupAtualizarFechar = () => {
+    setPopupAtualizarAberto(false);
+    }
+
 
     const handleSelectCategoria = (event) => {
         setId(event.target.value)
@@ -81,10 +100,29 @@ export function Categorias() {
                     "categoriaPai": {
                     "idCategoria": 2
                     }
-                }).catch(error => {
-                    console.log("Erro ao cadastrar Categoria: ", error)
                 })
+                .then(response => {
+                console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Categoria cadastrada com sucesso!");
+                setAlertMessage(`Os dados ${nome} foram cadastrados com sucesso.`);
+                setAlertOpen(true);
                 handlePopupAdicionarFechar()
+            })
+                .catch(error => {
+                    console.log("Erro ao cadastrar Categoria: ", error)
+                    if (error.response.status === 409) {
+                    setAlertType("warning");
+                    setAlertTitle("Cadastro já existente!");
+                    setAlertMessage(`Já existe uma categoria cadastrada com o nome informado.`);
+                } else {
+                    setAlertType("error");
+                    setAlertTitle("Erro ao realizar cadastro!");
+                    setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${nome}. Entre em contato com o suporte.`);
+                }
+                setAlertOpen(true);
+                handlePopupAdicionarFechar()
+                })
             } else if (popupEscolhido == "Tecido") { // if como failsafe
                 axios.post("/api/categorias", {
                     "nome": nome,
@@ -94,7 +132,6 @@ export function Categorias() {
                 }).catch(error => {
                     console.log("Erro ao cadastrar Categoria: ", error)
                 })
-                handlePopupAdicionarFechar()
             }
         }
     }
@@ -103,6 +140,7 @@ export function Categorias() {
         const formData = new FormData(event.currentTarget)
         const formJson = Object.fromEntries(formData.entries())
         const id = formJson.idCategoria
+        const nome = formJson.nomeCategoria
         event.preventDefault()
         
         if (id == 0) {
@@ -113,12 +151,73 @@ export function Categorias() {
         console.log(id)
         if (popupRemoverEscolhido == "Roupa") {
             axios.delete(`/api/categorias/${id}`)
+            .then(response => {
+                console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Remoção bem sucedida!");
+                setAlertMessage(`Categoria "${nome}" apagada com sucesso.`);
+                setAlertOpen(true);
+            })
+            .catch(error => {
+                console.error('Erro ao remover categoria:', error);
+                if (error.response.status === 409) {
+                    setAlertType("warning");
+                    setAlertTitle("Remoção não permitida!");
+                    setAlertMessage(`Não é possível apagar ${nome}, pois está referenciado(a) por uma roupa ou tecido no sistema.`);
+                } else {
+                    setAlertType("error");
+                    setAlertTitle("Erro ao apagar dados!");
+                    setAlertMessage(`Ocorreu um erro ao remover as informações de ${nome}. Entre em contato com o suporte.`);
+                }
+                setAlertOpen(true);
+            });
             handlePopupAdicionarFechar()
         } else if (popupRemoverEscolhido == "Tecido") { // if como failsafe
             axios.delete(`/api/categorias/${id}`)
             handlePopupAdicionarFechar()
         }
 
+    }
+
+     const atualizarCategoria = (dados) => {
+
+        const formData = new FormData(event.currentTarget);
+        const formJson = Object.fromEntries(formData.entries());
+        const id = formJson.idCategoria;
+        const nome = formJson.nomeCategoria;
+        let idCategoriaPai = 0;
+
+        if (popupEscolhido === "Roupa") {
+        idCategoriaPai = 2;
+    } else if (popupEscolhido === "Tecido") {
+        idCategoriaPai = 1;
+    }
+
+        console.log(dados);
+        axios.put(`/api/categorias/${dados.id}`,
+            {
+                "nome": nome,
+                "categoriaPai": {
+                "idCategoria": idCategoriaPai
+  }
+            }
+        )
+            .then(response => {
+                console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Categoria atualizada com sucesso!");
+                setAlertMessage(`A categoria ${nome} foi atualizada com sucesso..`);
+                setAlertOpen(true);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setAlertType("error");
+                setAlertTitle("Erro ao atualizar dados!");
+                setAlertMessage(`Ocorreu um erro ao atualizar as informações ${nome}. Entre em contato com o suporte.`);
+                setAlertOpen(true);
+                setDadosAtualizacao([]);
+                setOperations(operations + 1);
+            });
     }
 
 
@@ -144,6 +243,16 @@ export function Categorias() {
             })
     }
 
+     // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
+    useEffect(() => {
+        if (alertOpen) {
+            console.log("ALERT OPENED");
+            const timer = setTimeout(() => {
+                setAlertOpen(false);
+            }, 10000);
+            return () => clearTimeout(timer);
+        }
+    }, [alertOpen]);
 
     return (
         <div>
@@ -180,6 +289,7 @@ export function Categorias() {
                     <div className={styles.divBotoes}>
                         <Button onClick={() => handlePopupAdicionarAbrir("Tecido")} variant='contained'>Adicionar Categoria</Button>
                         <Button onClick={() => handlePopupRemoverAbrir("Tecido")} variant='contained'>Remover Categoria</Button>
+                        <Button onClick={() => handlePopupAtualizarAbrir("Roupa")} variant='contained'> Atualizar Categoria</Button>
                     </div>
                 </div>
             </div>
@@ -227,6 +337,46 @@ export function Categorias() {
                     <DialogActions>
                         <Button onClick={() => handlePopupRemoverFechar()}>Cancelar</Button>
                         <Button type='submit' form="formRemoverCategoria">Remover</Button>
+                    </DialogActions>
+                </DialogContent>
+            </Dialog>
+            <Dialog open={popupAtualizarAberto}>
+                <DialogTitle>Atualizar categoria de {popupEscolhido}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                         Escolha a categoria e digite o novo nome
+                    </DialogContentText>
+                    <br />
+                    <form onSubmit={atualizarCategoria} id='formAtualizarCategoria'>
+                    <Select 
+                        value={id} 
+                        name={'idCategoria'} 
+                        onChange={(event) => handleSelectCategoria(event)}  
+                        fullWidth
+                    >
+                        <MenuItem disabled value={0}>Escolha uma Categoria</MenuItem>
+                        {popupEscolhido === 'Roupa' 
+                            ? dadosRoupa.map(c => (
+                                <MenuItem key={c.id} value={c.id}>{c.nome}</MenuItem>
+                            ))
+                            : dadosTecido.map(c => (
+                                <MenuItem key={c.id} value={c.id}>{c.nome}</MenuItem>
+                            ))
+                        }
+                    </Select>
+                    <br /><br />
+                    <TextField
+                        autoFocus
+                        required
+                        name="nomeCategoria"
+                        label="Novo nome da Categoria"
+                        fullWidth
+                        />
+                    </form>
+                    <br />
+                    <DialogActions>
+                        <Button onClick={() => handlePopupAtualizarFechar()}>Cancelar</Button>
+                        <Button type='submit' form="formAtualizarCategoria">Atualizar</Button>
                     </DialogActions>
                 </DialogContent>
             </Dialog>
