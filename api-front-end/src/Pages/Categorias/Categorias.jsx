@@ -74,6 +74,7 @@ export function Categorias() {
     }
 
     const cadastrarCategoria = (event) => {
+        event.preventDefault();
         const formData = new FormData(event.currentTarget)
         const formJson = Object.fromEntries(formData.entries())
         const nome = formJson.nomeCategoria
@@ -81,14 +82,14 @@ export function Categorias() {
         if (popupEscolhido == "Roupa") {
             dadosRoupa.map(r => {
                 if (r.nome == nome) {
-                    document.getElementById('alert-cadastro').style.display = "flex"
+                    document.getElementById('alert-cadastro-add').style.display = "flex"
                     duplicado = true
                 }
             })
         } else {
             dadosTecido.map(r => {
                 if (r.nome == nome) {
-                    document.getElementById('alert-cadastro').style.display = "flex"
+                    document.getElementById('alert-cadastro-add').style.display = "flex"
                     duplicado = true
                 }
             })
@@ -107,6 +108,7 @@ export function Categorias() {
                 setAlertTitle("Categoria cadastrada com sucesso!");
                 setAlertMessage(`Os dados ${nome} foram cadastrados com sucesso.`);
                 setAlertOpen(true);
+                getDados();
                 handlePopupAdicionarFechar()
             })
                 .catch(error => {
@@ -129,8 +131,29 @@ export function Categorias() {
                     "categoriaPai": {
                     "idCategoria": 1
                     }
-                }).catch(error => {
+                })
+                .then(response => {
+                    console.log(response.data);
+                    setAlertType("success");
+                    setAlertTitle("Categoria cadastrada com sucesso!");
+                    setAlertMessage(`Os dados ${nome} foram cadastrados com sucesso.`);
+                    setAlertOpen(true);
+                    getDados();
+                    handlePopupAdicionarFechar();
+                })
+                .catch(error => {
                     console.log("Erro ao cadastrar Categoria: ", error)
+                    if (error?.response?.status === 409) {
+                        setAlertType("warning");
+                        setAlertTitle("Cadastro já existente!");
+                        setAlertMessage(`Já existe uma categoria cadastrada com o nome informado.`);
+                    } else {
+                        setAlertType("error");
+                        setAlertTitle("Erro ao realizar cadastro!");
+                        setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${nome}. Entre em contato com o suporte.`);
+                    }
+                    setAlertOpen(true);
+                    handlePopupAdicionarFechar();
                 })
             }
         }
@@ -144,7 +167,7 @@ export function Categorias() {
         event.preventDefault()
         
         if (id == 0) {
-            document.getElementById('alert-cadastro').style.display = "flex"
+            document.getElementById('alert-cadastro-remove').style.display = "flex"
             return;
         }
 
@@ -157,6 +180,7 @@ export function Categorias() {
                 setAlertTitle("Remoção bem sucedida!");
                 setAlertMessage(`Categoria "${nome}" apagada com sucesso.`);
                 setAlertOpen(true);
+                getDados();
             })
             .catch(error => {
                 console.error('Erro ao remover categoria:', error);
@@ -171,35 +195,43 @@ export function Categorias() {
                 }
                 setAlertOpen(true);
             });
-            handlePopupAdicionarFechar()
+            handlePopupRemoverFechar()
         } else if (popupRemoverEscolhido == "Tecido") { // if como failsafe
             axios.delete(`/api/categorias/${id}`)
-            handlePopupAdicionarFechar()
+            .then(response => {
+                setAlertType("success");
+                setAlertTitle("Remoção bem sucedida!");
+                setAlertMessage(`Categoria "${nome}" apagada com sucesso.`);
+                setAlertOpen(true);
+                getDados();
+                handlePopupRemoverFechar();
+            })
+            .catch(error => {
+                console.error('Erro ao remover categoria:', error);
+                setAlertType("error");
+                setAlertTitle("Erro ao apagar dados!");
+                setAlertMessage(`Ocorreu um erro ao remover as informações de ${nome}. Entre em contato com o suporte.`);
+                setAlertOpen(true);
+                handlePopupRemoverFechar();
+            })
         }
 
     }
 
-     const atualizarCategoria = (dados) => {
-
+     const atualizarCategoria = (event) => {
+        event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const formJson = Object.fromEntries(formData.entries());
         const id = formJson.idCategoria;
         const nome = formJson.nomeCategoria;
-        let idCategoriaPai = 0;
+        const idCategoriaPai = popupEscolhido === "Roupa" ? 2 : 1;
 
-        if (popupEscolhido === "Roupa") {
-        idCategoriaPai = 2;
-    } else if (popupEscolhido === "Tecido") {
-        idCategoriaPai = 1;
-    }
-
-        console.log(dados);
-        axios.put(`/api/categorias/${dados.id}`,
+        axios.put(`/api/categorias/${id}`,
             {
                 "nome": nome,
                 "categoriaPai": {
                 "idCategoria": idCategoriaPai
-  }
+    }
             }
         )
             .then(response => {
@@ -208,6 +240,8 @@ export function Categorias() {
                 setAlertTitle("Categoria atualizada com sucesso!");
                 setAlertMessage(`A categoria ${nome} foi atualizada com sucesso..`);
                 setAlertOpen(true);
+                handlePopupAtualizarFechar();
+                getDados();
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -215,8 +249,6 @@ export function Categorias() {
                 setAlertTitle("Erro ao atualizar dados!");
                 setAlertMessage(`Ocorreu um erro ao atualizar as informações ${nome}. Entre em contato com o suporte.`);
                 setAlertOpen(true);
-                setDadosAtualizacao([]);
-                setOperations(operations + 1);
             });
     }
 
@@ -273,6 +305,7 @@ export function Categorias() {
                     <div className={styles.divBotoes}>
                         <Button onClick={() => handlePopupAdicionarAbrir("Roupa")} variant='contained'>Adicionar Categoria</Button>
                         <Button onClick={() => handlePopupRemoverAbrir("Roupa")} variant='contained'>Remover Categoria</Button>
+                        <Button onClick={() => handlePopupAtualizarAbrir("Roupa")} variant='contained'> Atualizar Categoria</Button>
                     </div>
                 </div>
                 <div className={styles.listCategorias}>
@@ -310,7 +343,7 @@ export function Categorias() {
                         />
                     </form>
                     <br />
-                    <Alert severity='error' id='alert-cadastro' style={{ display: "none" }}>Nome indisponível</Alert>
+                    <Alert severity='error' id='alert-cadastro-add' style={{ display: "none" }}>Nome indisponível</Alert>
                     <DialogActions>
                         <Button onClick={() => handlePopupAdicionarFechar()}>Cancelar</Button>
                         <Button type='submit' form="formAddCategoria">Cadastrar</Button>
@@ -333,7 +366,7 @@ export function Categorias() {
                         </Select>
                     </form>
                     <br />
-                    <Alert severity='error' id='alert-cadastro' style={{ display: "none" }}>Escolha uma categoria</Alert>
+                    <Alert severity='error' id='alert-cadastro-remove' style={{ display: "none" }}>Escolha uma categoria</Alert>
                     <DialogActions>
                         <Button onClick={() => handlePopupRemoverFechar()}>Cancelar</Button>
                         <Button type='submit' form="formRemoverCategoria">Remover</Button>
@@ -380,6 +413,12 @@ export function Categorias() {
                     </DialogActions>
                 </DialogContent>
             </Dialog>
+            <AlertDialog
+                alertType={alertType}
+                alertTitle={alertTitle}
+                alertMessage={alertMessage}
+                state={alertOpen}
+                    />
         </div>
     )
 }

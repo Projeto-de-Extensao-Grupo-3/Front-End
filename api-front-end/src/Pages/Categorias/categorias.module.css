@@ -19,10 +19,12 @@
 
 .divBotoes {
     width: 100%;
+    margin-bottom: 16px; 
     margin-top: 30px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    gap: 12px; /* espaço entre os filhos quando empilhados/ao usar wrap */
 }
 
 @media (min-width: 600px) and (max-width: 1400px) {
