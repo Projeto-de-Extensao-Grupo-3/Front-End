@@ -23,8 +23,8 @@ import AlertDialog from '../../components/AlertDialog/AlertDialog';
 export function Categorias() {
 
     useEffect(() => {
-        document.title = "Categorias"
-    })
+    document.title = "Categorias";
+    }, []);
 
 
      // Variáveis para alertas
@@ -303,9 +303,11 @@ export function Categorias() {
                             )}</List>
                     </Paper>
                     <div className={styles.divBotoes}>
+
                         <Button onClick={() => handlePopupAdicionarAbrir("Roupa")} variant='contained'>Adicionar Categoria</Button>
                         <Button onClick={() => handlePopupRemoverAbrir("Roupa")} variant='contained'>Remover Categoria</Button>
                         <Button onClick={() => handlePopupAtualizarAbrir("Roupa")} variant='contained'> Atualizar Categoria</Button>
+
                     </div>
                 </div>
                 <div className={styles.listCategorias}>
@@ -320,9 +322,11 @@ export function Categorias() {
                             )}</List>
                     </Paper>
                     <div className={styles.divBotoes}>
+
                         <Button onClick={() => handlePopupAdicionarAbrir("Tecido")} variant='contained'>Adicionar Categoria</Button>
                         <Button onClick={() => handlePopupRemoverAbrir("Tecido")} variant='contained'>Remover Categoria</Button>
                         <Button onClick={() => handlePopupAtualizarAbrir("Roupa")} variant='contained'> Atualizar Categoria</Button>
+
                     </div>
                 </div>
             </div>
