@@ -1,13 +1,16 @@
 import { useReducer, useEffect, useState } from "react"
-import { Navbar } from "../../components/Navbar/Navbar"
 import styles from "./historico.module.css"
 
-import 'dayjs/locale/en-gb';
+import { Navbar } from "../../components/Navbar/Navbar"
+import AlertDialog from '../../components/AlertDialog/AlertDialog';
+
 import dayjs from "dayjs";
+import 'dayjs/locale/en-gb';
 
 import PropTypes from 'prop-types';
 
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 import { NumericFormat } from 'react-number-format';
 
@@ -18,7 +21,7 @@ import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
-import { createTheme, ThemeProvider, useTheme } from '@mui/material/styles';
+import { alpha, createTheme, getContrastRatio, ThemeProvider, useTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -35,11 +38,19 @@ import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import LastPageIcon from '@mui/icons-material/LastPage';
 import Box from '@mui/material/Box';
 import FormLabel from '@mui/material/FormLabel';
-import TextField from '@mui/material/TextField'
+import TextField from '@mui/material/TextField';
+import LogoutIcon from '@mui/icons-material/Logout';
+import InventoryIcon from '@mui/icons-material/Inventory';
 
-const theme = createTheme(
-    ptBR
-);
+const theme = createTheme({
+    palette: {
+        saida: {
+            main: '#ef5350',
+            light: '#f44336',
+            dark: '#d32f2f',
+            contrastText: '#fff'
+        },
+}});
 
 function PaginarTabela(props) {
 
@@ -157,6 +168,22 @@ function reducer(state, action) {
                 itensParaRegistrar: auxItensParaRegistrar
             }
         }
+        case 'alert': {
+            return {
+                ...state,
+                alertType: action.severity,
+                alertTitle: action.title, 
+                alertMessage: action.message,
+                alertOpen: true
+            }
+        }
+        case 'registro': {
+            return {
+                ...state,
+                displayPopup: action.display,
+                tipoItem: action.tipoItem
+            }
+        }
         default: throw new Error("Erro no reducer!");
     }
 }
@@ -171,6 +198,7 @@ export function Historico() {
         entradasPorPagina: 9,
         tamanho: 0,
         tuplas: [],
+        triggerAtualizar: 1,
 
         brightnessMain: '100%',
 
@@ -181,11 +209,14 @@ export function Historico() {
         idParceiroEscolhido: -1,
         motivo: '',
 
-        displayPopup: "none",
         tipoItem: 0,
-
-        displayPopupSaida: "none",
+        displayPopup: "none",
         auxSelectItensSaida: 0,
+
+        alertOpen: false,
+        alertTitle: "",
+        alertMessage: "",
+        alertType: ""
 
     };
 
@@ -196,12 +227,12 @@ export function Historico() {
     });
 
     const handleBlackout = useEffect(() => {
-        if (values.displayPopupSaida == 'none') {
+        if (values.displayPopup == 'none') {
             dispatch({type: 'simples', field: 'brightnessMain', value: '100%'})
         } else {
             dispatch({type: 'simples', field: 'brightnessMain', value: '50%'})
         }
-    }, [values.displayPopupSaida])
+    }, [values.displayPopup])
 
     const handleChangePage = (event, newPage) => {
         dispatch({ type: 'simples', field: 'pagina', value: newPage });
@@ -213,7 +244,6 @@ export function Historico() {
     };
 
     const obterDadosTabela = useEffect(() => {
-
         if (values.tipoMovimentacao == 0) {
             axios.get(`/api/lotes-item-estoque/paginado?page=${values.pagina}&limit=${values.entradasPorPagina}`)
                 .then(response => {
@@ -233,51 +263,71 @@ export function Historico() {
                     dispatch({ type: 'simples', field: 'tamanho', value: response.data.totalRegistros });
                 })
         }
-    }, [values.entradasPorPagina, values.pagina, values.tipoMovimentacao]);
+    }, [values.entradasPorPagina, values.pagina, values.tipoMovimentacao, values.triggerAtualizar]);
 
-    const obterDadosRegistrarEntrada = useEffect(() => {
+    // const obterDadosRegistrarEntrada = useEffect(() => {
+    //     if (values.displayPopup == 'none') {
+    //         dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] })
+    //         return;
+    //     }
+    //     axios.get(`/api/itens-estoque/itensResumidos`)
+    //         .then(response => { dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data }) });
+    // }, [values.displayPopup]);
+
+    const obterDadosRegistrar = useEffect(() => {
         if (values.displayPopup == 'none') {
-            dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] })
-            return;
-        }
-        axios.get(`/api/itens-estoque/itensResumidos`)
-            .then(response => { dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data }) });
-    }, [values.displayPopup]);
-
-    const obterDadosRegistrarSaida = useEffect(() => {
-        if (values.displayPopupSaida == 'none') {
             dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] });
             dispatch({ type: 'simples', field: 'itensParaRegistrar', value: [] });
             return;
         }
-        axios.get(`/api/lotes/lotesEmEstoque`)
-            .then(response => { dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data }) });
+        if (values.tipoItem == 'saida') {
+            axios.get(`/api/lotes/lotesEmEstoque`)
+                .then(response => {
+                    dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
+                }).catch(error => {
+                    console.log("Erro ao obter dados de lotes em estoque: " + error)
+                });
+    
+            axios.get(`/api/parceiros/listagem/costureira`)
+                .then(response => { 
+                    dispatch({ type: 'simples', field: 'parceiros', value: response.data }) 
+                }).catch(error => {
+                    console.log("Erro ao obter dados de parceiros: " + error)
+                });
+        }
+    }, [values.displayPopup]);
 
-        axios.get(`/api/parceiros/listagem/costureira`) // Quando enpoint existir, colocar de todos
-            .then(response => { dispatch({ type: 'simples', field: 'parceiros', value: response.data }) });
-    }, [values.displayPopupSaida]);
+    globalThis.values = values
 
     const handleRegistrarSaida = () => {
-        var auxRegistrarSaida = [];
-        values.itensParaRegistrar.forEach( (item) => 
-            axios.post(`/api/saidas-estoque`, {
-                data: dayjs().format('YYYY-MM-DD'),
-                hora: dayjs().format('HH:mm:ss'),
-                qtdSaida: item.quantidadeNova,
-                motivoSaida: values.motivo,
-                responsavel: {
-                    idFuncionario: 1 // Como faremos para obter esse atributo?
-                },
-                loteItemEstoque: {
-                    idLoteItemEstoque: item.idLoteItemEstoque
-                },
-                costureira: values.idParceiroEscolhido != -1 ? values.idParceiroEscolhido : null
-            }).then(response => {
-                dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })
-                alert("Itens registrados!")
-                location.reload();
-            })
-        )
+        if (values.itensParaRegistrar.length == 0) {
+                dispatch({ type: 'alert', severity: 'warning', title: 'Nenhum item escolhido!', message: "Escolha um ou mais itens para registrar!" });
+                console.log("here")
+                return;
+        } else if (values.tipoItem == 'saida') {
+            console.log(values.itensParaRegistrar)
+            values.itensParaRegistrar.forEach( (item) => 
+                axios.post(`/api/saidas-estoque`, {
+                    data: dayjs().format('YYYY-MM-DD'),
+                    hora: dayjs().format('HH:mm:ss'),
+                    qtdSaida: item.quantidadeNova,
+                    motivoSaida: values.motivo,
+                    responsavel: {
+                        idFuncionario: 1 // Como faremos para obter esse atributo?
+                    },
+                    loteItemEstoque: {
+                        idLoteItemEstoque: item.idLoteItemEstoque
+                    },
+                    costureira: values.idParceiroEscolhido != -1 ? values.idParceiroEscolhido : null
+                }).then(response => {
+                    dispatch({ type: 'registro', tipoItem: '', display: 'none' })
+                    dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de saída concluído com sucesso!" });
+                    dispatch({ type: 'simples', field: 'triggerAtualizar', value: values.triggerAtualizar + 1 })
+                }).catch(error => {
+                    console.log("Erro ao regsitrar saída de itens itens:" + error)
+                })
+            );
+        }
         return null;
     };
 
@@ -287,25 +337,32 @@ export function Historico() {
             <Navbar vazio={false} pageNumber={0} />
             <div className={styles.main} style={{filter: `brightness(${values.brightnessMain})`}}>
                 <div className={styles.barraFiltros}>
-                    <div className={styles.boxSelect}>
-                        <FormControl >
-                            <InputLabel id="label-tipo-slct">Tipo</InputLabel>
-                            <Select value={values.tipoMovimentacao} onChange={(event) => dispatch({ type: 'simples', field: 'tipoMovimentacao', value: event.target.value })} labelId="label-tipo-slct" label="Tipo">
-                                <MenuItem value={0}>Entrada</MenuItem>
-                                <MenuItem value={1}>Saída</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </div>
-                    <div className={styles.boxButton}>
-                        <Button className={styles.button} variant="contained" onClick={() => dispatch({ type: 'simples', field: 'displayPopup', value: 'flex' })}>Registrar Entrada de Item</Button>
-                    </div>
-                    <div className={styles.boxButton}>
-                        <Button className={styles.button} variant="contained" onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'flex' })}>Registrar Saída de Item</Button>
-                    </div>
+                        <div className={styles.boxButton}>
+                            <Button className={styles.button} variant="contained" onClick={() => dispatch({ type: 'registro', tipoItem: 'entrada', display: 'flex' })}>
+                                <InventoryIcon style={{marginRight: '5px'}} />
+                                Registrar Entrada de Item
+                            </Button>
+                        </div>
+                        <div className={styles.boxButton}>
+                            <Button theme={theme} color='saida' className={styles.button} variant="contained" onClick={() => dispatch({ type: 'registro', tipoItem: 'saida', display: 'flex' })}>
+                                <LogoutIcon style={{marginRight: '5px'}} />Registrar Saída de Item
+                            </Button>
+                        </div>
                 </div>
                 <div className={styles.body}>
                     <div className={styles.divTabela}>
-                        <h1>Dados de {values.tipoMovimentacao == 0 ? 'Entrada' : 'Saída' } de Estoque</h1>
+                        <div className={styles.boxTituloTabela}>
+                            <span className={styles.tituloTabela}>Movimentação de estoque: </span>
+                            <div className={styles.boxSelect}>
+                            <FormControl >
+                                <InputLabel id="label-tipo-slct">Tipo</InputLabel>
+                                <Select value={values.tipoMovimentacao} onChange={(event) => dispatch({ type: 'simples', field: 'tipoMovimentacao', value: event.target.value })} labelId="label-tipo-slct" label="Tipo">
+                                    <MenuItem value={0}>Entrada</MenuItem>
+                                    <MenuItem value={1}>Saída</MenuItem>
+                                </Select>
+                            </FormControl>
+                            </div>
+                        </div>
                         <br />
                         <TableContainer component={Paper}>
                             <Table>
@@ -321,7 +378,7 @@ export function Historico() {
                                 </TableHead>
                                 <TableBody>
                                     {values.tuplas.map((tupla) => (
-                                        <TableRow key={''+ tupla.nomeItem + tupla.idLote + (values.tipoMovimentacao == 0 ? dayjs(tupla.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(tupla.saidaEstoque).format('HH:mm:ss DD/MM/YY'))}>
+                                        <TableRow key={tupla.nomeItem + tupla.idLote + values.tuplas.indexOf(tupla)}>
                                             <TableCell><img src={tupla.url} className={styles.boxImagem} /></TableCell>
                                             <TableCell>{tupla.qtdItem}</TableCell>
                                             <TableCell>{tupla.nomeItem}</TableCell>
@@ -361,38 +418,12 @@ export function Historico() {
                     </div>
                 </div>
             </div>
+            <AlertDialog alertType={values.alertType} alertTitle={values.alertTitle} alertMessage={values.alertMessage} state={values.alertOpen} />
             <div>
                 <div className={styles.popupRegistro} style={{ display: values.displayPopup }}>
-                    <div className={styles.blackout} onClick={() => dispatch({ type: 'simples', field: 'displayPopup', value: 'none' })}>
+                    <div className={styles.blackout} onClick={() => dispatch({ type: 'registro', tipoItem: '', display: 'none' })}>
                         <Paper className={styles.popupWindow} onClick={(e) => e.stopPropagation()}>
-                            <h2 className={styles.tituloPopup}>Registrar Movimentação</h2>
-                            <div>
-                                <div className={styles.barraPopup}>
-                                    <Select value={values.tipoItem} onChange={(event) => dispatch({ type: 'simples', field: 'tipoItem', value: event.target.value })}>
-                                        <MenuItem value={0} disabled>Tipo de Item</MenuItem>
-                                        <MenuItem value={1}>Roupas</MenuItem>
-                                        <MenuItem value={2}>Tecidos</MenuItem>
-                                    </Select>
-                                    {/* <Select value={0} onChange={(event) => handleItem(event)}>
-                                        <MenuItem value={0} disabled>Selecione um Item</MenuItem>
-                                        {values.itensDisponiveis.map((dadoItem) => (
-                                            <MenuItem value={dadoItem.id}>{dadoItem.descricao}</MenuItem>
-                                        ))}
-                                    </Select> */}
-                                    <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopup', value: 'none' })} variant="contained">Adicionar Item</Button>
-                                    <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopup', value: 'none' })} variant="outlined">Cancelar</Button>
-                                </div>
-                                <FormControl>
-                                    <FormLabel id="id-entrada-saida">Itens para registro:</FormLabel>
-                                </FormControl>
-                            </div>
-                        </Paper>
-                    </div>
-                </div>
-                <div className={styles.popupRegistro} style={{ display: values.displayPopupSaida }}>
-                    <div className={styles.blackout} onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })}>
-                        <Paper className={styles.popupWindow} onClick={(e) => e.stopPropagation()}>
-                            <h2 className={styles.tituloPopup}>Registrar Saída de Itens</h2>
+                            <h2 className={styles.tituloPopup}>Registrar {values.tipoItem == 'saida' ? "Saída" : "Entrada"} de Itens</h2>
                             <div>
                                 <div className={styles.barraPopup}>
                                     <div className={styles.selectsPopup}>
@@ -414,7 +445,7 @@ export function Historico() {
                                         </FormControl>
                                     </div>
                                     <div className={styles.btnCancelarPopup}>
-                                        <Button onClick={() => dispatch({ type: 'simples', field: 'displayPopupSaida', value: 'none' })} variant="outlined">Cancelar</Button>
+                                        <Button onClick={() => dispatch({ type: 'registro', tipoItem: '', display: 'none' })} variant="outlined">Cancelar</Button>
                                     </div>
                                 </div>
                                 <br />
@@ -464,7 +495,7 @@ export function Historico() {
                                     value={values.motivo}
                                     onChange={(event) => dispatch({type: 'simples', field: 'motivo', value: event.target.value})}
                                 />
-                                <Button onClick={() => handleRegistrarSaida()} variant="contained">Confirmar</Button>
+                                <Button onClick={() => handleRegistrarSaida()} variant={values.itensParaRegistrar.length > 0 ? "contained" : "outlined"} disabled={values.itensParaRegistrar.length == 0}>Confirmar</Button>
                             </div>
                         </Paper>
                     </div>

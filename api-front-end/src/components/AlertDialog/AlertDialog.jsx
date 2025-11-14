@@ -7,7 +7,6 @@ export default function AlertDialog(props) {
     const [showAlert, setShowAlert] = useState(props.state);
 
     useEffect(() => {
-        console.log(props.state);
         setShowAlert(props.state)
     }, [props.state])
 
