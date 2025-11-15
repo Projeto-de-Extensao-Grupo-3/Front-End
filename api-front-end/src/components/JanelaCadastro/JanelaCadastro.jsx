@@ -78,8 +78,9 @@ export function JanelaCadastro(props) {
           </form>
         </DialogContent>
         <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button type='submit' form='form-cadastro' autoFocus sx={{
-            color: 'white', fontSize: '1.5rem', border: '2px solid black', backgroundColor: 'blue'
+          <Button disabled={props.cadastroDisabled} type='submit' form='form-cadastro' autoFocus sx={{
+            "&.Mui-disabled": {background: "#537d9dff", color: "#aba7a7ff", border: '1px solid black' },
+            color: 'white', fontSize: '1.5rem', border: '2px solid black', backgroundColor: 'rgba(68, 132, 199, 1)'
           }}>
             {props.message}
           </Button>
