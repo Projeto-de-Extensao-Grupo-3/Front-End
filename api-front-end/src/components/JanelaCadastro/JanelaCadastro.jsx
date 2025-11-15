@@ -52,7 +52,7 @@ export function JanelaCadastro(props) {
         aria-labelledby="customized-dialog-title"
         open={open}
       >
-        <DialogTitle sx={{ m: 0, p: 2, fontSize: '2rem' }} id="customized-dialog-title">
+        <DialogTitle sx={{ m: 0, p: 2, fontSize: '1.5rem' }} id="customized-dialog-title">
           {props.action}
         </DialogTitle>
         <IconButton
@@ -80,7 +80,7 @@ export function JanelaCadastro(props) {
         <DialogActions sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button disabled={props.cadastroDisabled} type='submit' form='form-cadastro' autoFocus sx={{
             "&.Mui-disabled": {background: "#537d9dff", color: "#aba7a7ff", border: '1px solid black' },
-            color: 'white', fontSize: '1.5rem', border: '2px solid black', backgroundColor: 'rgba(68, 132, 199, 1)'
+            color: 'white', fontSize: '1.2rem', border: '2px solid black', backgroundColor: 'rgba(68, 132, 199, 1)'
           }}>
             {props.message}
           </Button>

@@ -284,30 +284,30 @@ export function Funcionarios() {
                             limparCampos={limparCampos}
                             dados={dadosCadastro}
                             children={
-                                <Button variant="outlined" size="large" sx={
-                                    { p: "1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)" }
+                                <Button variant="contained" size="large" sx={
+                                    { p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)"}
                                 }>Cadastrar Funcionário</Button>
                             } action={`Cadastrar Funcionário`} message={"Confirmar cadastro"}
                             form={
                                 <>
                                     <div>
-                                        <h2>Nome</h2>
-                                        <TextField key="nome" required={true} onChange={(e) => setAtribute(e.target.value, "nome")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Telefone</h2>
-                                        <TextField error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} onChange={(e) => { setAtribute(e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone); }}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>E-mail</h2>
-                                        <TextField error={errorEmail} helperText={helperTextEmail} key="email" required={true} onChange={(e) => { setAtribute(e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail); }}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Nome</h3>
+                                        <TextField size='small' key="nome" required={true} onChange={(e) => setAtribute(e.target.value, "nome")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Telefone</h3>
+                                        <TextField size='small' error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} onChange={(e) => { setAtribute(e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone); }}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>E-mail</h3>
+                                        <TextField size='small' error={errorEmail} helperText={helperTextEmail} key="email" required={true} onChange={(e) => { setAtribute(e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail); }}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                     <div>
-                                        <h2>CPF</h2>
-                                        <TextField error={errorIdentificacao} helperText={helperTextIdentificacao} key="cpf" required={true} onChange={(e) => {setAtribute(e.target.value, "cpf"); formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao); }}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Senha</h2>
-                                        <OutlinedInput type={showPassword ? 'text' : 'password'} key="senha" required={true} onChange={(e) => setAtribute(e.target.value, "senha")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined"
+                                        <h3>CPF</h3>
+                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="cpf" required={true} onChange={(e) => {setAtribute(e.target.value, "cpf"); formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao); }}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Senha</h3>
+                                        <OutlinedInput size='small' type={showPassword ? 'text' : 'password'} key="senha" required={true} onChange={(e) => setAtribute(e.target.value, "senha")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined"
                                             endAdornment={
                                                 <InputAdornment position="end">
                                                     <IconButton
@@ -320,7 +320,7 @@ export function Funcionarios() {
                                                 </InputAdornment>
                                             }
                                         />
-                                        <h2>Permissões</h2>
+                                        <h3>Permissões</h3>
                                         <SelectOptions lista={permissoes}
                                             chave={"descricao"}
                                             id={"idPermissao"}
@@ -355,21 +355,21 @@ export function Funcionarios() {
                                 dados={dadosAtualizacao[dadosAtualizacao.findIndex(dado => dado.idFuncionario === item.idFuncionario)]}
                                 form={<>
                                     <div>
-                                        <h2>Nome</h2>
-                                        <TextField key="nome" required={true} defaultValue={item.nome} onChange={(e) => updateDados(item, e.target.value, "nome")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Telefone</h2>
-                                        <TextField error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} defaultValue={aplicarMascaraTelefone(item.telefone)} onChange={(e) => {updateDados(item, e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone)}}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>E-mail</h2>
-                                        <TextField error={errorEmail} helperText={helperTextEmail} key="email" required={true} defaultValue={item.email} onChange={(e) => {updateDados(item, e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail)}}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Nome</h3>
+                                        <TextField size='small' key="nome" required={true} defaultValue={item.nome} onChange={(e) => updateDados(item, e.target.value, "nome")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Telefone</h3>
+                                        <TextField size='small' error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} defaultValue={aplicarMascaraTelefone(item.telefone)} onChange={(e) => {updateDados(item, e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone)}}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>E-mail</h3>
+                                        <TextField size='small' error={errorEmail} helperText={helperTextEmail} key="email" required={true} defaultValue={item.email} onChange={(e) => {updateDados(item, e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail)}}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                     <div>
-                                        <h2>CPF</h2>
-                                        <TextField error={errorIdentificacao} helperText={helperTextIdentificacao} key="cpf" required={true} defaultValue={aplicarMascaraCpf(item.cpf)} onChange={(e) => {updateDados(item, e.target.value, "cpf"); formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao)}}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Permissões</h2>
+                                        <h3>CPF</h3>
+                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="cpf" required={true} defaultValue={aplicarMascaraCpf(item.cpf)} onChange={(e) => {updateDados(item, e.target.value, "cpf"); formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao)}}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Permissões</h3>
                                         <SelectOptions lista={permissoes}
                                             chave={"descricao"}
                                             id={"idPermissao"}
@@ -383,17 +383,17 @@ export function Funcionarios() {
                                 info={
                                     <>
                                         <div>
-                                            <h2>Nome:</h2>
+                                            <h3>Nome:</h3>
                                             <p key="nome" style={{ width: '100%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined">{item.nome}</p>
-                                            <h2>Telefone:</h2>
+                                            <h3>Telefone:</h3>
                                             <p key="telefone" style={{ width: '100%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined">{aplicarMascaraTelefone(item.telefone)}</p>
-                                            <h2>E-mail:</h2>
+                                            <h3>E-mail:</h3>
                                             <p key="email" style={{ width: '100%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined">{item.email}</p>
                                         </div>
                                         <div>
-                                            <h2>CPF:</h2>
+                                            <h3>CPF:</h3>
                                             <p key="cpf" style={{ width: '100%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined">{aplicarMascaraCpf(item.cpf)}</p>
-                                            <h2>Permissões:</h2>
+                                            <h3>Permissões:</h3>
                                             {item.permissoes.map((dado) => <p>{dado.descricao}</p>)}
                                         </div>
                                     </>

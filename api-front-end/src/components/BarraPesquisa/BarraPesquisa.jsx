@@ -7,7 +7,7 @@ export function BarraPesquisa(props) {
   return (
     <Paper
       component="form"
-      sx={{ p: '0.5rem 1rem', display: 'flex', alignItems: 'center', width: '60vw' }}
+      sx={{ p: '0.5rem 1rem', display: 'flex', alignItems: 'center', width: '60vw', border: "1px solid black" }}
     >
       <InputBase
         sx={{ ml: 1, flex: 1 }}

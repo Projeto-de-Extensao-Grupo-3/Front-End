@@ -379,29 +379,29 @@ export function Estoque() {
                             limparCampos={limparCampos}
                             dados={dadosCadastro}
                             children={
-                                <Button variant="outlined" size="large" sx={
-                                    { p: "1rem 3vw 1rem 3vw", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)" }
+                                <Button variant="contained" size="large" sx={
+                                    { p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)"}
                                 }>Cadastrar {categoria}</Button>
                             } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                             form={
                                 <>
                                     <div>
-                                        <h2>Descrição</h2>
-                                        <TextField key="descricao" required={true} onChange={(e) => setAtribute(e.target.value, "descricao")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Complemento</h2>
-                                        <TextField key="complemento" required={true} onChange={(e) => setAtribute(e.target.value, "complemento")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Peso</h2>
-                                        <TextField key="peso" required={true} onChange={(e) => setAtribute(e.target.value, "peso")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Qtd. mínimo</h2>
-                                        <TextField key="qtdMinimo" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdMinimo")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Descrição</h3>
+                                        <TextField size='small' key="descricao" required={true} onChange={(e) => setAtribute(e.target.value, "descricao")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Complemento</h3>
+                                        <TextField size='small' key="complemento" required={true} onChange={(e) => setAtribute(e.target.value, "complemento")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Peso</h3>
+                                        <TextField size='small' key="peso" required={true} onChange={(e) => setAtribute(e.target.value, "peso")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Qtd. mínimo</h3>
+                                        <TextField size='small' key="qtdMinimo" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdMinimo")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         {itemEstoque === "Roupa" ? (
                                             <>
-                                                <h2>Receber notificações</h2>
-                                                <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                                <h3>Receber notificações de saída do estoque?</h3>
+                                                <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
                                                     labelId="select-notificar"
                                                     id="select-notificar"
                                                     value={dadosCadastro.notificar === undefined ? "" : dadosCadastro.notificar}
@@ -415,8 +415,8 @@ export function Estoque() {
                                         }
                                     </div>
                                     <div>
-                                        <h2>Categoria</h2>
-                                        <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                        <h3>Categoria</h3>
+                                        <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
                                             labelId="select-categoria"
                                             id="select-categoria"
                                             value={categoriaCadastro}
@@ -426,15 +426,15 @@ export function Estoque() {
                                                 <MenuItem key={categoria.id} value={categoria.nome}>{categoria.nome}</MenuItem>
                                             ))}
                                         </Select>
-                                        <h2>Características</h2>
+                                        <h3>Características</h3>
                                         <SelectOptions lista={caracteristicas}
                                             chave={"nome"}
                                             id={"id"}
                                             dados={caracteristicasAtualizacao.map((item) => item.caracteristica)}
                                             func={setCaracteristicasAtualizacao}>
                                         </SelectOptions>
-                                        <h2>Prateleira</h2>
-                                        <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                        <h3>Prateleira</h3>
+                                        <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
                                             labelId="select-prateleira"
                                             id="select-prateleira"
                                             value={prateleiraCadastro}
@@ -444,10 +444,10 @@ export function Estoque() {
                                                 <MenuItem key={prateleira.id} value={prateleira.codigo}>{prateleira.codigo}</MenuItem>
                                             ))}
                                         </Select>
-                                        <h2>Preço</h2>
-                                        <TextField key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Imagem</h2>
+                                        <h3>Preço</h3>
+                                        <TextField size='small' key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Imagem</h3>
                                         <Button variant="contained" component="label">
                                             Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
                                         </Button>
@@ -477,22 +477,22 @@ export function Estoque() {
                                 form={
                                     <>
                                         <div>
-                                            <h2>Descrição</h2>
-                                            <TextField key="descricao" required={true} defaultValue={item.descricao} onChange={(e) => updateDados(item, e.target.value, "descricao")}
-                                                sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                            <h2>Complemento</h2>
-                                            <TextField key="complemento" required={true} defaultValue={item.complemento} onChange={(e) => updateDados(item, e.target.value, "complemento")}
-                                                sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                            <h2>Peso</h2>
-                                            <TextField key="peso" required={true} defaultValue={item.peso} onChange={(e) => updateDados(item, e.target.value, "peso")}
-                                                sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                            <h2>Qtd. mínimo</h2>
-                                            <TextField key="qtdMinimo" required={true} defaultValue={item.qtdMinimo} onChange={(e) => updateDados(item, Number(e.target.value), "qtdMinimo")}
-                                                sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Descrição</h3>
+                                            <TextField size='small' key="descricao" required={true} defaultValue={item.descricao} onChange={(e) => updateDados(item, e.target.value, "descricao")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Complemento</h3>
+                                            <TextField size='small' key="complemento" required={true} defaultValue={item.complemento} onChange={(e) => updateDados(item, e.target.value, "complemento")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Peso</h3>
+                                            <TextField size='small' key="peso" required={true} defaultValue={item.peso} onChange={(e) => updateDados(item, e.target.value, "peso")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Qtd. mínimo</h3>
+                                            <TextField size='small' key="qtdMinimo" required={true} defaultValue={item.qtdMinimo} onChange={(e) => updateDados(item, Number(e.target.value), "qtdMinimo")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             {itemEstoque === "Roupa" ? (
                                                 <>
-                                                    <h2>Receber notificações</h2>
-                                                    <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                                    <h3>Receber notificações de saída do estoque?</h3>
+                                                    <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
                                                         labelId="select-notificar"
                                                         id="select-notificar"
                                                         value={notificarAtualizacao === "" ? item.notificar : notificarAtualizacao}
@@ -506,8 +506,8 @@ export function Estoque() {
                                             }
                                         </div>
                                         <div>
-                                            <h2>Categoria</h2>
-                                            <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                            <h3>Categoria</h3>
+                                            <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
                                                 labelId="select-categoria"
                                                 id="select-categoria"
                                                 value={categoriaAtualizacao != "" ? categoriaAtualizacao : item.categoria.nome}
@@ -518,15 +518,15 @@ export function Estoque() {
                                                 ))}
 
                                             </Select>
-                                            <h2>Características</h2>
+                                            <h3>Características</h3>
                                             <SelectOptions lista={caracteristicas}
                                                 chave={"nome"}
                                                 id={"id"}
                                                 dados={item.caracteristicas.map((dado) => dado.nome)}
                                                 func={setCaracteristicasAtualizacao}>
                                             </SelectOptions>
-                                            <h2>Prateleira</h2>
-                                            <Select fullWidth sx={{ width: '35vw', marginBottom: '3rem' }}
+                                            <h3>Prateleira</h3>
+                                            <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
                                                 labelId="select-prateleira"
                                                 id="select-prateleira"
                                                 value={prateleiraAtualizacao != "" ? prateleiraAtualizacao : item.prateleira.codigo}
@@ -536,10 +536,10 @@ export function Estoque() {
                                                     <MenuItem key={prateleira.id} value={prateleira.codigo}>{prateleira.codigo}</MenuItem>
                                                 ))}
                                             </Select>
-                                            <h2>Preço</h2>
-                                            <TextField key="preco" required={true} defaultValue={item.preco} onChange={(e) => updateDados(item, Number(e.target.value), "preco")}
-                                                sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                            <h2>Imagem</h2>
+                                            <h3>Preço</h3>
+                                            <TextField size='small' key="preco" required={true} defaultValue={item.preco} onChange={(e) => updateDados(item, Number(e.target.value), "preco")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Imagem</h3>
                                             <Button variant="contained" component="label">
                                                 Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
                                             </Button>
@@ -551,30 +551,30 @@ export function Estoque() {
                                 info={
                                     <>
                                         <div>
-                                            <h2>Descrição:</h2>
+                                            <h3>Descrição:</h3>
                                             <p key="descricao" style={{ width: '100%', marginBottom: '2rem' }}>{item.descricao}</p>
-                                            <h2>Complemento:</h2>
+                                            <h3>Complemento:</h3>
                                             <p key="complemento" style={{ width: '100%', marginBottom: '2rem' }}>{item.complemento}</p>
-                                            <h2>Peso:</h2>
+                                            <h3>Peso:</h3>
                                             <p key="peso" style={{ width: '100%', marginBottom: '2rem' }}>{item.peso}</p>
-                                            <h2>Qtd. mínimo:</h2>
+                                            <h3>Qtd. mínimo:</h3>
                                             <p key="qtdMinimo" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdMinimo}</p>
-                                            <h2>Qtd. Armazenado:</h2>
+                                            <h3>Qtd. Armazenado:</h3>
                                             <p key="qtdArmazenado" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdArmazenado}</p>
                                             {itemEstoque === "Roupa" ? (<>
-                                                <h2>Receber notificações</h2>
+                                                <h3>Receber notificações</h3>
                                                 <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === 0 ? "Não" : "Sim"}</p> </>) : null}
                                         </div>
                                         <div>
-                                            <h2>Categoria:</h2>
+                                            <h3>Categoria:</h3>
                                             <p style={{ width: '100%', marginBottom: '2rem' }}>{item.categoria.nome}</p>
-                                            <h2>Características:</h2>
+                                            <h3>Características:</h3>
                                             {item.caracteristicas.map((dado) => <p>{dado.nome}</p>)}
-                                            <h2 style={{ marginTop: '2rem' }}>Prateleira</h2>
+                                            <h3 style={{ marginTop: '2rem' }}>Prateleira</h3>
                                             <p style={{ width: '100%', marginBottom: '2rem' }}>{item.prateleira.codigo}</p>
-                                            <h2>Preço:</h2>
+                                            <h3>Preço:</h3>
                                             <p style={{ width: '100%', marginBottom: '2rem' }}>{item.preco}</p>
-                                            <h2>Imagem:</h2>
+                                            <h3>Imagem:</h3>
                                             <img src={item.imagem.url} style={{ height: "8rem" }} />
                                         </div>
                                     </>
