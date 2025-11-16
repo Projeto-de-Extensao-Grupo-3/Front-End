@@ -20,6 +20,8 @@ export function BarraVisualizacao(props) {
             <ul className={styles.uul}>
                 {props.children}
                 <li><JanelaCadastro
+                        cadastroDisabled={props.cadastroDisabled}
+                        limparCampos={props.limparCampos}
                         form={props.form}
                         lista={props.lista}
                         func={props.func}

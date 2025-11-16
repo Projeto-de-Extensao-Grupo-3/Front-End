@@ -48,7 +48,7 @@ export function PaginaInicial(){
             if (response.status === 200 && response.data?.token) {
                 sessionStorage.setItem('authToken', response.data.token)
                 sessionStorage.setItem('usuario', response.data.nome)
-                sessionStorage.setItem('idUsuario', response.data.nome)
+                sessionStorage.setItem('idFuncionario', response.data.idFuncionario)
                 setTimeout(() => {
                     navigate('/historico')
                 }

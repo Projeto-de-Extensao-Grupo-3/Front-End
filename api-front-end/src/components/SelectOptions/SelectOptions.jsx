@@ -28,14 +28,15 @@ export function SelectOptions(props) {
 
   return (
     <div>
-      <FormControl sx={{width:'35vw', marginBottom:'3rem'}}>
-        <InputLabel id="demo-multiple-checkbox-label">Lista</InputLabel>
+      <FormControl sx={{width:'35vw', marginBottom:'2rem'}}>
+        <InputLabel id="demo-multiple-checkbox-label"></InputLabel>
         <Select
           labelId="demo-multiple-checkbox-label"
           id="demo-multiple-checkbox"
           multiple
           value={dados}
           onChange={handleChange}
+          size='small'
           renderValue={(selected) => selected.join(', ')}
         >
           {opcoes.map((opcao) => (

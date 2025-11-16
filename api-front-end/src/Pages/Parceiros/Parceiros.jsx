@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import styles from "./parceiros.module.css"
 import axios from 'axios';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
+import { formatTelefone, aplicarMascaraTelefone, formatCnpj, formatCpf, aplicarMascaraCnpj, aplicarMascaraCpf, validarEmail } from '../../functions/utils.js';
 
 export function Parceiros() {
 
@@ -171,6 +172,34 @@ export function Parceiros() {
     /*=====================================================================*/
 
 
+    /*================== Variáveis para validação de input ================*/
+
+    // Telefone (XX)XXXXX-XXXX
+    const [errorTelefone, setErrorTelefone] = useState(false);
+    const [helperTextTelefone, setHelperTextTelefone] = useState("");
+
+    // CNPJ 00.000.000/0000-00 ou  CPF 000.000.000-00
+    const [errorIdentificacao, setErrorIdentificacao] = useState(false);
+    const [helperTextIdentificacao, setHelperTextIdentificacao] = useState("");
+
+    // E-mail
+    const [errorEmail, setErrorEmail] = useState(false);
+    const [helperTextEmail, setHelperTextEmail] = useState("");
+
+    // Desativar botão de cadastro caso campo esteja inválido
+    const [isCadastroDisabled, setIsCadastroDisabled] = useState(false);
+
+    useEffect(() => {
+        if (errorTelefone || errorIdentificacao || errorEmail) {
+            setIsCadastroDisabled(true);
+        } else {
+            setIsCadastroDisabled(false);
+        }
+    }, [errorTelefone, errorIdentificacao, errorEmail]);
+
+    /*=====================================================================*/
+
+
     /*============================ Funções gerais =========================*/
 
     // Lista parceiros ao carregar a página e após operações
@@ -226,6 +255,16 @@ export function Parceiros() {
         }
     }, [alertOpen]);
 
+    // Reseta o estado dos campos do formulário de cadastro
+    const limparCampos = () => {
+        setErrorTelefone(false);
+        setHelperTextTelefone("");
+        setErrorIdentificacao(false);
+        setHelperTextIdentificacao("");
+        setErrorEmail(false);
+        setHelperTextEmail("");
+    }
+
     /*======================================================================*/
 
     return (
@@ -239,32 +278,34 @@ export function Parceiros() {
                     </div>
                     <div>
                         <JanelaCadastro func={cadastrarParceiro} id={''} categoria={parceiro}
+                            cadastroDisabled={isCadastroDisabled}
+                            limparCampos={limparCampos}
                             dados={dadosCadastro}
                             children={
-                                <Button variant="outlined" size="large" sx={
-                                    { p: "1rem 3rem 1rem 3rem", color: "rgba(0, 0, 0, 1)", borderColor: "rgba(0, 0, 0, 1)" }
+                                <Button variant="contained" size="large" sx={
+                                    { width: '25vw', p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)"}
                                 }>Cadastrar {categoria}</Button>
                             } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                             form={
                                 <>
                                     <div>
-                                        <h2>Nome</h2>
-                                        <TextField key="nome" required={true} onChange={(e) => setAtribute(e.target.value, "nome")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Telefone</h2>
-                                        <TextField key="telefone" required={true} onChange={(e) => setAtribute(e.target.value, "telefone")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>E-mail</h2>
-                                        <TextField key="email" required={true} onChange={(e) => setAtribute(e.target.value, "email")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Nome</h3>
+                                        <TextField size='small' key="nome" required={true} onChange={(e) => setAtribute(e.target.value, "nome")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Telefone</h3>
+                                        <TextField size='small' error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} onChange={(e) => { setAtribute(e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone); }}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>E-mail</h3>
+                                        <TextField size='small' error={errorEmail} helperText={helperTextEmail} key="email" required={true} onChange={(e) => { setAtribute(e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail); }}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                     <div>
-                                        <h2>Endereço</h2>
-                                        <TextField key="endereco" required={true} onChange={(e) => setAtribute(e.target.value, "endereco")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>CPF/CNPJ</h2>
-                                        <TextField key="identificacao" required={true} onChange={(e) => setAtribute(e.target.value, "identificacao")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Endereço</h3>
+                                        <TextField size='small' key="endereco" required={true} onChange={(e) => setAtribute(e.target.value, "endereco")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>{parceiro === "fornecedor" ? "CNPJ:" : "CPF:"}</h3>
+                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="identificacao" required={true} onChange={(e) => {setAtribute(e.target.value, "identificacao"); parceiro === "fornecedor" ? formatCnpj(e, setErrorIdentificacao, setHelperTextIdentificacao) : formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao)}}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                 </>
                             } />
@@ -279,11 +320,13 @@ export function Parceiros() {
                                     <>
                                         <li>Nome: <br /> {item.nome} </li>
                                         <hr />
-                                        <li>Telefone: <br /> {item.telefone} </li>
+                                        <li>Telefone: <br /> {aplicarMascaraTelefone(item.telefone)} </li>
                                         <hr />
                                         <li>E-mail: <br /> {item.email} </li>
                                         <hr />
                                     </>}
+                                cadastroDisabled={isCadastroDisabled}
+                                limparCampos={limparCampos}
                                 acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                                 func={atualizarParceiro}
                                 dadoTitle={item.nome}
@@ -291,40 +334,40 @@ export function Parceiros() {
                                 dados={dadosAtualizacao[dadosAtualizacao.findIndex(dado => dado.id === item.id)]}
                                 form={<>
                                     <div>
-                                        <h2>Nome</h2>
-                                        <TextField key="nome" required={true} defaultValue={item.nome} onChange={(e) => updateDados(item, e.target.value, "nome")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>Telefone</h2>
-                                        <TextField key="telefone" required={true} defaultValue={item.telefone} onChange={(e) => updateDados(item, e.target.value, "telefone")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>E-mail</h2>
-                                        <TextField key="email" required={true} defaultValue={item.email} onChange={(e) => updateDados(item, e.target.value, "email")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Nome</h3>
+                                        <TextField size='small' key="nome" required={true} defaultValue={item.nome} onChange={(e) => updateDados(item, e.target.value, "nome")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Telefone</h3>
+                                        <TextField size='small' error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} defaultValue={aplicarMascaraTelefone(item.telefone)} onChange={(e) => {updateDados(item, e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone)}}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>E-mail</h3>
+                                        <TextField size='small' error={errorEmail} helperText={helperTextEmail} key="email" required={true} defaultValue={item.email} onChange={(e) => {updateDados(item, e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail)}}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                     <div>
-                                        <h2>Endereço</h2>
-                                        <TextField key="endereco" required={true} defaultValue={item.endereco} onChange={(e) => updateDados(item, e.target.value, "endereco")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
-                                        <h2>CPF/CNPJ</h2>
-                                        <TextField key="identificacao" required={true} defaultValue={item.identificacao} onChange={(e) => updateDados(item, e.target.value, "identificacao")}
-                                            sx={{ width: '35vw', marginBottom: '3rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>Endereço</h3>
+                                        <TextField size='small' key="endereco" required={true} defaultValue={item.endereco} onChange={(e) => updateDados(item, e.target.value, "endereco")}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                        <h3>{parceiro === "fornecedor" ? "CNPJ:" : "CPF:"}</h3>
+                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="identificacao" required={true} defaultValue={parceiro === "fornecedor" ? aplicarMascaraCnpj(item.identificacao) : aplicarMascaraCpf(item.identificacao)} onChange={(e) => {updateDados(item, e.target.value, "identificacao");parceiro === "fornecedor" ? formatCnpj(e, setErrorIdentificacao, setHelperTextIdentificacao) : formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao)}}
+                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                 </>
                                 }
                                 info={<>
                                     <div>
-                                        <h2>Nome:</h2>
+                                        <h3>Nome:</h3>
                                         <p key="nome" style={{ width: '100%', marginBottom: '2rem' }}> {item.nome}</p>
-                                        <h2>Telefone:</h2>
-                                        <p key="telefone" style={{ width: '100%', marginBottom: '2rem' }}> {item.telefone}</p>
-                                        <h2>E-mail:</h2>
+                                        <h3>Telefone:</h3>
+                                        <p key="telefone" style={{ width: '100%', marginBottom: '2rem' }}> {aplicarMascaraTelefone(item.telefone)}</p>
+                                        <h3>E-mail:</h3>
                                         <p key="email" style={{ width: '100%', marginBottom: '2rem' }}> {item.email}</p>
                                     </div>
                                     <div>
-                                        <h2>Endereço:</h2>
+                                        <h3>Endereço:</h3>
                                         <p key="endereco" style={{ width: '100%', marginBottom: '2rem' }}> {item.endereco}</p>
-                                        <h2>CPF/CNPJ:</h2>
-                                        <p key="identificacao" style={{ width: '100%', marginBottom: '2rem' }}> {item.identificacao}</p>
+                                        <h3>{parceiro === "fornecedor" ? "CNPJ:" : "CPF:"}</h3>
+                                        <p key="identificacao" style={{ width: '100%', marginBottom: '2rem' }}> {parceiro === "fornecedor" ? aplicarMascaraCnpj(item.identificacao) : aplicarMascaraCpf(item.identificacao)}</p>
                                     </div>
                                 </>}
                                 title={`Informações ${atualizarDados}`}
