@@ -123,7 +123,7 @@ export function Parceiros() {
                 setAlertTitle("Cadastro realizado com sucesso!");
                 setAlertMessage(`Os dados ${atualizarDados} foram cadastrados com sucesso.`);
                 setAlertOpen(true);
-                setDadosAtualizacao([]);
+                setDadosCadastro([]);
                 setOperations(operations + 1);
             })
             .catch(error => {
@@ -138,32 +138,57 @@ export function Parceiros() {
                     setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${atualizarDados}. Entre em contato com o suporte.`);
                 }
                 setAlertOpen(true);
-                setDadosAtualizacao([]);
+                setDadosCadastro([]);
                 setOperations(operations + 1);
             });
     }
 
-    const deletarParceiro = (id, nome) => {
-        axios.delete(`/api/parceiros/${id}`)
+    const deletarParceiro = (parceiro) => {
+        axios.delete(`/api/parceiros/${parceiro.id}`)
             .then(response => {
                 console.log(response.data);
                 setAlertType("success");
                 setAlertTitle("Remoção bem sucedida!");
-                setAlertMessage(`Os dados de ${nome} foram apagados com sucesso.`);
+                setAlertMessage(`Os dados de ${parceiro.nome} foram apagados com sucesso.`);
                 setAlertOpen(true);
                 setOperations(operations + 1);
             })
             .catch(error => {
-                console.error('Erro ao deletar parceiro:', error);
                 if (error.response.status === 409) {
-                    setAlertType("warning");
-                    setAlertTitle("Remoção não permitida!");
-                    setAlertMessage(`Não é possível apagar os dados de ${nome}, pois está referenciado(a) em outras partes do sistema.`);
+                    deletarParceiroReferenciado(parceiro);
                 } else {
                     setAlertType("error");
                     setAlertTitle("Erro ao apagar dados!");
-                    setAlertMessage(`Ocorreu um erro ao remover as informações de ${nome}. Entre em contato com o suporte.`);
+                    setAlertMessage(`Ocorreu um erro ao remover as informações de ${parceiro.nome}. Entre em contato com o suporte.`);
+                    setAlertOpen(true);
+                    setOperations(operations + 1);
                 }
+            });
+    }
+
+    const deletarParceiroReferenciado = (parceiro) => {
+        axios.put(`/api/parceiros/${parceiro.id}`,
+            {
+                "categoria": parceiro.categoria,
+                "nome": parceiro.nome,
+                "telefone": null,
+                "email": null,
+                "endereco": null,
+                "identificacao": null,
+            }
+        ).then(response => {
+            console.log(response.data);
+            setAlertType("success");
+            setAlertTitle("Remoção bem sucedida!");
+            setAlertMessage(`Os dados de ${parceiro.nome} foram apagados com sucesso.`);
+            setAlertOpen(true);
+            setOperations(operations + 1);
+        })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setAlertType("error");
+                setAlertTitle("Erro ao apagar dados!");
+                setAlertMessage(`Ocorreu um erro ao remover as informações de ${parceiro.nome}. Entre em contato com o suporte.`);
                 setAlertOpen(true);
                 setOperations(operations + 1);
             });
@@ -227,6 +252,11 @@ export function Parceiros() {
 
     // Seta os atributos do parceiro para cadastro
     const setAtribute = (valor, key) => {
+        if ((key === "identificacao" && parceiro === "fornecedor" && valor.length > 18) ||
+            (key === "identificacao" && parceiro === "costureira" && valor.length > 14) ||
+            (key === "telefone" && valor.length > 15)) {
+            return;
+        }
         let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro; // Cria uma cópia dos dados de cadastro ou um objeto vazio se ainda não houver dados
         copiaDados[key] = valor;
         setDadosCadastro(copiaDados);
@@ -283,7 +313,7 @@ export function Parceiros() {
                             dados={dadosCadastro}
                             children={
                                 <Button variant="contained" size="large" sx={
-                                    { width: '25vw', p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)"}
+                                    { width: '21vw', p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)" }
                                 }>Cadastrar {categoria}</Button>
                             } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                             form={
@@ -304,7 +334,7 @@ export function Parceiros() {
                                         <TextField size='small' key="endereco" required={true} onChange={(e) => setAtribute(e.target.value, "endereco")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>{parceiro === "fornecedor" ? "CNPJ:" : "CPF:"}</h3>
-                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="identificacao" required={true} onChange={(e) => {setAtribute(e.target.value, "identificacao"); parceiro === "fornecedor" ? formatCnpj(e, setErrorIdentificacao, setHelperTextIdentificacao) : formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao)}}
+                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="identificacao" required={true} onChange={(e) => { setAtribute(e.target.value, "identificacao"); parceiro === "fornecedor" ? formatCnpj(e, setErrorIdentificacao, setHelperTextIdentificacao) : formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao) }}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                 </>
@@ -330,7 +360,7 @@ export function Parceiros() {
                                 acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                                 func={atualizarParceiro}
                                 dadoTitle={item.nome}
-                                deleteFunc={() => deletarParceiro(item.id, item.nome)}
+                                deleteFunc={() => deletarParceiro(item)}
                                 dados={dadosAtualizacao[dadosAtualizacao.findIndex(dado => dado.id === item.id)]}
                                 form={<>
                                     <div>
@@ -338,10 +368,10 @@ export function Parceiros() {
                                         <TextField size='small' key="nome" required={true} defaultValue={item.nome} onChange={(e) => updateDados(item, e.target.value, "nome")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>Telefone</h3>
-                                        <TextField size='small' error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} defaultValue={aplicarMascaraTelefone(item.telefone)} onChange={(e) => {updateDados(item, e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone)}}
+                                        <TextField size='small' error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} defaultValue={aplicarMascaraTelefone(item.telefone)} onChange={(e) => { updateDados(item, e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone) }}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>E-mail</h3>
-                                        <TextField size='small' error={errorEmail} helperText={helperTextEmail} key="email" required={true} defaultValue={item.email} onChange={(e) => {updateDados(item, e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail)}}
+                                        <TextField size='small' error={errorEmail} helperText={helperTextEmail} key="email" required={true} defaultValue={item.email} onChange={(e) => { updateDados(item, e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail) }}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                     <div>
@@ -349,7 +379,7 @@ export function Parceiros() {
                                         <TextField size='small' key="endereco" required={true} defaultValue={item.endereco} onChange={(e) => updateDados(item, e.target.value, "endereco")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>{parceiro === "fornecedor" ? "CNPJ:" : "CPF:"}</h3>
-                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="identificacao" required={true} defaultValue={parceiro === "fornecedor" ? aplicarMascaraCnpj(item.identificacao) : aplicarMascaraCpf(item.identificacao)} onChange={(e) => {updateDados(item, e.target.value, "identificacao");parceiro === "fornecedor" ? formatCnpj(e, setErrorIdentificacao, setHelperTextIdentificacao) : formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao)}}
+                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="identificacao" required={true} defaultValue={parceiro === "fornecedor" ? aplicarMascaraCnpj(item.identificacao) : aplicarMascaraCpf(item.identificacao)} onChange={(e) => { updateDados(item, e.target.value, "identificacao"); parceiro === "fornecedor" ? formatCnpj(e, setErrorIdentificacao, setHelperTextIdentificacao) : formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao) }}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                 </>
