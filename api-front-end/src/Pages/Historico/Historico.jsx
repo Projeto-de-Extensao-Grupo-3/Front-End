@@ -50,7 +50,8 @@ const theme = createTheme({
             dark: '#d32f2f',
             contrastText: '#fff'
         },
-}});
+    }
+});
 
 function PaginarTabela(props) {
 
@@ -126,12 +127,16 @@ function reducer(state, action) {
         }
         case 'saida_add': {
             var index = state.itensDisponiveis.indexOf(action.value);
+            if (state.tipoItem == 'entrada') {
+                console.log(action.value.tipoItem)
+                action.value.isRoupa = action.value.tipoItem == 'roupa'
+            }
             if (index > -1) {
                 action.value.quantidadeNova = 1;
                 if (!action.value.isRoupa) {
-                    action.value.quantidadeNova+=99; // começar em 100 gramas
+                    action.value.quantidadeNova += 99; // começar em 100 gramas
                 }
-                action.value.precoNovo = Number(action.value.precoItem).toFixed(2);
+                action.value.precoNovo = Number(action.value.preco).toFixed(2);
                 return {
                     ...state,
                     itensDisponiveis: state.itensDisponiveis.splice(index, 1),
@@ -156,12 +161,20 @@ function reducer(state, action) {
         }
         case 'saida_update': {
             var index = state.itensParaRegistrar.indexOf(action.value)
-            action.newValue = Number(action.newValue);
-            if (index < 0 || isNaN(action.newValue) || action.newValue < 0 || action.newValue > Number(action.value.qtdItem)) {
+            var asNumber = action.newValue.toString()
+            asNumber = asNumber.match(/\d/g);
+            if (index < 0 || asNumber == null) {
+                // Necessário manter aqui devido a ambiente dev rodar essa função duas vezes
+                return {...state}
+            }
+            asNumber = asNumber.join("");
+            asNumber = Number(asNumber)
+            if (index < 0 || action.newValue < 0 || action.newValue > Number(action.value.qtdItem)) {
                 return { ...state };
             }
-            action.value.quantidadeNova = action.newValue;
+            action.value.quantidadeNova = asNumber;
             var auxItensParaRegistrar = state.itensParaRegistrar;
+            auxItensParaRegistrar.quantidadeNova = action.newValue
             auxItensParaRegistrar[index] = action.value;
             return {
                 ...state,
@@ -172,7 +185,7 @@ function reducer(state, action) {
             return {
                 ...state,
                 alertType: action.severity,
-                alertTitle: action.title, 
+                alertTitle: action.title,
                 alertMessage: action.message,
                 alertOpen: true
             }
@@ -228,9 +241,9 @@ export function Historico() {
 
     const handleBlackout = useEffect(() => {
         if (values.displayPopup == 'none') {
-            dispatch({type: 'simples', field: 'brightnessMain', value: '100%'})
+            dispatch({ type: 'simples', field: 'brightnessMain', value: '100%' })
         } else {
-            dispatch({type: 'simples', field: 'brightnessMain', value: '50%'})
+            dispatch({ type: 'simples', field: 'brightnessMain', value: '50%' })
         }
     }, [values.displayPopup])
 
@@ -265,35 +278,43 @@ export function Historico() {
         }
     }, [values.entradasPorPagina, values.pagina, values.tipoMovimentacao, values.triggerAtualizar]);
 
-    // const obterDadosRegistrarEntrada = useEffect(() => {
-    //     if (values.displayPopup == 'none') {
-    //         dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] })
-    //         return;
-    //     }
-    //     axios.get(`/api/itens-estoque/itensResumidos`)
-    //         .then(response => { dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data }) });
-    // }, [values.displayPopup]);
-
     const obterDadosRegistrar = useEffect(() => {
         if (values.displayPopup == 'none') {
             dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] });
             dispatch({ type: 'simples', field: 'itensParaRegistrar', value: [] });
-            return;
-        }
-        if (values.tipoItem == 'saida') {
-            axios.get(`/api/lotes/lotesEmEstoque`)
-                .then(response => {
-                    dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
-                }).catch(error => {
-                    console.log("Erro ao obter dados de lotes em estoque: " + error)
-                });
-    
+            dispatch({ type: 'simples', field: 'parceiros', value: [] });
+        } else {
+            if (values.tipoItem == 'saida') {
+                axios.get(`/api/lotes/lotesEmEstoque`)
+                    .then(response => {
+                        dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
+                    }).catch(error => {
+                        console.log("Erro ao obter dados de lotes em estoque: " + error)
+                    });
+            } else if (values.tipoItem == 'entrada') {
+                axios.get(`/api/itens-estoque/itensResumidos`)
+                    .then(response => {
+                        var data = response.data
+                        // data.forEach((e) => e)
+                        dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
+                    }).catch(error => {
+                        console.log("Erro ao obter dados de lotes em estoque: " + error)
+                    });
+            }
+            let auxParceiro = []
             axios.get(`/api/parceiros/listagem/costureira`)
-                .then(response => { 
-                    dispatch({ type: 'simples', field: 'parceiros', value: response.data }) 
+                .then(response => {
+                    response.data.forEach((e) => auxParceiro.push(e))
                 }).catch(error => {
                     console.log("Erro ao obter dados de parceiros: " + error)
                 });
+            axios.get(`/api/parceiros/listagem/fornecedor`)
+                .then(response => {
+                    response.data.forEach((e) => auxParceiro.push(e))
+                }).catch(error => {
+                    console.log("Erro ao obter dados de parceiros: " + error)
+                });
+            dispatch({ type: 'simples', field: 'parceiros', value: auxParceiro })
         }
     }, [values.displayPopup]);
 
@@ -301,19 +322,24 @@ export function Historico() {
 
     const handleRegistrarSaida = () => {
         if (values.itensParaRegistrar.length == 0) {
-                dispatch({ type: 'alert', severity: 'warning', title: 'Nenhum item escolhido!', message: "Escolha um ou mais itens para registrar!" });
-                console.log("here")
-                return;
+            dispatch({ type: 'alert', severity: 'warning', title: 'Nenhum item escolhido!', message: "Escolha um ou mais itens para registrar!" });
+            console.log("here")
+            return;
         } else if (values.tipoItem == 'saida') {
-            console.log(values.itensParaRegistrar)
-            values.itensParaRegistrar.forEach( (item) => 
+            values.itensParaRegistrar.forEach((item) => {
+                if (item.quantidadeNova == 0) {
+                    dispatch({ type: 'alert', severity: 'warning', title: 'Quantidade incorreta para um ou mais itens!', message: "Todos os itens devem estar com ao menos 1 unidade saindo!" });
+                    return null;
+                }
+            })
+            values.itensParaRegistrar.forEach((item) =>
                 axios.post(`/api/saidas-estoque`, {
                     data: dayjs().format('YYYY-MM-DD'),
                     hora: dayjs().format('HH:mm:ss'),
                     qtdSaida: item.quantidadeNova,
                     motivoSaida: values.motivo,
                     responsavel: {
-                        idFuncionario: 1 // Como faremos para obter esse atributo?
+                        idFuncionario: sessionStorage.getItem('idFuncionario')
                     },
                     loteItemEstoque: {
                         idLoteItemEstoque: item.idLoteItemEstoque
@@ -327,6 +353,14 @@ export function Historico() {
                     console.log("Erro ao regsitrar saída de itens itens:" + error)
                 })
             );
+        } else if (values.tipoItem == 'entrada') {
+            values.itensParaRegistrar.forEach((item) => {
+                console.log(item.quantidadeNova )
+                if (item.quantidadeNova == 0) {
+                    dispatch({ type: 'alert', severity: 'warning', title: 'Quantidade incorreta para um ou mais itens!', message: "Todos os itens devem estar com ao menos 1 unidade saindo!" });
+                    return null;
+                }
+            })
         }
         return null;
     };
@@ -335,32 +369,32 @@ export function Historico() {
     return (
         <div >
             <Navbar vazio={false} pageNumber={0} />
-            <div className={styles.main} style={{filter: `brightness(${values.brightnessMain})`}}>
+            <div className={styles.main} style={{ filter: `brightness(${values.brightnessMain})` }}>
                 <div className={styles.barraFiltros}>
-                        <div className={styles.boxButton}>
-                            <Button className={styles.button} variant="contained" onClick={() => dispatch({ type: 'registro', tipoItem: 'entrada', display: 'flex' })}>
-                                <InventoryIcon style={{marginRight: '5px'}} />
-                                Registrar Entrada de Item
-                            </Button>
-                        </div>
-                        <div className={styles.boxButton}>
-                            <Button theme={theme} color='saida' className={styles.button} variant="contained" onClick={() => dispatch({ type: 'registro', tipoItem: 'saida', display: 'flex' })}>
-                                <LogoutIcon style={{marginRight: '5px'}} />Registrar Saída de Item
-                            </Button>
-                        </div>
+                    <div className={styles.boxButton}>
+                        <Button className={styles.button} variant="contained" onClick={() => dispatch({ type: 'registro', tipoItem: 'entrada', display: 'flex' })}>
+                            <InventoryIcon style={{ marginRight: '5px' }} />
+                            Registrar Entrada de Item
+                        </Button>
+                    </div>
+                    <div className={styles.boxButton}>
+                        <Button theme={theme} color='saida' className={styles.button} variant="contained" onClick={() => dispatch({ type: 'registro', tipoItem: 'saida', display: 'flex' })}>
+                            <LogoutIcon style={{ marginRight: '5px' }} />Registrar Saída de Item
+                        </Button>
+                    </div>
                 </div>
                 <div className={styles.body}>
                     <div className={styles.divTabela}>
                         <div className={styles.boxTituloTabela}>
                             <span className={styles.tituloTabela}>Movimentação de estoque: </span>
                             <div className={styles.boxSelect}>
-                            <FormControl >
-                                <InputLabel id="label-tipo-slct">Tipo</InputLabel>
-                                <Select value={values.tipoMovimentacao} onChange={(event) => dispatch({ type: 'simples', field: 'tipoMovimentacao', value: event.target.value })} labelId="label-tipo-slct" label="Tipo">
-                                    <MenuItem value={0}>Entrada</MenuItem>
-                                    <MenuItem value={1}>Saída</MenuItem>
-                                </Select>
-                            </FormControl>
+                                <FormControl >
+                                    <InputLabel id="label-tipo-slct">Tipo</InputLabel>
+                                    <Select value={values.tipoMovimentacao} onChange={(event) => dispatch({ type: 'simples', field: 'tipoMovimentacao', value: event.target.value })} labelId="label-tipo-slct" label="Tipo">
+                                        <MenuItem value={0}>Entrada</MenuItem>
+                                        <MenuItem value={1}>Saída</MenuItem>
+                                    </Select>
+                                </FormControl>
                             </div>
                         </div>
                         <br />
@@ -431,15 +465,20 @@ export function Historico() {
                                             <MenuItem value={0} disabled>Selecione um Item</MenuItem>
                                             <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
                                             {values.itensDisponiveis.map((dadoItem) => (
-                                                <MenuItem value={dadoItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem>
+                                                values.tipoItem == 'saida' ?
+                                                    <MenuItem value={dadoItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem> :
+                                                    <MenuItem value={dadoItem}>{`${dadoItem.descricao}`}</MenuItem>
                                             ))}
                                         </Select>
                                         <FormControl>
-                                            <InputLabel id="labelDestino">Destino dos Itens</InputLabel>
-                                            <Select labelId="labelDestino" label="Destino dos Itens" value={values.idParceiroEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'idParceiroEscolhido', value: event.target.value })}>
-                                                <MenuItem value={-1}>Cliente (venda)</MenuItem>
+                                            <InputLabel id="labelDestino">{values.tipoItem == 'saida' ? "Destino dos Itens" : "Origem dos itens"}</InputLabel>
+                                            <Select labelId="labelDestino" label={values.tipoItem == 'saida' ? "Destino dos Itens" : "Origem dos itens"} value={values.idParceiroEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'idParceiroEscolhido', value: event.target.value })}>
+                                                {values.tipoItem == 'saida' ?
+                                                    <MenuItem value={-1}>Cliente (venda)</MenuItem> :
+                                                    <MenuItem disabled value={-1}>Escolha o fornecedor de origem</MenuItem>
+                                                }
                                                 {values.parceiros.map((parceiro) => (
-                                                    <MenuItem value={parceiro.id}>{parceiro.nome} (Parceira)</MenuItem>
+                                                    <MenuItem value={parceiro.id}>{parceiro.nome} ({parceiro.categoria})</MenuItem>
                                                 ))}
                                             </Select>
                                         </FormControl>
@@ -450,30 +489,29 @@ export function Historico() {
                                 </div>
                                 <br />
                                 <h2 id="id-entrada-saida">Itens para registro:</h2>
-                                <TableContainer sx={{maxHeight: '600px'}}>
+                                <TableContainer sx={{ maxHeight: '600px' }}>
                                     <Table stickyHeader>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>Lote</TableCell>
+                                                <TableCell>{values.tipoItem == 'saida' ? "Lote" : "Imagem"}</TableCell>
                                                 <TableCell>Item</TableCell>
                                                 <TableCell>Quantidade</TableCell>
                                                 <TableCell>Tirar Item</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {values.itensParaRegistrar.map((item) => (
+                                            {values.tipoItem == 'saida' ? values.itensParaRegistrar.map((item) => (
                                                 <TableRow key={item.idLoteItemEstoque}>
                                                     <TableCell>{item.idLote}</TableCell>
                                                     <TableCell>{item.nomeItem}</TableCell>
                                                     <TableCell>
-                                                        <NumericFormat 
+                                                        <NumericFormat
                                                             value={item.quantidadeNova}
                                                             customInput={TextField}
                                                             onChange={(e) =>
                                                                 dispatch({
                                                                     type: 'saida_update',
                                                                     value: item,
-                                                                    atribute: 'quantidade',
                                                                     newValue: e.target.value
                                                                 })
                                                             }
@@ -484,16 +522,39 @@ export function Historico() {
                                                         <Button onClick={() => dispatch({ type: 'saida_del', value: item })}>Remover Item</Button>
                                                     </TableCell>
                                                 </TableRow>
-                                            ))}
+                                            )) : values.itensParaRegistrar.map((item) => (
+                                                <TableRow key={item.idItem}>
+                                                    <TableCell><img src={item.urlImagem} className={styles.boxImagem} /></TableCell>
+                                                    <TableCell>{item.descricao}</TableCell>
+                                                    <TableCell>
+                                                        <NumericFormat
+                                                            value={item.quantidade}
+                                                            customInput={TextField}
+                                                            onChange={(e) =>
+                                                                dispatch({
+                                                                    type: 'saida_update',
+                                                                    value: item,
+                                                                    newValue: e.target.value
+                                                                })
+                                                            }
+                                                            suffix={item.tipoItem == 'roupa' ? ' unidade(s)' : ' gramas'}
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button onClick={() => dispatch({ type: 'saida_del', value: item })}>Remover Item</Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                            }
                                         </TableBody>
                                     </Table>
                                 </TableContainer>
                             </div>
                             <div className={styles.btnConfirmarPopup}>
-                                <TextField 
+                                <TextField
                                     label="Motivo de saída (opcional)"
                                     value={values.motivo}
-                                    onChange={(event) => dispatch({type: 'simples', field: 'motivo', value: event.target.value})}
+                                    onChange={(event) => dispatch({ type: 'simples', field: 'motivo', value: event.target.value })}
                                 />
                                 <Button onClick={() => handleRegistrarSaida()} variant={values.itensParaRegistrar.length > 0 ? "contained" : "outlined"} disabled={values.itensParaRegistrar.length == 0}>Confirmar</Button>
                             </div>
