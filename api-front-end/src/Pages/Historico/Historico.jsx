@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-import { NumericFormat } from 'react-number-format';
+// import { NumericFormat } from 'react-number-format';
 
 // @MUI
 import { ptBR } from '@mui/x-date-pickers/locales';

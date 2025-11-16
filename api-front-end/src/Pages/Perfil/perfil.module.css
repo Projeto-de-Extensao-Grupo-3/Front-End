@@ -78,7 +78,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 80%; /* Faz preencher todo o espaço restante */
+    width: 100%; /* Faz preencher todo o espaço restante */
     background-color: white; /* Cor de fundo da área de informações do perfil */
     border-left: 0.1rem solid black;
 }
@@ -86,7 +86,7 @@
 .userInfo {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: first baseline;
     margin-top: 10px;
     width: 100%;
     justify-content: space-evenly;
@@ -130,7 +130,7 @@
   border-radius: 2px;
   text-align: center;
   display: inline-block;
-  margin-bottom: -2rem;
+  margin-bottom: 2rem;
 }
 
 .botaoSalvar {
@@ -142,8 +142,8 @@
   cursor: pointer;
   border-radius: 2px;
   text-align: center;
-  display: inline-block;
   margin: 1rem 0 1rem auto;
+  float: right;
 }
 
 .botaoo:hover  {

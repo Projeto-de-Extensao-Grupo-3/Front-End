@@ -50,8 +50,8 @@ export function Navbar(props) {
                 <div onClick={() => redirecionar("/funcionarios")} className={styles.link} style={{ fontFamily: weights[4] }}>Funcionários</div>
                 <div onClick={() => redirecionar("/parceiros")} className={styles.link} style={{ fontFamily: weights[5] }}>Fornecedores</div>
             </div>
-            <div className={styles.link}>
-                <AccountCircleIcon fontSize="large" color="action" onClick={() => redirecionar("/perfil")}
+            <div className={styles.link} onClick={() => redirecionar("/perfil")}>
+                <AccountCircleIcon fontSize="large" color="action" 
                 sx={
                     {color: "rgba(255, 255, 255, 1)", cursor: "pointer", display: "flex", alignItems: "center"}
                 }/>
