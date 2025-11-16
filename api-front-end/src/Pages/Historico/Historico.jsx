@@ -12,7 +12,7 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 
-// import { NumericFormat } from 'react-number-format';
+import { NumericFormat } from 'react-number-format';
 
 // @MUI
 import { ptBR } from '@mui/x-date-pickers/locales';
@@ -125,10 +125,9 @@ function reducer(state, action) {
                 [action.field]: action.value
             }
         }
-        case 'saida_add': {
+        case 'registro_add': {
             var index = state.itensDisponiveis.indexOf(action.value);
             if (state.tipoItem == 'entrada') {
-                console.log(action.value.tipoItem)
                 action.value.isRoupa = action.value.tipoItem == 'roupa'
             }
             if (index > -1) {
@@ -146,7 +145,7 @@ function reducer(state, action) {
                 return { ...state };
             }
         }
-        case 'saida_del': {
+        case 'registro_del': {
             var index = state.itensParaRegistrar.indexOf(action.value);
             if (index > -1) {
                 delete action.value.quantidadeNova;
@@ -159,22 +158,25 @@ function reducer(state, action) {
                 return { ...state };
             }
         }
-        case 'saida_update': {
+        case 'registro_update': {
             var index = state.itensParaRegistrar.indexOf(action.value)
             var asNumber = action.newValue.toString()
             asNumber = asNumber.match(/\d/g);
             if (index < 0 || asNumber == null) {
                 // Necessário manter aqui devido a ambiente dev rodar essa função duas vezes
-                return {...state}
+                return { ...state }
             }
             asNumber = asNumber.join("");
             asNumber = Number(asNumber)
             if (index < 0 || action.newValue < 0 || action.newValue > Number(action.value.qtdItem)) {
                 return { ...state };
             }
-            action.value.quantidadeNova = asNumber;
+            if (action.field == 'quantidadeNova') {
+                action.value.quantidadeNova = asNumber;
+            } else if (action.field == 'preco') {
+                action.value.preco = asNumber;
+            }
             var auxItensParaRegistrar = state.itensParaRegistrar;
-            auxItensParaRegistrar.quantidadeNova = action.newValue
             auxItensParaRegistrar[index] = action.value;
             return {
                 ...state,
@@ -194,7 +196,9 @@ function reducer(state, action) {
             return {
                 ...state,
                 displayPopup: action.display,
-                tipoItem: action.tipoItem
+                tipoItem: action.tipoItem,
+                idParceiroEscolhido: -1
+
             }
         }
         default: throw new Error("Erro no reducer!");
@@ -320,10 +324,9 @@ export function Historico() {
 
     globalThis.values = values
 
-    const handleRegistrarSaida = () => {
+    const handleRegistrar = () => {
         if (values.itensParaRegistrar.length == 0) {
             dispatch({ type: 'alert', severity: 'warning', title: 'Nenhum item escolhido!', message: "Escolha um ou mais itens para registrar!" });
-            console.log("here")
             return;
         } else if (values.tipoItem == 'saida') {
             values.itensParaRegistrar.forEach((item) => {
@@ -345,22 +348,47 @@ export function Historico() {
                         idLoteItemEstoque: item.idLoteItemEstoque
                     },
                     costureira: values.idParceiroEscolhido != -1 ? values.idParceiroEscolhido : null
-                }).then(response => {
-                    dispatch({ type: 'registro', tipoItem: '', display: 'none' })
-                    dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de saída concluído com sucesso!" });
-                    dispatch({ type: 'simples', field: 'triggerAtualizar', value: values.triggerAtualizar + 1 })
                 }).catch(error => {
-                    console.log("Erro ao regsitrar saída de itens itens:" + error)
+                    console.error("Erro ao regsitrar saída de itens:" + error)
+                    return;
                 })
             );
+            dispatch({ type: 'registro', tipoItem: '', display: 'none' })
+            dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de saída concluído com sucesso!" });
+            dispatch({ type: 'simples', field: 'triggerAtualizar', value: values.triggerAtualizar + 1 })
         } else if (values.tipoItem == 'entrada') {
-            values.itensParaRegistrar.forEach((item) => {
-                console.log(item.quantidadeNova )
-                if (item.quantidadeNova == 0) {
-                    dispatch({ type: 'alert', severity: 'warning', title: 'Quantidade incorreta para um ou mais itens!', message: "Todos os itens devem estar com ao menos 1 unidade saindo!" });
-                    return null;
-                }
+            if (values.idParceiroEscolhido == -1) {
+                dispatch({ type: 'alert', severity: 'warning', title: 'Escolha um parceiro!', message: "Um parceiro é necessário para entrada de itens!" });
+                return null;
+            }
+            if (values.motivo == "") {
+                dispatch({ type: 'simples', field: 'motivo', value: "Não especificado" })
+            }
+            let lote = 0;
+            axios.post(`api/lotes`, {
+                descricao: values.motivo,
+                dataEntrada: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+                parceiro: values.idParceiroEscolhido,
+                responsavel: sessionStorage.getItem('idFuncionario')
+            }).then(response => {
+                lote = response.data.idLote;
+                values.itensParaRegistrar.forEach((item) => {
+                    axios.post(`/api/lotes-item-estoque`, {
+                        qtdItem: item.quantidadeNova,
+                        preco: item.preco,
+                        itemEstoque: item.idItem,
+                        lote: response.data.idLote
+                    }).then(response => 
+                        console.log(response)
+                    ).catch(error => {
+                        console.error("Erro ao registrar entrada de itens: " + error)
+                        return;
+                    })
+                })
             })
+            dispatch({ type: 'registro', tipoItem: '', display: 'none' })
+            dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de entrada concluído com sucesso!" });
+            dispatch({ type: 'simples', field: 'triggerAtualizar', value: values.triggerAtualizar + 1 })
         }
         return null;
     };
@@ -461,7 +489,7 @@ export function Historico() {
                             <div>
                                 <div className={styles.barraPopup}>
                                     <div className={styles.selectsPopup}>
-                                        <Select value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'saida_add', value: event.target.value })}>
+                                        <Select value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'registro_add', value: event.target.value })}>
                                             <MenuItem value={0} disabled>Selecione um Item</MenuItem>
                                             <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
                                             {values.itensDisponiveis.map((dadoItem) => (
@@ -496,6 +524,7 @@ export function Historico() {
                                                 <TableCell>{values.tipoItem == 'saida' ? "Lote" : "Imagem"}</TableCell>
                                                 <TableCell>Item</TableCell>
                                                 <TableCell>Quantidade</TableCell>
+                                                <TableCell>{values.tipoItem == 'saida' ? "Preço" : "Custo"}</TableCell>
                                                 <TableCell>Tirar Item</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -510,16 +539,20 @@ export function Historico() {
                                                             customInput={TextField}
                                                             onChange={(e) =>
                                                                 dispatch({
-                                                                    type: 'saida_update',
+                                                                    type: 'registro_update',
                                                                     value: item,
-                                                                    newValue: e.target.value
+                                                                    newValue: e.target.value,
+                                                                    field: 'quantidadeNova'
                                                                 })
                                                             }
                                                             suffix={item.isRoupa ? ' unidade(s)' : ' gramas'}
                                                         />
                                                     </TableCell>
+                                                    <TableCell>{item.isRoupa ? item.precoItem + " cada, " + Number(item.precoItem) * Number(item.quantidadeNova) + " total"
+                                                        : "Não se aplica"
+                                                    }</TableCell>
                                                     <TableCell>
-                                                        <Button onClick={() => dispatch({ type: 'saida_del', value: item })}>Remover Item</Button>
+                                                        <Button onClick={() => dispatch({ type: 'registro_del', value: item })}>Remover Item</Button>
                                                     </TableCell>
                                                 </TableRow>
                                             )) : values.itensParaRegistrar.map((item) => (
@@ -528,20 +561,35 @@ export function Historico() {
                                                     <TableCell>{item.descricao}</TableCell>
                                                     <TableCell>
                                                         <NumericFormat
-                                                            value={item.quantidade}
+                                                            value={item.quantidadeNova}
                                                             customInput={TextField}
                                                             onChange={(e) =>
                                                                 dispatch({
-                                                                    type: 'saida_update',
+                                                                    type: 'registro_update',
                                                                     value: item,
-                                                                    newValue: e.target.value
+                                                                    newValue: e.target.value,
+                                                                    field: 'quantidadeNova'
                                                                 })
                                                             }
                                                             suffix={item.tipoItem == 'roupa' ? ' unidade(s)' : ' gramas'}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
-                                                        <Button onClick={() => dispatch({ type: 'saida_del', value: item })}>Remover Item</Button>
+                                                        <NumericFormat
+                                                            value={item.preco}
+                                                            customInput={TextField}
+                                                            onChange={(e) =>
+                                                                dispatch({
+                                                                    type: 'registro_update',
+                                                                    value: item,
+                                                                    newValue: e.target.value,
+                                                                    field: 'preco'
+                                                                })
+                                                            }
+                                                        />
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Button onClick={() => dispatch({ type: 'registro_del', value: item })}>Remover Item</Button>
                                                     </TableCell>
                                                 </TableRow>
                                             ))
@@ -552,11 +600,11 @@ export function Historico() {
                             </div>
                             <div className={styles.btnConfirmarPopup}>
                                 <TextField
-                                    label="Motivo de saída (opcional)"
+                                    label={values.tipoItem == 'saida' ? "Motivo de saída (opcional)" : "Descrição do lote (opcional)"}
                                     value={values.motivo}
                                     onChange={(event) => dispatch({ type: 'simples', field: 'motivo', value: event.target.value })}
                                 />
-                                <Button onClick={() => handleRegistrarSaida()} variant={values.itensParaRegistrar.length > 0 ? "contained" : "outlined"} disabled={values.itensParaRegistrar.length == 0}>Confirmar</Button>
+                                <Button onClick={() => handleRegistrar()} variant={values.itensParaRegistrar.length > 0 ? "contained" : "outlined"} disabled={values.itensParaRegistrar.length == 0}>Confirmar</Button>
                             </div>
                         </Paper>
                     </div>
