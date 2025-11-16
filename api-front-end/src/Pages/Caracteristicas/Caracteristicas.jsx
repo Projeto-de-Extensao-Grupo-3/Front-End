@@ -94,8 +94,7 @@ export function Caracteristicas() {
         const duplicado = dadosCaracteristicas.some(r => r.nome === nome);
 
         if (duplicado) {
-            document.getElementById('alert-cadastro-atualiza').style.display = "flex"; // idealmente substituir por estado React
-            return;
+            document.getElementById('alert-cadastro-atualiza').style.display = "flex";
         }
 
         try {
