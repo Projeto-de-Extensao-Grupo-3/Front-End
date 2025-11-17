@@ -11,6 +11,7 @@ import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import axios from 'axios';
 
 export function Estoque() {
@@ -56,6 +57,9 @@ export function Estoque() {
     const [alertTitle, setAlertTitle] = useState("");
     const [alertMessage, setAlertMessage] = useState("");
     const [alertType, setAlertType] = useState("");
+
+    // Variável para responsividade
+    const matches = useMediaQuery('(min-width:600px)');
 
     // Armazena a imagem cadastrada (id e url retornados pelo endpoint de cadastro de imagem)
     let imagemCadastro;
@@ -492,16 +496,16 @@ export function Estoque() {
                 <Options opt1={"Roupa"} opt2={"Tecido"} acao={atualizarInfoTela} />
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
-                        <BarraPesquisa func={buscarItemEstoque} busca={pesquisa} />
+                        <BarraPesquisa func={buscarItemEstoque} busca={pesquisa} width='90%'/>
                     </div>
                     <div>
                         <JanelaCadastro func={uploadImagemS3}
                             limparCampos={limparCampos}
                             dados={dadosCadastro}
                             children={
-                                <Button variant="contained" size="large" sx={
-                                    { p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)" }
-                                }>Cadastrar {categoria}</Button>
+                                <Button className={styles.btnCadastro} variant="contained" size="large" sx={{
+                                    p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)", marginTop: matches ? '0' : '20px'
+                                }}>Cadastrar {categoria}</Button>
                             } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                             form={
                                 <>
@@ -572,7 +576,7 @@ export function Estoque() {
                                             Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
                                         </Button>
                                         <br />
-                                        <img style={{ width: "10em" }} src={imagePreview} alt="" />
+                                        <img style={{ width: matches ? "10em" : "4rem" }} src={imagePreview} alt="" />
                                     </div>
                                 </>
                             } />
@@ -585,11 +589,11 @@ export function Estoque() {
                             <BarraVisualizacao key={item.idItemEstoque}
                                 children={
                                     <>
-                                        <li>Imagem: <br /> <img src={item.imagem.url} style={{ height: "6rem" }} /> </li>
+                                        <li className={styles.liImagem}>Imagem: <br /> <img src={item.imagem.url} className={styles.imagemItem}style={{ height: matches ? "6rem" : "4rem" }} /> </li>
                                         <hr />
-                                        <li>Descrição: <br /> {item.descricao} </li>
+                                        <li className={styles.liTextoLargo}>Descrição: <br /> {item.descricao} </li>
                                         <hr />
-                                        <li>Quantidade em estoque: <br /> {item.qtdArmazenado} </li>
+                                        <li className={styles.liTextoLargo}>Quantidade em estoque: <br /> {item.qtdArmazenado} </li>
                                         <hr />
                                     </>}
                                 limparCampos={limparCampos}
@@ -668,7 +672,7 @@ export function Estoque() {
                                                 Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
                                             </Button>
                                             <br />
-                                            <img style={{ width: "10rem" }} src={imagePreview === "" ? item.imagem.url : imagePreview} alt="" />
+                                            <img style={{ width: matches ? "10rem" : "4rem" }} src={imagePreview === "" ? item.imagem.url : imagePreview} alt="" />
                                         </div>
                                     </>
                                 }

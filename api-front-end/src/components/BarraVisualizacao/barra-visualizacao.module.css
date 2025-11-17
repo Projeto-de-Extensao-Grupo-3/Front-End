@@ -27,3 +27,21 @@ hr {
     width: 5%;
    transform: rotate(90deg);
 }
+
+@media (max-width: 600px) {
+    .card {
+        height: 16rem;
+    }
+    .uul {
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .uul li {
+        margin-top: 20px;
+    }
+
+    hr {
+        display: none;
+    }
+}
