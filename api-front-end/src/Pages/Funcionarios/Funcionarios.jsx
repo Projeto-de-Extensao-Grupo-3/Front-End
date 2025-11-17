@@ -256,7 +256,6 @@ export function Funcionarios() {
         let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro; // Cria uma cópia dos dados de cadastro ou um objeto vazio se ainda não houver dados
         copiaDados[key] = valor;
         setDadosCadastro(copiaDados);
-        setOperations(operations + 1);
         console.log(dadosCadastro);
     }
 
@@ -269,7 +268,6 @@ export function Funcionarios() {
         let copiaDados = dadosAtualizacao;
         copiaDados[index][key] = novoValor; // Atualiza o atributo com base no index do parceiro e na chave do atributo
         setDadosAtualizacao(copiaDados);
-        setOperations(operations + 1);
         console.log(permissoesAtualizacao);
     };
 
@@ -381,7 +379,7 @@ export function Funcionarios() {
                                 limparCampos={limparCampos}
                                 acao={`Atualizar dados do funcionário`} confirm={"Confirmar alterações"}
                                 func={atualizarFuncionario}
-                                dadoTitle={item.nome}
+                                dadoTitle={`de ${item.nome}`}
                                 deleteFunc={() => deletarFuncionario(item)}
                                 dados={dadosAtualizacao[dadosAtualizacao.findIndex(dado => dado.idFuncionario === item.idFuncionario)]}
                                 form={<>

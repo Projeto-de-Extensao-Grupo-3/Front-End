@@ -48,7 +48,7 @@ export function JanelaDeletar(props) {
                 open={open}
             >
                 <DialogTitle sx={{ m: 3, p: 2, fontSize: '1.5rem', textAlign: 'center' }} id="customized-dialog-title">
-                    Deseja apagar permanentemente os dados de {props.dadoTitle}?
+                    Deseja apagar permanentemente os dados {props.dadoTitle}?
                 </DialogTitle>
                 <IconButton
                     aria-label="close"

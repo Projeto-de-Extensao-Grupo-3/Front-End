@@ -260,7 +260,6 @@ export function Parceiros() {
         let copiaDados = Object.keys(dadosCadastro).length == 0 ? {} : dadosCadastro; // Cria uma cópia dos dados de cadastro ou um objeto vazio se ainda não houver dados
         copiaDados[key] = valor;
         setDadosCadastro(copiaDados);
-        setOperations(operations + 1);
         console.log(dadosCadastro);
     }
 
@@ -271,7 +270,6 @@ export function Parceiros() {
         let copiaDados = dadosAtualizacao;
         copiaDados[index][key] = novoValor; // Atualiza o atributo com base no index do parceiro e na chave do atributo
         setDadosAtualizacao(copiaDados);
-        setOperations(operations + 1);
     };
 
     // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
@@ -359,7 +357,7 @@ export function Parceiros() {
                                 limparCampos={limparCampos}
                                 acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
                                 func={atualizarParceiro}
-                                dadoTitle={item.nome}
+                                dadoTitle={`de ${item.nome}`}
                                 deleteFunc={() => deletarParceiro(item)}
                                 dados={dadosAtualizacao[dadosAtualizacao.findIndex(dado => dado.id === item.id)]}
                                 form={<>
