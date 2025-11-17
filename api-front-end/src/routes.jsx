@@ -8,6 +8,7 @@ import { Caracteristicas } from "./Pages/Caracteristicas/Caracteristicas";
 import { Dashboard } from "./Pages/Dashboard/Dashboard";
 import { Funcionarios } from "./Pages/Funcionarios/Funcionarios";
 import { Estoque } from "./Pages/Estoque/Estoque";
+import { Prateleiras } from "./Pages/Prateleiras/Prateleiras.jsx";
 
 export const routes = createBrowserRouter([
     {
@@ -51,5 +52,9 @@ export const routes = createBrowserRouter([
         path: "/funcionarios",
         element: <Funcionarios/>,
         errorElement: <div>Erro</div>
+    },{
+        path: "/prateleiras",
+        element: <Prateleiras />,
+        errorElement: <div>Erro </div>
     }
 ]);

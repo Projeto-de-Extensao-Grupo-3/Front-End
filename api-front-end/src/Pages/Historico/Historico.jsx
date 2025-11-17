@@ -3,41 +3,29 @@ import styles from "./historico.module.css"
 
 import { Navbar } from "../../components/Navbar/Navbar"
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
+import { TabelaHistorico } from "../../components/TabelaHistorico/TabelaHistorico";
 
 import dayjs from "dayjs";
 import 'dayjs/locale/en-gb';
 
-import PropTypes from 'prop-types';
-
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 
 import { NumericFormat } from 'react-number-format';
 
 // @MUI
-import { ptBR } from '@mui/x-date-pickers/locales';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
-import { alpha, createTheme, getContrastRatio, ThemeProvider, useTheme } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
-import TablePagination from '@mui/material/TablePagination';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import { Paper, TablePaginationActions } from "@mui/material";
-import IconButton from '@mui/material/IconButton';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import Box from '@mui/material/Box';
-import FormLabel from '@mui/material/FormLabel';
+import { Paper } from "@mui/material";
 import TextField from '@mui/material/TextField';
 import LogoutIcon from '@mui/icons-material/Logout';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -53,68 +41,6 @@ const theme = createTheme({
     }
 });
 
-function PaginarTabela(props) {
-
-    const theme = useTheme();
-
-    const { count, page, rowsPerPage, onPageChange } = props;
-
-    const handleFirstPageButtonClick = (event) => {
-        onPageChange(event, 0);
-    };
-
-    const handleBackButtonClick = (event) => {
-        onPageChange(event, page - 1);
-    };
-
-    const handleNextButtonClick = (event) => {
-        onPageChange(event, page + 1);
-    };
-
-    const handleLastPageButtonClick = (event) => {
-        onPageChange(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
-    };
-
-    return (
-        <Box className={styles.btnPaginas}>
-            <IconButton
-                onClick={handleFirstPageButtonClick}
-                disabled={page === 0}
-                aria-label="Primeira Página"
-            >
-                {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
-            </IconButton>
-            <IconButton
-                onClick={handleBackButtonClick}
-                disabled={page === 0}
-                aria-label="Página Anterior"
-            >
-                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
-            </IconButton>
-            <IconButton
-                onClick={handleNextButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="Próxima Paáina"
-            >
-                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
-            </IconButton>
-            <IconButton
-                onClick={handleLastPageButtonClick}
-                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
-                aria-label="Última Página"
-            >
-                {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
-            </IconButton>
-        </Box>
-    );
-};
-
-PaginarTabela.propTypes = {
-    count: PropTypes.number.isRequired,
-    onPageChange: PropTypes.func.isRequired,
-    page: PropTypes.number.isRequired,
-    rowsPerPage: PropTypes.number.isRequired,
-};
 
 function reducer(state, action) {
 
@@ -210,11 +136,6 @@ export function Historico() {
     const initialState = {
 
         tipoMovimentacao: 0,
-
-        pagina: 0,
-        entradasPorPagina: 9,
-        tamanho: 0,
-        tuplas: [],
         triggerAtualizar: 1,
 
         brightnessMain: '100%',
@@ -239,6 +160,8 @@ export function Historico() {
 
     const [values, dispatch] = useReducer(reducer, initialState);
 
+    globalThis.values = values
+
     useEffect(() => {
         document.title = "Histórico"
     });
@@ -251,60 +174,19 @@ export function Historico() {
         }
     }, [values.displayPopup])
 
-    const handleChangePage = (event, newPage) => {
-        dispatch({ type: 'simples', field: 'pagina', value: newPage });
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        dispatch({ type: 'simples', field: 'entradasPorPagina', value: event.target.value });
-        dispatch({ type: 'simples', field: 'pagina', value: 0 });
-    };
-
-    const obterDadosTabela = useEffect(() => {
-        if (values.tipoMovimentacao == 0) {
-            axios.get(`/api/lotes-item-estoque/paginado?page=${values.pagina}&limit=${values.entradasPorPagina}`)
-                .then(response => {
-                    let newTuplas = [];
-                    response.data.conteudo.forEach(dados => { newTuplas.push(dados) });
-                    dispatch({ type: 'simples', field: 'tuplas', value: newTuplas });
-                    newTuplas = null;
-                    dispatch({ type: 'simples', field: 'tamanho', value: response.data.totalRegistros });
-                })
-        } else {
-            axios.get(`/api/lotes-item-estoque/paginadoSaida?page=${values.pagina}&limit=${values.entradasPorPagina}`)
-                .then(response => {
-                    let newTuplas = [];
-                    response.data.conteudo.forEach(dados => { newTuplas.push(dados) });
-                    dispatch({ type: 'simples', field: 'tuplas', value: newTuplas });
-                    newTuplas = null;
-                    dispatch({ type: 'simples', field: 'tamanho', value: response.data.totalRegistros });
-                })
-        }
-    }, [values.entradasPorPagina, values.pagina, values.tipoMovimentacao, values.triggerAtualizar]);
-
     const obterDadosRegistrar = useEffect(() => {
         if (values.displayPopup == 'none') {
             dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] });
             dispatch({ type: 'simples', field: 'itensParaRegistrar', value: [] });
             dispatch({ type: 'simples', field: 'parceiros', value: [] });
         } else {
-            if (values.tipoItem == 'saida') {
-                axios.get(`/api/lotes/lotesEmEstoque`)
-                    .then(response => {
-                        dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
-                    }).catch(error => {
-                        console.log("Erro ao obter dados de lotes em estoque: " + error)
-                    });
-            } else if (values.tipoItem == 'entrada') {
-                axios.get(`/api/itens-estoque/itensResumidos`)
-                    .then(response => {
-                        var data = response.data
-                        // data.forEach((e) => e)
-                        dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
-                    }).catch(error => {
-                        console.log("Erro ao obter dados de lotes em estoque: " + error)
-                    });
-            }
+            let endpoint = values.tipoItem == 'saida' ? 'lotes/lotesEmEstoque' : 'itens-estoque/itensResumidos';
+            axios.get(`/api/${endpoint}`)
+                .then(response => {
+                    dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
+                }).catch(error => {
+                    console.log("Erro ao obter dados de lotes em estoque: " + error)
+                });
             let auxParceiro = []
             axios.get(`/api/parceiros/listagem/costureira`)
                 .then(response => {
@@ -321,8 +203,6 @@ export function Historico() {
             dispatch({ type: 'simples', field: 'parceiros', value: auxParceiro })
         }
     }, [values.displayPopup]);
-
-    globalThis.values = values
 
     const handleRegistrar = () => {
         if (values.itensParaRegistrar.length == 0) {
@@ -378,7 +258,7 @@ export function Historico() {
                         preco: item.preco,
                         itemEstoque: item.idItem,
                         lote: response.data.idLote
-                    }).then(response => 
+                    }).then(response =>
                         console.log(response)
                     ).catch(error => {
                         console.error("Erro ao registrar entrada de itens: " + error)
@@ -426,60 +306,11 @@ export function Historico() {
                             </div>
                         </div>
                         <br />
-                        <TableContainer component={Paper}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Imagem</TableCell>
-                                        <TableCell>Quantidade</TableCell>
-                                        <TableCell>Nome do Item</TableCell>
-                                        <TableCell>Lote</TableCell>
-                                        <TableCell>{values.tipoMovimentacao == 0 ? "Origem" : "Destino"}</TableCell>
-                                        <TableCell>Horário</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {values.tuplas.map((tupla) => (
-                                        <TableRow key={tupla.nomeItem + tupla.idLote + values.tuplas.indexOf(tupla)}>
-                                            <TableCell><img src={tupla.url} className={styles.boxImagem} /></TableCell>
-                                            <TableCell>{tupla.qtdItem}</TableCell>
-                                            <TableCell>{tupla.nomeItem}</TableCell>
-                                            <TableCell>{tupla.idLote}</TableCell>
-                                            <TableCell>{tupla.nomeParceiro}</TableCell>
-                                            <TableCell>
-                                                {values.tipoMovimentacao == 0 ? dayjs(tupla.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(tupla.saidaEstoque).format('HH:mm:ss DD/MM/YY')}
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                                <TableFooter>
-                                    <TableRow>
-                                        <TablePagination
-                                            align="right"
-                                            rowsPerPageOptions={[6, 9, 12]}
-                                            colSpan={6}
-                                            count={values.tamanho}
-                                            rowsPerPage={values.entradasPorPagina}
-                                            page={values.pagina}
-                                            slotProps={{
-                                                select: {
-                                                    inputProps: {
-                                                        'aria-label': 'Entradas por Página',
-                                                    },
-                                                    native: true,
-                                                }
-                                            }}
-                                            onPageChange={(event, newPage) => handleChangePage(event, newPage)}
-                                            onRowsPerPageChange={(event) => handleChangeRowsPerPage(event)}
-                                            ActionsComponent={(props) => PaginarTabela(props)}
-                                        />
-                                    </TableRow>
-                                </TableFooter>
-                            </Table>
-                        </TableContainer>
+                          <TabelaHistorico  tipoMovimentacao={values.tipoMovimentacao} triggerAtualizar={values.triggerAtualizar}/>
                     </div>
                 </div>
             </div>
+
             <AlertDialog alertType={values.alertType} alertTitle={values.alertTitle} alertMessage={values.alertMessage} state={values.alertOpen} />
             <div>
                 <div className={styles.popupRegistro} style={{ display: values.displayPopup }}>
