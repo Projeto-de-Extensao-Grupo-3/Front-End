@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import styles from "./parceiros.module.css"
 import axios from 'axios';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { formatTelefone, aplicarMascaraTelefone, formatCnpj, formatCpf, aplicarMascaraCnpj, aplicarMascaraCpf, validarEmail } from '../../functions/utils.js';
 
 export function Parceiros() {
@@ -18,7 +19,7 @@ export function Parceiros() {
     // Tipo de parceiro mostrado na página (costureira ou fornecedor)
     const [parceiro, setParceiro] = useState("costureira");
     const [pesquisa, setPesquisa] = useState("Buscar costureira");
-    const [categoria, setCategoria] = useState("Nova Costureira");
+    const [categoria, setCategoria] = useState("Costureira");
     const [atualizarDados, setAtualizarDados] = useState("da costureira");
 
     // Mensagem de carregamento enquanto dados não são carregados
@@ -37,6 +38,9 @@ export function Parceiros() {
     const [alertTitle, setAlertTitle] = useState("");
     const [alertMessage, setAlertMessage] = useState("");
     const [alertType, setAlertType] = useState("");
+
+    // Variável para responsividade
+    const matches = useMediaQuery('(min-width:600px)');
 
     /*=====================================================================*/
 
@@ -239,13 +243,13 @@ export function Parceiros() {
             setDadosAtualizacao([]);
             setParceiro("costureira");
             setPesquisa("Buscar costureira");
-            setCategoria("Nova Costureira");
+            setCategoria("Costureira");
             setAtualizarDados("da costureira");
         } else if (tela == "fornecedor") {
             setDadosAtualizacao([]);
             setParceiro("fornecedor");
             setPesquisa("Buscar fornecedor");
-            setCategoria("Novo Fornecedor");
+            setCategoria("Fornecedor");
             setAtualizarDados("do fornecedor");
         }
     }
@@ -302,7 +306,7 @@ export function Parceiros() {
                 <Options item1={"Costureiras"} item2={"Fornecedores de Tecido"} opt1={"costureira"} opt2={"fornecedor"} acao={atualizarInfoTela} />
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
-                        <BarraPesquisa func={buscarParceiro} busca={pesquisa} />
+                        <BarraPesquisa func={buscarParceiro} busca={pesquisa} width='90%'/>
                     </div>
                     <div>
                         <JanelaCadastro func={cadastrarParceiro} id={''} categoria={parceiro}
@@ -310,8 +314,8 @@ export function Parceiros() {
                             limparCampos={limparCampos}
                             dados={dadosCadastro}
                             children={
-                                <Button variant="contained" size="large" sx={
-                                    { width: '21vw', p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)" }
+                                <Button className={styles.btnCadastro} variant="contained" size="large" sx={
+                                    { p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)", marginTop: matches ? '0' : '20px' }
                                 }>Cadastrar {categoria}</Button>
                             } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                             form={
@@ -346,11 +350,11 @@ export function Parceiros() {
                             <BarraVisualizacao key={item.id}
                                 children={
                                     <>
-                                        <li>Nome: <br /> {item.nome} </li>
+                                        <li className={styles.liTextoLargo}>Nome: <br /> {item.nome} </li>
                                         <hr />
-                                        <li>Telefone: <br /> {aplicarMascaraTelefone(item.telefone)} </li>
+                                        <li className={styles.liTextoLargo}>Telefone: <br /> {aplicarMascaraTelefone(item.telefone)} </li>
                                         <hr />
-                                        <li>E-mail: <br /> {item.email} </li>
+                                        <li className={styles.liTextoLargo}>E-mail: <br /> {item.email} </li>
                                         <hr />
                                     </>}
                                 cadastroDisabled={isCadastroDisabled}
