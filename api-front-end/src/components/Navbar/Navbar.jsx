@@ -2,7 +2,8 @@ import * as React from 'react';
 import styles from "./navbar.module.css"
 import ButtonReact from '@mui/material/Button';
 import Menu from '@mui/material/Menu';
-import burgerIco from "../../assets/white-burger.png"
+import MenuIcon from '@mui/icons-material/Menu';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import { MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom"
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -58,7 +59,9 @@ export function Navbar(props) {
             </div>
             <div className={styles.divBurger}>
                 <ButtonReact onClick={handleClick}>
-                    <img src={burgerIco} style={{maxWidth: "50px"}} />
+                    <MenuIcon color='primary' sx={{color: "white", fontSize: 55, display: anchorEl == null ? 'flex' : 'none'}} />
+                    <MenuOpenIcon color='primary' sx={{color: "white", fontSize: 55, display: anchorEl == null ? 'none' : 'flex'}} />
+
                 </ButtonReact>
                 <Menu anchorEl={anchorEl} open={open} onClose={handleClose} >
                     <MenuItem onClick={handleClose}>Histórico</MenuItem>

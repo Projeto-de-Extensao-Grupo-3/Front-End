@@ -38,7 +38,8 @@ hr {
     }
 
     .uul li {
-        margin-top: 20px;
+        margin-top: 30px;
+        min-width: 100px;
     }
 
     hr {
