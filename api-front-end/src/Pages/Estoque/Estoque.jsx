@@ -49,6 +49,8 @@ export function Estoque() {
     const [imagem, setImagem] = useState([]); // Imagem (arquivo) selecionada para upload
     const [imagePreview, setImagePreview] = useState(null); // Preview da imagem selecionada
 
+    const [tecidos, setTecidos] = useState([]); // Lista de tecidos (apenas para roupas)
+
     // Controla refresh da página a cada operação
     const [operations, setOperations] = useState(0);
 
@@ -75,6 +77,17 @@ export function Estoque() {
                 console.log(response.data);
                 setData(response.data);
                 if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data); // Inicializa os dados de atualização com os dados obtidos na listagem
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+    }
+
+    const listarTecidos = () => { // Apesar de já estar listando ItemEstoque,é necessário listar tecidos para serem relacionados com roupa
+        axios.get(`/api/itens-estoque/categorias?tipo=Tecido`)
+            .then(response => {
+                console.log(response.data);
+                setTecidos(response.data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -298,7 +311,7 @@ export function Estoque() {
                 }
                 "caracteristicas": ${caracteristicasIds}
                 "plateleira":
-                    "idPrateleira": ${ prateleiraCadastrar[0].id}
+                    "idPrateleira": ${prateleiraCadastrar[0].id}
                 }
                 "preco": ${dadosCadastro.preco}
                 "imagem":
@@ -396,6 +409,7 @@ export function Estoque() {
     // Carrega os dados iniciais
     useEffect(() => {
         listarItensEstoque();
+        listarTecidos();
         listarPrateleiras();
         listarCaracteristicas();
         listarCategorias();
@@ -463,6 +477,10 @@ export function Estoque() {
     // Limpa os campos do formulário de cadastro
     const limparCampos = () => {
         setImagem([]); // Limpa o arquivo de imagem selecionado
+        setDadosCadastro({}); // Limpa os dados de cadastro
+        setCategoriaCadastro(""); // Limpa a categoria selecionada para cadastro
+        setCaracteristicasAtualizacao([]); // Limpa as características selecionadas para cadastro/atualização
+        setPrateleiraCadastro(""); // Limpa a prateleira selecionada para cadastro
         setImagePreview(""); // Limpa o preview da imagem
     }
 
@@ -496,16 +514,17 @@ export function Estoque() {
                 <Options opt1={"Roupa"} opt2={"Tecido"} acao={atualizarInfoTela} />
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
-                        <BarraPesquisa func={buscarItemEstoque} busca={pesquisa} width='90%'/>
+                        <BarraPesquisa func={buscarItemEstoque} busca={pesquisa} width='90%' />
                     </div>
                     <div>
                         <JanelaCadastro func={uploadImagemS3}
                             limparCampos={limparCampos}
                             dados={dadosCadastro}
                             children={
-                                <Button className={styles.btnCadastro} variant="contained" size="large" sx={{
-                                    p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)", marginTop: matches ? '0' : '20px'
-                                }}>Cadastrar {categoria}</Button>
+                                <Button className={styles.btnCadastro} variant="contained" size="large"
+                                    sx={{
+                                        p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)", marginTop: matches ? '0' : '20px'
+                                    }}>Cadastrar {categoria}</Button>
                             } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                             form={
                                 <>
@@ -537,6 +556,16 @@ export function Estoque() {
                                             </>
                                         ) : <></>
                                         }
+                                        {itemEstoque === "Roupa" ? (
+                                            <>
+                                                <h3>Selecionar tecidos da roupa</h3>
+                                                <SelectOptions lista={tecidos}
+                                                    chave={"descricao"}
+                                                    id={"id"}
+                                                    dados={tecidos.map((item) => item.descricao)}>
+                                                </SelectOptions>
+                                            </>
+                                        ) : <></>}
                                     </div>
                                     <div>
                                         <h3>Categoria</h3>
@@ -589,7 +618,7 @@ export function Estoque() {
                             <BarraVisualizacao key={item.idItemEstoque}
                                 children={
                                     <>
-                                        <li className={styles.liImagem}>Imagem: <br /> <img src={item.imagem.url} className={styles.imagemItem}style={{ height: matches ? "6rem" : "4rem" }} /> </li>
+                                        <li className={styles.liImagem}>Imagem: <br /> <img src={item.imagem.url} className={styles.imagemItem} style={{ height: matches ? "6rem" : "4rem" }} /> </li>
                                         <hr />
                                         <li className={styles.liTextoLargo}>Descrição: <br /> {item.descricao} </li>
                                         <hr />
@@ -632,6 +661,16 @@ export function Estoque() {
                                                 </>
                                             ) : <></>
                                             }
+                                            {itemEstoque === "Roupa" ? (
+                                            <>
+                                                <h3>Selecionar tecidos da roupa</h3>
+                                                <SelectOptions lista={tecidos}
+                                                    chave={"descricao"}
+                                                    id={"id"}
+                                                    dados={tecidos.map((item) => item.descricao)}>
+                                                </SelectOptions>
+                                            </>
+                                        ) : <></>}
                                         </div>
                                         <div>
                                             <h3>Categoria</h3>
@@ -691,7 +730,10 @@ export function Estoque() {
                                             <p key="qtdArmazenado" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdArmazenado}</p>
                                             {itemEstoque === "Roupa" ? (<>
                                                 <h3>Receber notificações</h3>
-                                                <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === 0 ? "Não" : "Sim"}</p> </>) : null}
+                                                <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === 0 ? "Não" : "Sim"}</p> 
+                                                <h3>Tecidos:</h3>
+                                                {item.confeccaoRoupa.map((dado) => <p>{dado.tecido.descricao}</p>)}
+                                            </>) : null}
                                         </div>
                                         <div>
                                             <h3>Categoria:</h3>

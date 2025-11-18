@@ -14,6 +14,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import axios from 'axios';
+import useMediaQuery from '@mui/material/useMediaQuery';
 import { formatTelefone, aplicarMascaraTelefone, formatCnpj, formatCpf, aplicarMascaraCnpj, aplicarMascaraCpf, validarEmail } from '../../functions/utils.js';
 
 export function Funcionarios() {
@@ -41,6 +42,9 @@ export function Funcionarios() {
     const [alertTitle, setAlertTitle] = useState("");
     const [alertMessage, setAlertMessage] = useState("");
     const [alertType, setAlertType] = useState("");
+
+    // Variável para responsividade
+    const matches = useMediaQuery('(min-width:600px)');
 
     /*=====================================================================*/
 
@@ -305,7 +309,7 @@ export function Funcionarios() {
             <div className={styles.main}>
                 <div className={styles.barra_gerenciamento}>
                     <div className={styles.barra_pesquisa}>
-                        <BarraPesquisa func={buscarFuncionario} busca={"Buscar funcionário por nome"} />
+                        <BarraPesquisa func={buscarFuncionario} busca={"Buscar funcionário por nome"} width='90%'/>
                     </div>
                     <div>
                         <JanelaCadastro func={cadastrarFuncionario}
@@ -313,8 +317,8 @@ export function Funcionarios() {
                             limparCampos={limparCampos}
                             dados={dadosCadastro}
                             children={
-                                <Button variant="contained" size="large" sx={
-                                    { p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)" }
+                                <Button className={styles.btnCadastro} variant="contained" size="large" sx={
+                                    { p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)", marginTop: matches ? '0' : '20px' }
                                 }>Cadastrar Funcionário</Button>
                             } action={`Cadastrar Funcionário`} message={"Confirmar cadastro"}
                             form={
@@ -368,11 +372,11 @@ export function Funcionarios() {
                             <BarraVisualizacao key={item.idFuncionario}
                                 children={
                                     <>
-                                        <li>Nome: <br /> {item.nome} </li>
+                                        <li className={styles.liTextoLargo}>Nome: <br /> {item.nome} </li>
                                         <hr />
-                                        <li>Telefone: <br /> {aplicarMascaraTelefone(item.telefone)} </li>
+                                        <li className={styles.liTextoLargo}>Telefone: <br /> {aplicarMascaraTelefone(item.telefone)} </li>
                                         <hr />
-                                        <li>E-mail: <br /> {item.email} </li>
+                                        <li className={styles.liTextoLargo}>E-mail: <br /> {item.email} </li>
                                         <hr />
                                     </>}
                                 cadastroDisabled={isCadastroDisabled}
