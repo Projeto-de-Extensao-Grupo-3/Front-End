@@ -12,24 +12,35 @@ import { Permissao } from "../../components/Permissao/Permissao.jsx";
 import FotoPerfil from "../../components/fotoPerfil/FotoPerfil.jsx";
 import { jwtDecode } from "jwt-decode";
 import Swal from 'sweetalert2';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Alert from '@mui/material/Alert';
+import Button from '@mui/material/Button';
 
 export function Perfil() {
 
     const navigate = useNavigate();
     const [permissoes, setPermissoes] = useState([]);
     const [funcionario, setFuncionario] = useState({});
+    const [popupSenhaAberto, setPopupSenhaAberto] = useState(false)
     const [erroNome, setErroNome] = useState("");
     const [erroEmail, setErroEmail] = useState("");
     const [erroTelefone, setErroTelefone] = useState("");
+    const [erroSenhaInvalida, setErroSenhaInvalida] = useState("");
+    const [erroNovaSenhaInvalida, setErroNovaSenhaInvalida] = useState("");
+    const [erroNovaSenhaDiferente, setErroNovaSenhaDiferente] = useState("");
 
     useEffect(() => {
         const token = sessionStorage.getItem("authToken");
         if (token) {
             const decoded = jwtDecode(token);
-            const idFuncionario = decoded.sub;
+            const id = decoded.sub;
             setPermissoes(decoded.permissoes || []);
 
-            axios.get(`http://localhost:8080/funcionarios/${idFuncionario}`)
+            axios.get(`http://localhost:8080/funcionarios/${id}`)
                 .then(response => {
                     setFuncionario(response.data);
                 })
@@ -72,7 +83,6 @@ export function Perfil() {
                 cpf: funcionario.cpf,
                 telefone,
                 email,
-                senha: funcionario.senha,
                 permissoes: funcionario.permissoes
             });
 
@@ -86,8 +96,54 @@ export function Perfil() {
         } catch (error) {
             console.error("Erro ao atualizar Funcionário:", error);
         }
-
     };
+
+    const atualizarSenha = async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(event.currentTarget);
+        const { senhaAtual, novaSenha, confirmarNovaSenha } = Object.fromEntries(formData.entries());
+
+        // Validar força da senha
+        const novaSenhaValida =
+            novaSenha.length >= 8 &&
+            /[^a-zA-Z0-9]/.test(novaSenha) &&
+            !/\s/.test(novaSenha);
+
+        if (!novaSenhaValida) {
+            setErroNovaSenhaInvalida("A nova senha deve ter pelo menos 8 caracteres, incluindo um caractere especial e sem espaços");
+            return;
+        }
+
+        if (novaSenha !== confirmarNovaSenha) {
+            setErroNovaSenhaDiferente("As senhas não coincidem");
+            return;
+        }
+
+        try {
+            console.log("ID FUNCIONARIO: ", funcionario.idFuncionario);
+            await axios.patch(`/api/funcionarios/${funcionario.idFuncionario}/senha`, {
+                senhaAtual,
+                novaSenha
+            });
+
+            setPopupSenhaAberto(false);
+
+            Swal.fire({
+                title: "Sucesso!",
+                text: "Senha alterada com sucesso!",
+                icon: "success"
+            });
+
+        } catch (error) {
+            if (error.response?.status === 400) {
+                setErroSenhaInvalida("A senha atual está incorreta");
+            } else {
+                console.error("Erro ao atualizar senha:", error);
+            }
+        }
+    };
+
 
     const handleLogout = () => {
         // Remove tudo relacionado à sessão
@@ -173,20 +229,6 @@ export function Perfil() {
                                         helperText={erroTelefone}
                                     />
                                 </div>
-
-                                <div className={styles.caixasDeTexto}>
-                                    <TextField name="senhaFuncionario" id="filled-basic" label="Senha" value={funcionario?.senha || ''} variant="filled" sx={{ width: "45%" }}
-                                        onChange={(e) => setFuncionario(prev => ({ ...prev, senha: e.target.value }))
-                                        }
-                                        error={!!erroEmail}
-                                        helperText={erroEmail}
-                                    />
-                                    <TextField name="novaSenha" id="filled-basic" label="Nova Senha" variant="filled" sx={{ width: "45%" }}
-                                        onChange={(e) => setFuncionario(prev => ({ ...prev, novaSenha: e.target.value }))
-                                        }
-                                    />
-                                </div>
-
                             </div>
 
                             <div className={styles.permissoesContainer}>
@@ -206,13 +248,69 @@ export function Perfil() {
                                 )}
                             </div>
 
-                            <button className={styles.botaoSalvar} type='submit'>
-                                Salvar Alterações
-                            </button>
+                            <div className={styles.botoes}>
+                                <button onClick={() => setPopupSenhaAberto(true)} variant='contained' className={styles.botaoSalvar} type='button'>
+                                    Alterar Senha
+                                </button>
+                                <button className={styles.botaoSalvar} type='submit'>
+                                    Salvar Alterações
+                                </button>
+                            </div>
+
                         </form>
                     </div>
                 </div>
             </div>
+
+
+            <Dialog open={popupSenhaAberto}>
+
+                <DialogTitle>Alteração de Senha</DialogTitle>
+                <DialogContent>
+                    {/* <DialogContentText>
+                        Senha Atual
+                    </DialogContentText> */}
+                    <br />
+                    <form onSubmit={atualizarSenha} id='formAtualizarSenha'>
+                        <TextField
+                            autoFocus
+                            required
+                            name="senhaAtual"
+                            label="Senha Atual"
+                            fullWidth
+                            error={!!erroSenhaInvalida}
+                            helperText={erroSenhaInvalida}
+                        />
+                        <br /> <br />
+                        <TextField
+                            autoFocus
+                            required
+                            name="novaSenha"
+                            label="Nova Senha"
+                            fullWidth
+                            error={!!erroNovaSenhaInvalida}
+                            helperText={erroNovaSenhaInvalida}
+                        />
+                        <br /> <br />
+                        <TextField
+                            autoFocus
+                            required
+                            name="confirmarNovaSenha"
+                            label="Confirmar Nova Senha"
+                            fullWidth
+                            error={!!erroNovaSenhaDiferente}
+                            helperText={erroNovaSenhaDiferente}
+                        />
+                    </form>
+                    <br />
+                    <Alert severity='error' id='alert-atualizar-senha' style={{ display: "none" }}>Nome indisponível</Alert>
+                    <DialogActions className={styles.divBotoes}>
+                        <Button onClick={() => setPopupSenhaAberto(false)}>Cancelar</Button>
+                        <Button type='submit' form="formAtualizarSenha">Atualizar</Button>
+                    </DialogActions>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }

@@ -23,9 +23,10 @@
     margin-top: 30px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-evenly;
     gap: 12px; /* espaço entre os filhos quando empilhados/ao usar wrap */
 }
+
 
 @media (min-width: 600px) and (max-width: 1400px) {
     .divBotoes {

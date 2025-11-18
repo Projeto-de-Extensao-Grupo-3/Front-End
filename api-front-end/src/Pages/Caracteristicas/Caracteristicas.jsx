@@ -144,8 +144,6 @@ export function Caracteristicas() {
                     <div className={styles.divBotoes}>
                         <Button onClick={() => setPopupAdicionarAberto(true)} variant='contained'>Adicionar</Button>
                         <Button onClick={() => setPopupRemoverAberto(true)} variant='contained'>Remover</Button>
-                    </div>
-                    <div className={styles.divBotoes}>
                         <Button onClick={() => setPopupAtualizarAberto(true)} variant='contained'>Atualizar</Button>
                     </div>
                 </div>
