@@ -54,3 +54,57 @@
     width: 100%;
 }
 
+.liImagem {
+    width: 130px;
+}
+
+.liTextoLargo {
+    width: 250px;
+}
+
+.imagemItem {
+    height: 5rem;
+}
+
+.btnCadastro {
+    width: 93vw;
+}
+
+/* Telas entre celular e desktop */
+@media (max-width: 1050px) {
+ 
+    .imagemItem {
+        height: 4rem;
+    }
+
+    .liImagem {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        width: 100px;
+    }
+    
+    .liTextoLargo {
+        width: 140px;
+    }   
+}
+
+/* Celular */
+@media (max-width: 600px) {
+
+    .barra_gerenciamento {
+        width: 93vw;
+        margin: 3rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .liImagem {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100px;
+    }
+}
