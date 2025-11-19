@@ -273,6 +273,9 @@ export function Historico() {
         return null;
     };
 
+    const obterDados = (endpoint, page, limit) => {
+        return axios.get(`/api/lotes-item-estoque/${endpoint}?page=${page}&limit=${limit}`) 
+    }
 
     return (
         <div >
@@ -306,7 +309,7 @@ export function Historico() {
                             </div>
                         </div>
                         <br />
-                          <TabelaHistorico  tipoMovimentacao={values.tipoMovimentacao} triggerAtualizar={values.triggerAtualizar}/>
+                        <TabelaHistorico  tipoMovimentacao={values.tipoMovimentacao} triggerAtualizar={values.triggerAtualizar} obter={obterDados}/>
                     </div>
                 </div>
             </div>

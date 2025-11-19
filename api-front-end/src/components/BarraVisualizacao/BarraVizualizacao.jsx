@@ -29,7 +29,7 @@ export function BarraVisualizacao(props) {
                         dados={dados}
                         children={
                         <>
-                            <EditSquareIcon fontSize="large" color="action" sx={{color: "rgba(255, 255, 255, 1)", cursor: "pointer"}}/>
+                            <EditSquareIcon fontSize="large" color="action" sx={{color: "rgba(60, 60, 60, 1)", cursor: "pointer"}}/>
                         </>
                     } action={props.acao} message={props.confirm}/>
                     </li>
@@ -39,7 +39,7 @@ export function BarraVisualizacao(props) {
                         title={props.title}
                         altura={props.altura}
                         children={
-                            <InfoIcon fontSize="large" color="action" sx={{ color: "rgba(255, 255, 255, 1)", cursor: "pointer" }}/>
+                            <InfoIcon fontSize="large" color="action" sx={{ color: "rgba(60, 60, 60, 1)", cursor: "pointer" }}/>
                         }/>
                     </li>
                     <li>

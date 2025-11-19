@@ -1,11 +1,11 @@
 .card {
     width: 95%;
-    height: 7.5rem;
-    background-color: rgb(40, 40, 40);
+    /* height: 7.5rem; */
+    background-color: '#EDFFFA';
     display: flex;
     align-items: center;
-    margin-bottom: 3rem;
-    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid;
 }
 
 .uul {
@@ -16,7 +16,7 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    color: aliceblue;
+    color: rgb(40,40,40);
 }
 
 .uul li {
@@ -24,8 +24,10 @@
 }
 
 hr {
-    width: 5%;
-   transform: rotate(90deg);
+
+    width: 3rem;
+    height: 1px solid;
+    transform: rotate(90deg);
 }
 
 @media (max-width: 600px) {

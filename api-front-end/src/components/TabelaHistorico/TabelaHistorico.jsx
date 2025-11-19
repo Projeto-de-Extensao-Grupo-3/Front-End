@@ -129,7 +129,7 @@ export function TabelaHistorico(props) {
                         {tableData.map((data) => (
                             <TableRow key={data.nomeItem + data.idLote + tableData.indexOf(data)}>
                                 <TableCell><img src={data.url} className={styles.boxImagem} /></TableCell>
-                                <TableCell>{data.qtdItem}</TableCell>
+                                <TableCell >{data.qtdItem}</TableCell>
                                 <TableCell>{data.nomeItem}</TableCell>
                                 <TableCell>{data.idLote}</TableCell>
                                 <TableCell>{data.nomeParceiro}</TableCell>
