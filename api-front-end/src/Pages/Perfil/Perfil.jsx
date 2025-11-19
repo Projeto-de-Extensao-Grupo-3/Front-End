@@ -9,16 +9,20 @@ import icon_configuracao from './configuracao.png';
 import { useNavigate } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import { Permissao } from "../../components/Permissao/Permissao.jsx";
-import FotoPerfil from "../../components/fotoPerfil/FotoPerfil.jsx";
 import { jwtDecode } from "jwt-decode";
-import Swal from 'sweetalert2';
+import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
+import venuste from "../../../public/venuste_ico.png";
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 export function Perfil() {
 
@@ -32,6 +36,15 @@ export function Perfil() {
     const [erroSenhaInvalida, setErroSenhaInvalida] = useState("");
     const [erroNovaSenhaInvalida, setErroNovaSenhaInvalida] = useState("");
     const [erroNovaSenhaDiferente, setErroNovaSenhaDiferente] = useState("");
+
+    // Variável para mostrar/ocultar senha no cadastro
+    const [showPassword, setShowPassword] = useState(false);
+
+    // Variáveis para alertas
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("");
 
     useEffect(() => {
         const token = sessionStorage.getItem("authToken");
@@ -85,14 +98,10 @@ export function Perfil() {
                 email,
                 permissoes: funcionario.permissoes
             });
-
-            Swal.fire({
-                title: 'Sucesso!',
-                text: 'Usuário atualizado com sucesso!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-
+            setAlertType("success");
+            setAlertTitle("Atualização bem sucedida!");
+            setAlertMessage(`Os dados de ${funcionario.nome} foram atualizados com sucesso.`);
+            setAlertOpen(true);
         } catch (error) {
             console.error("Erro ao atualizar Funcionário:", error);
         }
@@ -126,15 +135,11 @@ export function Perfil() {
                 senhaAtual,
                 novaSenha
             });
-
+            setAlertType("success");
+            setAlertTitle("Atualização bem sucedida!");
+            setAlertMessage(`Os dados de ${funcionario.nome} foram atualizados com sucesso.`);
+            setAlertOpen(true);
             setPopupSenhaAberto(false);
-
-            Swal.fire({
-                title: "Sucesso!",
-                text: "Senha alterada com sucesso!",
-                icon: "success"
-            });
-
         } catch (error) {
             if (error.response?.status === 400) {
                 setErroSenhaInvalida("A senha atual está incorreta");
@@ -155,51 +160,45 @@ export function Perfil() {
         navigate('/');
     };
 
+    // Mostra/oculta senha no cadastro
+    const handleClickShowPassword = () => {
+        setShowPassword((prevShowPassword) => !prevShowPassword);
+    };
+
+    // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
+    useEffect(() => {
+        if (alertOpen) {
+            console.log("ALERT OPENED");
+            const timer = setTimeout(() => {
+                setAlertOpen(false);
+            }, 10000);
+            return () => clearTimeout(timer);
+        }
+    }, [alertOpen]);
+
     return (
         <div>
             <Navbar vazio={false} pageNumber={6} />
             <div className={styles.main}>
+
+                <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
 
                 <h1 className={styles.textPerfil}>Perfil</h1>
                 <div className={styles.linha_horizontal}></div>
 
                 <div className={styles.container}>
 
-                    <div className={styles.side_bar}>
 
-                        <div className={styles.navegacaoSideBarTop}>
-                            <h3>Configurações da Conta</h3>
-                            <p>Nome de Usuário</p>
-                        </div>
-
-                        <div className={styles.navegacaoSideBarContainer}>
-
-                            <div className={styles.navegacaoSideBar}>
-                                <img src={icon_perfil} alt="" />
-                                <Link to="/perfil">Minha Conta</Link>
-                            </div>
-
-                            <div className={styles.navegacaoSideBar}>
-                                <img src={icon_notificacao} alt="" />
-                                <Link to="/perfil">Notificações</Link>
-                            </div>
-
-                            <div className={styles.navegacaoSideBar}>
-                                <img src={icon_configuracao} alt="" />
-                                <Link to="/perfil">Configurações</Link>
-                            </div>
-
-                        </div>
-
-                        <button variant="contained" color="error" onClick={handleLogout} className={styles.botaoSair}>
-                            Sair
-                        </button>
-
-                    </div>
 
                     <div className={styles.right_container}>
-                        <form onSubmit={atualizarFuncionario} id="formAtualizarFuncionario">
-                            <FotoPerfil />
+                        <form onSubmit={atualizarFuncionario} id="formAtualizarFuncionario" className={styles.formPerfil}>
+                            <div className={styles.logo}>
+                                <img
+                                    src={venuste}
+                                    alt="Foto de perfil"
+                                />
+                            </div>
+
 
                             <div className={styles.userInfo}>
 
@@ -248,13 +247,24 @@ export function Perfil() {
                                 )}
                             </div>
 
+
+
                             <div className={styles.botoes}>
+                                <div>
+                                <button variant="contained" color="error" onClick={handleLogout} className={styles.botaoSair}>
+                                    Sair
+                                </button>
+                                </div>
+
+                                <div>
                                 <button onClick={() => setPopupSenhaAberto(true)} variant='contained' className={styles.botaoSalvar} type='button'>
                                     Alterar Senha
                                 </button>
+
                                 <button className={styles.botaoSalvar} type='submit'>
                                     Salvar Alterações
                                 </button>
+                                </div>
                             </div>
 
                         </form>
@@ -272,7 +282,8 @@ export function Perfil() {
                     </DialogContentText> */}
                     <br />
                     <form onSubmit={atualizarSenha} id='formAtualizarSenha'>
-                        <TextField
+
+                        <OutlinedInput
                             autoFocus
                             required
                             name="senhaAtual"
@@ -280,7 +291,22 @@ export function Perfil() {
                             fullWidth
                             error={!!erroSenhaInvalida}
                             helperText={erroSenhaInvalida}
+                            type={showPassword ? 'text' : 'password'}
+                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined"
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
                         />
+
+
                         <br /> <br />
                         <TextField
                             autoFocus
