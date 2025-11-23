@@ -11,7 +11,9 @@ export function BarraPesquisa(props) {
   return (
     <Paper
       component="form"
-      sx={{ p: '0.5rem 1rem', display: 'flex', alignItems: 'center', width: width, border: "1px solid black" }}
+      sx={{ p: '0.5rem 1rem', display: 'flex', alignItems: 'center', width: width, border: "1px solid black",
+        '&:focus-within': { border: '2px solid blue'}
+       }}
     >
       <InputBase
         sx={{ ml: 1, flex: 1 }}

@@ -6,12 +6,17 @@ import { JanelaCadastro } from "../../components/JanelaCadastro/JanelaCadastro";
 import { Options } from "../../components/Options/Options";
 import { SelectOptions } from '../../components/SelectOptions/SelectOptions';
 import Button from '@mui/material/Button';
-import styles from "../Parceiros/parceiros.module.css"
+import IconButton from '@mui/material/IconButton';
+import styles from "../Parceiros/parceiros.module.css";
+import estoque_styles from "../Estoque/estoque.module.css";
 import TextField from '@mui/material/TextField';
 import Select from '@mui/material/Select';
+import ClearIcon from '@mui/icons-material/Clear';
 import MenuItem from '@mui/material/MenuItem';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import Autocomplete from '@mui/material/Autocomplete';
+import InputAdornment from '@mui/material/InputAdornment';
 import axios from 'axios';
 
 export function Estoque() {
@@ -50,6 +55,7 @@ export function Estoque() {
     const [imagePreview, setImagePreview] = useState(null); // Preview da imagem selecionada
 
     const [tecidos, setTecidos] = useState([]); // Lista de tecidos (apenas para roupas)
+    const [tecidosSelecionados, setTecidosSelecionados] = useState([]); // Tecidos selecionados para cadastro/atualização de roupa
 
     // Controla refresh da página a cada operação
     const [operations, setOperations] = useState(0);
@@ -343,12 +349,7 @@ export function Estoque() {
         )
             .then(response => {
                 console.log(response.data);
-                setAlertType("success");
-                setAlertTitle("Cadastro realizado com sucesso!");
-                setAlertMessage(`Os dados ${atualizarDados} foram cadastrados com sucesso.`);
-                setAlertOpen(true);
-                setDadosCadastro([]);
-                setOperations(operations + 1);
+                cadastrarConfeccaoRoupa(response.data.idItemEstoque);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -361,6 +362,33 @@ export function Estoque() {
                     setAlertTitle("Erro ao realizar cadastro!");
                     setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${atualizarDados}. Entre em contato com o suporte.`);
                 }
+                setAlertOpen(true);
+                setDadosCadastro([]);
+                setOperations(operations + 1);
+            });
+    }
+
+    const cadastrarConfeccaoRoupa = (id) => {
+        let confeccaoRoupa = tecidosSelecionados;
+        for (const item of confeccaoRoupa) delete item.tecido.descricao; 
+        
+        axios.post(`/api/itens-estoque/tecidos/${id}`,
+            confeccaoRoupa
+        )
+            .then(response => {
+                console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Cadastro realizado com sucesso!");
+                setAlertMessage(`Os dados ${atualizarDados} foram cadastrados com sucesso.`);
+                setAlertOpen(true);
+                setDadosCadastro([]);
+                setOperations(operations + 1);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setAlertType("error");
+                setAlertTitle("Erro ao realizar cadastro!");
+                setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${atualizarDados}. Entre em contato com o suporte.`);
                 setAlertOpen(true);
                 setDadosCadastro([]);
                 setOperations(operations + 1);
@@ -478,10 +506,11 @@ export function Estoque() {
     const limparCampos = () => {
         setImagem([]); // Limpa o arquivo de imagem selecionado
         setDadosCadastro({}); // Limpa os dados de cadastro
-        setCategoriaCadastro(""); // Limpa a categoria selecionada para cadastro
-        setCaracteristicasAtualizacao([]); // Limpa as características selecionadas para cadastro/atualização
-        setPrateleiraCadastro(""); // Limpa a prateleira selecionada para cadastro
+        setCategoriaCadastro("");
+        setCaracteristicasAtualizacao([]);
+        setPrateleiraCadastro("");
         setImagePreview(""); // Limpa o preview da imagem
+        setTecidosSelecionados([]);
     }
 
     // Controla o upload da imagem e cria o preview
@@ -492,6 +521,37 @@ export function Estoque() {
         console.log(file.name);
         setImagem(file);
         console.log(imagem)
+    }
+
+    // Função para controle de tecidos selecionados (apenas para roupas)
+    const handleTecidosSelecionadosChange = (event, novoValor) => {
+        console.log(novoValor);
+        const confeccaoRoupa = {
+            "tecido": {
+                "idTecido": novoValor.idItemEstoque,
+                "descricao": novoValor.descricao
+            },
+            "qtdTecido": 0.0
+        }
+        const copiaTecidos = JSON.parse(JSON.stringify(tecidosSelecionados));
+        copiaTecidos.push(confeccaoRoupa);
+        setTecidosSelecionados(copiaTecidos);
+        console.log(tecidosSelecionados);
+    };
+
+    const handleRemoverTecidoSelecionado = (id) => {
+        const index = tecidosSelecionados.findIndex(dado => dado.tecido.idTecido == id);
+        const copiaTecidos = JSON.parse(JSON.stringify(tecidosSelecionados));
+        copiaTecidos.splice(index, 1);
+        setTecidosSelecionados(copiaTecidos);
+    }
+
+    const handleAdicionarQtdTecido = (e) => {
+        const index = tecidosSelecionados.findIndex(dado => dado.tecido.idTecido == e.target.id);
+        const copiaTecidos = JSON.parse(JSON.stringify(tecidosSelecionados));
+        copiaTecidos[index].qtdTecido = Number(e.target.value);
+        setTecidosSelecionados(copiaTecidos);
+        console.log(tecidosSelecionados);
     }
 
     // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
@@ -536,10 +596,10 @@ export function Estoque() {
                                         <TextField size='small' key="complemento" required={true} onChange={(e) => setAtribute(e.target.value, "complemento")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>Peso</h3>
-                                        <TextField size='small' key="peso" required={true} onChange={(e) => setAtribute(e.target.value, "peso")}
+                                        <TextField type="number" size='small' key="peso" required={true} onChange={(e) => setAtribute(e.target.value, "peso")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                        <h3>Qtd. mínimo</h3>
-                                        <TextField size='small' key="qtdMinimo" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdMinimo")}
+                                        <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}</h3>
+                                        <TextField type="number" size='small' key="qtdMinimo" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdMinimo")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         {itemEstoque === "Roupa" ? (
                                             <>
@@ -559,11 +619,36 @@ export function Estoque() {
                                         {itemEstoque === "Roupa" ? (
                                             <>
                                                 <h3>Selecionar tecidos da roupa</h3>
-                                                <SelectOptions lista={tecidos}
-                                                    chave={"descricao"}
-                                                    id={"id"}
-                                                    dados={tecidos.map((item) => item.descricao)}>
-                                                </SelectOptions>
+                                                <Autocomplete
+                                                    onChange={handleTecidosSelecionadosChange}
+                                                    disablePortal
+                                                    size="small"
+                                                    options={tecidos}
+                                                    getOptionLabel={(option) => option.descricao}
+                                                    noOptionsText={"Nenhum tecido encontrado"}
+                                                    sx={{ width: "35vw", marginBottom: '0.5rem' }}
+                                                    renderInput={(params) => <TextField {...params} />}
+                                                />
+                                                {tecidosSelecionados.length > 0 ? (
+                                                    <div>
+                                                        {tecidosSelecionados.map(confeccaoRoupa => (
+                                                            <div className={estoque_styles.container}>
+                                                                <p>{confeccaoRoupa.tecido.descricao}:</p>
+                                                                <TextField required id={confeccaoRoupa.tecido.idTecido} label="Quantidade (em metros)"
+                                                                    onChange={(e) => handleAdicionarQtdTecido(e)}
+                                                                    sx={{
+                                                                        m: 1,
+                                                                        "& .MuiOutlinedInput-input": { height: "0.1rem" }, width: '11rem',
+                                                                        '& input': { textAlign: 'center' }
+                                                                    }}
+                                                                    slotProps={{ inputLabel: { shrink: true, tyle: { color: 'blue' } } }} />
+                                                                <IconButton id={confeccaoRoupa.tecido.idTecido} onClick={(e) => handleRemoverTecidoSelecionado(e.currentTarget.id)}>
+                                                                    <ClearIcon fontSize="large" color="action" sx={{ color: "rgba(143, 140, 140, 1)", cursor: "pointer" }} />
+                                                                </IconButton>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                ) : <></>}
                                             </>
                                         ) : <></>}
                                     </div>
@@ -597,8 +682,8 @@ export function Estoque() {
                                                 <MenuItem key={prateleira.id} value={prateleira.codigo}>{prateleira.codigo}</MenuItem>
                                             ))}
                                         </Select>
-                                        <h3>Preço</h3>
-                                        <TextField size='small' key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
+                                        <h3>Preço {itemEstoque == "Roupa" ? "(de venda)" : "(de compra) p/ metro"}</h3>
+                                        <TextField type="number" size='small' key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>Imagem</h3>
                                         <Button variant="contained" component="label">
@@ -618,7 +703,7 @@ export function Estoque() {
                             <BarraVisualizacao key={item.idItemEstoque}
                                 children={
                                     <>
-                                        <li className={styles.liImagem}>Imagem: <br /> <img src={item.imagem.url} className={styles.imagemItem} style={{ height: matches ? "6rem" : "4rem" }} /> </li>
+                                        <li className={styles.liImagem}> <img src={item.imagem.url} className={styles.imagemItem} style={{ height: matches ? "6rem" : "4rem" }} /> </li>
                                         <hr />
                                         <li className={styles.liTextoLargo}>Descrição: <br /> {item.descricao} </li>
                                         <hr />
@@ -643,7 +728,7 @@ export function Estoque() {
                                             <h3>Peso</h3>
                                             <TextField size='small' key="peso" required={true} defaultValue={item.peso} onChange={(e) => updateDados(item, e.target.value, "peso")}
                                                 sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                            <h3>Qtd. mínimo</h3>
+                                            <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}</h3>
                                             <TextField size='small' key="qtdMinimo" required={true} defaultValue={item.qtdMinimo} onChange={(e) => updateDados(item, Number(e.target.value), "qtdMinimo")}
                                                 sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             {itemEstoque === "Roupa" ? (
@@ -662,15 +747,15 @@ export function Estoque() {
                                             ) : <></>
                                             }
                                             {itemEstoque === "Roupa" ? (
-                                            <>
-                                                <h3>Selecionar tecidos da roupa</h3>
-                                                <SelectOptions lista={tecidos}
-                                                    chave={"descricao"}
-                                                    id={"id"}
-                                                    dados={tecidos.map((item) => item.descricao)}>
-                                                </SelectOptions>
-                                            </>
-                                        ) : <></>}
+                                                <>
+                                                    <h3>Selecionar tecidos da roupa</h3>
+                                                    <SelectOptions lista={tecidos}
+                                                        chave={"descricao"}
+                                                        id={"id"}
+                                                        dados={tecidos.map((item) => item.descricao)}>
+                                                    </SelectOptions>
+                                                </>
+                                            ) : <></>}
                                         </div>
                                         <div>
                                             <h3>Categoria</h3>
@@ -703,7 +788,7 @@ export function Estoque() {
                                                     <MenuItem key={prateleira.id} value={prateleira.codigo}>{prateleira.codigo}</MenuItem>
                                                 ))}
                                             </Select>
-                                            <h3>Preço</h3>
+                                            <h3>Preço {itemEstoque == "Roupa" ? "(de venda)" : "(de compra) p/ metro"}</h3>
                                             <TextField size='small' key="preco" required={true} defaultValue={item.preco} onChange={(e) => updateDados(item, Number(e.target.value), "preco")}
                                                 sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             <h3>Imagem</h3>
@@ -724,13 +809,13 @@ export function Estoque() {
                                             <p key="complemento" style={{ width: '100%', marginBottom: '2rem' }}>{item.complemento}</p>
                                             <h3>Peso:</h3>
                                             <p key="peso" style={{ width: '100%', marginBottom: '2rem' }}>{item.peso}</p>
-                                            <h3>Qtd. mínimo:</h3>
+                                            <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}:</h3>
                                             <p key="qtdMinimo" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdMinimo}</p>
                                             <h3>Qtd. Armazenado:</h3>
                                             <p key="qtdArmazenado" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdArmazenado}</p>
                                             {itemEstoque === "Roupa" ? (<>
                                                 <h3>Receber notificações</h3>
-                                                <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === 0 ? "Não" : "Sim"}</p> 
+                                                <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === 0 ? "Não" : "Sim"}</p>
                                                 <h3>Tecidos:</h3>
                                                 {item.confeccaoRoupa.map((dado) => <p>{(tecidos.find(tecido => tecido.idItemEstoque == dado.tecido.idTecido)).descricao + ` (${dado.qtdTecido} gramas)`}</p>)}
                                             </>) : null}
@@ -742,7 +827,7 @@ export function Estoque() {
                                             {item.caracteristicas.map((dado) => <p>{dado.nome}</p>)}
                                             <h3 style={{ marginTop: '2rem' }}>Prateleira</h3>
                                             <p style={{ width: '100%', marginBottom: '2rem' }}>{item.prateleira.codigo}</p>
-                                            <h3>Preço:</h3>
+                                            <h3>Preço {itemEstoque == "Roupa" ? "(de venda)" : "(de compra) p/ metro"}:</h3>
                                             <p style={{ width: '100%', marginBottom: '2rem' }}>{item.preco}</p>
                                             <h3>Imagem:</h3>
                                             <img src={item.imagem.url} style={{ height: "8rem" }} />
