@@ -1,13 +1,22 @@
+import { useState } from "react";
 import { Filtro } from "../../components/Filtro/Filtro"
 import { Navbar } from "../../components/Navbar/Navbar"
 import styles from "./dashboard.module.css"
 
 export function Dashboard() {
+
+    const [currentPage, setCurrentPage] = useState('produtos');
+
+
+    const handleChangePage = (newPage) => {
+        setCurrentPage(newPage);
+    }
+
     return( 
         <div>
             <Navbar pageNumber={3}/>
             <div className={styles.sectionDash}>
-                <Filtro />
+                <Filtro currentPage={currentPage} handleChangePage={handleChangePage}/>
                 <div className={styles.containerDash}>
                     <div className={`${styles.conteudoDash}`}>
                         <div className={`${styles.conteudoGraficos}`}>
