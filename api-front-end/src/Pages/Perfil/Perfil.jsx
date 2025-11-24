@@ -1,11 +1,7 @@
-import { Link } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import axios from "axios";
 import { Navbar } from "../../components/Navbar/Navbar";
 import styles from "./perfil.module.css";
-import icon_perfil from './icon-perfil.png';
-import icon_notificacao from './notificacao.png';
-import icon_configuracao from './configuracao.png';
 import { useNavigate } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import { Permissao } from "../../components/Permissao/Permissao.jsx";
@@ -150,15 +146,15 @@ export function Perfil() {
     };
 
 
-    const handleLogout = () => {
-        // Remove tudo relacionado à sessão
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('usuario');
-        sessionStorage.removeItem('idUsuario');
+    // const handleLogout = () => {
+    //     // Remove tudo relacionado à sessão
+    //     sessionStorage.removeItem('authToken');
+    //     sessionStorage.removeItem('usuario');
+    //     sessionStorage.removeItem('idUsuario');
 
-        // Redireciona para a página inicial
-        navigate('/');
-    };
+    //     // Redireciona para a página inicial
+    //     navigate('/');
+    // };
 
     // Mostra/oculta senha no cadastro
     const handleClickShowPassword = () => {
@@ -250,13 +246,7 @@ export function Perfil() {
 
 
                             <div className={styles.botoes}>
-                                <div>
-                                <button variant="contained" color="error" onClick={handleLogout} className={styles.botaoSair}>
-                                    Sair
-                                </button>
-                                </div>
 
-                                <div>
                                 <button onClick={() => setPopupSenhaAberto(true)} variant='contained' className={styles.botaoSalvar} type='button'>
                                     Alterar Senha
                                 </button>
@@ -264,7 +254,6 @@ export function Perfil() {
                                 <button className={styles.botaoSalvar} type='submit'>
                                     Salvar Alterações
                                 </button>
-                                </div>
                             </div>
 
                         </form>
@@ -282,7 +271,7 @@ export function Perfil() {
                     </DialogContentText> */}
                     <br />
                     <form onSubmit={atualizarSenha} id='formAtualizarSenha'>
-
+                        <h3>Senha</h3>
                         <OutlinedInput
                             autoFocus
                             required
@@ -306,9 +295,8 @@ export function Perfil() {
                             }
                         />
 
-
-                        <br /> <br />
-                        <TextField
+                        <h3>Nova Senha</h3>
+                        <OutlinedInput
                             autoFocus
                             required
                             name="novaSenha"
@@ -316,9 +304,22 @@ export function Perfil() {
                             fullWidth
                             error={!!erroNovaSenhaInvalida}
                             helperText={erroNovaSenhaInvalida}
+                            type={showPassword ? 'text' : 'password'}
+                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined"
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
                         />
-                        <br /> <br />
-                        <TextField
+                        <h3>Confirmar Nova Senha</h3>
+                        <OutlinedInput
                             autoFocus
                             required
                             name="confirmarNovaSenha"
@@ -326,7 +327,21 @@ export function Perfil() {
                             fullWidth
                             error={!!erroNovaSenhaDiferente}
                             helperText={erroNovaSenhaDiferente}
+                            type={showPassword ? 'text' : 'password'}
+                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined"
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowPassword}
+                                        edge="end"
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
                         />
+
                     </form>
                     <br />
                     <Alert severity='error' id='alert-atualizar-senha' style={{ display: "none" }}>Nome indisponível</Alert>
