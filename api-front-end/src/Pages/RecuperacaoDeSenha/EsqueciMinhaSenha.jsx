@@ -12,7 +12,7 @@ export function EsqueciMinhaSenha() {
             <div className={styles.content}>
                 <div className={styles.box}>
                     <span className={styles.indicator}>Insira seu dados para entrar no sistema</span>
-                    <form onSubmit={} className={styles.form}>
+                    <form  className={styles.form}>
                         <div className={styles.input}>
                             <TextField
                                 fullWidth
