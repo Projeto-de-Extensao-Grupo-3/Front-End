@@ -41,7 +41,6 @@ export function DefeitosPorCostureira() {
         // labels
         let aux = [];
         retorno.forEach(dado => aux.push(dado['costureira']));
-        console.log(aux)
         setLabels(aux)
 
 
