@@ -36,7 +36,7 @@ export function Estoque() {
     const [data, setData] = useState([]); // Dados dos itens em estoque obtidos na listagem
 
     const [caracteristicas, setCaracteristicas] = useState([]); // Lista de todas as características disponíveis
-    const [caracteristicasAtualizacao, setCaracteristicasAtualizacao] = useState([""]); // Características selecionadas para atualização ou cadastro
+    const [caracteristicasAtualizacao, setCaracteristicasAtualizacao] = useState([]); // Características selecionadas para atualização ou cadastro
 
     const [categorias, setCategorias] = useState([]); // Lista de todas as categorias disponíveis
     const [categoriaAtualizacao, setCategoriaAtualizacao] = useState(""); // Categoria selecionada para atualização
@@ -236,7 +236,8 @@ export function Estoque() {
 
     const atualizarItemEstoque = (dados) => {
         if (imagem.length != 0) atualizarImagemS3(dados.imagem.url);
-        const caracteristicasCadastro = caracteristicasAtualizacao[0] === "" ? dados.caracteristicas : caracteristicasAtualizacao // Mantém as características atuais se nenhuma nova for selecionada
+        console.log(caracteristicasAtualizacao);
+        const caracteristicasCadastro = caracteristicasAtualizacao.length === 0 ? dados.caracteristicas : caracteristicasAtualizacao // Mantém as características atuais se nenhuma nova for selecionada
         const caracteristicasIds = caracteristicasCadastro.map(item => { const { nome, ...ids } = item; return ids }) // Extrai apenas os ids das características selecionadas
         console.log(`{
                 "descricao": ${dados.descricao}
@@ -282,12 +283,7 @@ export function Estoque() {
         )
             .then(response => {
                 console.log(response.data);
-                setAlertType("success");
-                setAlertTitle("Dados atualizados com sucesso!");
-                setAlertMessage(`Os dados ${atualizarDados} foram atualizados com sucesso.`);
-                setAlertOpen(true);
-                setDadosAtualizacao([]);
-                setOperations(operations + 1);
+                atualizarConfeccaoRoupa(dados.idItemEstoque, dados.confeccaoRoupa);;
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -296,6 +292,33 @@ export function Estoque() {
                 setAlertMessage(`Ocorreu um erro ao atualizar as informações ${atualizarDados}. Entre em contato com o suporte.`);
                 setAlertOpen(true);
                 setDadosAtualizacao([]);
+                setOperations(operations + 1);
+            });
+    }
+
+    const atualizarConfeccaoRoupa = (id, confeccaoAtualizar) => {
+        let confeccaoRoupa = confeccaoAtualizar;
+        for (const item of confeccaoRoupa) delete item.tecido.descricao;
+
+        axios.post(`/api/itens-estoque/tecidos/${id}`,
+            confeccaoRoupa
+        )
+            .then(response => {
+                console.log(response.data);
+                setAlertType("success");
+                setAlertTitle("Dados atualizados com sucesso!");
+                setAlertMessage(`Os dados ${atualizarDados} foram atualizados com sucesso.`);
+                setAlertOpen(true);
+                setDadosCadastro([]);
+                setOperations(operations + 1);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                setAlertType("error");
+                setAlertTitle("Erro ao atualizar dados!");
+                setAlertMessage(`Ocorreu um erro ao atualizar as informações ${atualizarDados}. Entre em contato com o suporte.`);
+                setAlertOpen(true);
+                setDadosCadastro([]);
                 setOperations(operations + 1);
             });
     }
@@ -370,8 +393,8 @@ export function Estoque() {
 
     const cadastrarConfeccaoRoupa = (id) => {
         let confeccaoRoupa = tecidosSelecionados;
-        for (const item of confeccaoRoupa) delete item.tecido.descricao; 
-        
+        for (const item of confeccaoRoupa) delete item.tecido.descricao;
+
         axios.post(`/api/itens-estoque/tecidos/${id}`,
             confeccaoRoupa
         )
@@ -537,6 +560,21 @@ export function Estoque() {
         copiaTecidos.push(confeccaoRoupa);
         setTecidosSelecionados(copiaTecidos);
         console.log(tecidosSelecionados);
+    }
+
+    const handleTecidosSelecionadosUpdate = (id, novoValor) => {
+        const confeccaoRoupa = {
+            "tecido": {
+                "idTecido": novoValor.idItemEstoque,
+                "descricao": novoValor.descricao
+            },
+            "qtdTecido": 0.0
+        }
+        const indexItem = dadosAtualizacao.findIndex(dado => dado.idItemEstoque === id);
+        let copiaDados = dadosAtualizacao.slice();
+        console.log(copiaDados[indexItem])
+        copiaDados[indexItem].confeccaoRoupa.push(confeccaoRoupa);
+        setDadosAtualizacao(copiaDados);
     };
 
     const handleRemoverTecidoSelecionado = (id) => {
@@ -546,12 +584,29 @@ export function Estoque() {
         setTecidosSelecionados(copiaTecidos);
     }
 
+    const handleRemoverTecidoUpdate = (idItem, idTecido) => {
+        const indexItem = dadosAtualizacao.findIndex(dado => dado.idItemEstoque === idItem);
+        const indexTecido = dadosAtualizacao[indexItem].confeccaoRoupa.findIndex(dado => dado.tecido.idTecido == idTecido)
+        let copiaDados = dadosAtualizacao.slice();
+        copiaDados[indexItem].confeccaoRoupa.splice(indexTecido, 1);
+        setDadosAtualizacao(copiaDados);
+    }
+
     const handleAdicionarQtdTecido = (e) => {
         const index = tecidosSelecionados.findIndex(dado => dado.tecido.idTecido == e.target.id);
         const copiaTecidos = JSON.parse(JSON.stringify(tecidosSelecionados));
         copiaTecidos[index].qtdTecido = Number(e.target.value);
         setTecidosSelecionados(copiaTecidos);
         console.log(tecidosSelecionados);
+    }
+
+    const handleAdicionarQtdTecidoUpdate = (idItem, e) => {
+        const indexItem = dadosAtualizacao.findIndex(dado => dado.idItemEstoque == idItem);
+        console.log(idItem)
+        const indexTecido = dadosAtualizacao[indexItem].confeccaoRoupa.findIndex(dado => dado.tecido.idTecido == e.target.id)
+        let copiaDados = dadosAtualizacao.slice();
+        copiaDados[indexItem].confeccaoRoupa[indexTecido].qtdTecido = Number(e.target.value);
+        setDadosAtualizacao(copiaDados);
     }
 
     // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
@@ -595,7 +650,7 @@ export function Estoque() {
                                         <h3>Complemento</h3>
                                         <TextField size='small' key="complemento" required={true} onChange={(e) => setAtribute(e.target.value, "complemento")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                        <h3>Peso</h3>
+                                        <h3>Peso (em gramas)</h3>
                                         <TextField type="number" size='small' key="peso" required={true} onChange={(e) => setAtribute(e.target.value, "peso")}
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}</h3>
@@ -607,7 +662,7 @@ export function Estoque() {
                                                 <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
                                                     labelId="select-notificar"
                                                     id="select-notificar"
-                                                    value={dadosCadastro.notificar === undefined ? "" : dadosCadastro.notificar}
+                                                    value={dadosCadastro.notificar}
                                                     onChange={(e) => setAtribute(e.target.value, "notificar")}
                                                 >
                                                     <MenuItem key={"true"} value={true}>Sim</MenuItem>
@@ -697,9 +752,9 @@ export function Estoque() {
                     </div>
                 </div>
                 <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
-                {data.length > 0 ? (
+                {dadosAtualizacao.length > 0 ? (
                     <div className={styles.lista_parceiros}>
-                        {data.map(item => (
+                        {dadosAtualizacao.map(item => (
                             <BarraVisualizacao key={item.idItemEstoque}
                                 children={
                                     <>
@@ -725,7 +780,7 @@ export function Estoque() {
                                             <h3>Complemento</h3>
                                             <TextField size='small' key="complemento" required={true} defaultValue={item.complemento} onChange={(e) => updateDados(item, e.target.value, "complemento")}
                                                 sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                            <h3>Peso</h3>
+                                            <h3>Peso (em gramas)</h3>
                                             <TextField size='small' key="peso" required={true} defaultValue={item.peso} onChange={(e) => updateDados(item, e.target.value, "peso")}
                                                 sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}</h3>
@@ -749,11 +804,34 @@ export function Estoque() {
                                             {itemEstoque === "Roupa" ? (
                                                 <>
                                                     <h3>Selecionar tecidos da roupa</h3>
-                                                    <SelectOptions lista={tecidos}
-                                                        chave={"descricao"}
-                                                        id={"id"}
-                                                        dados={tecidos.map((item) => item.descricao)}>
-                                                    </SelectOptions>
+                                                    <Autocomplete
+                                                        onChange={(e, novoValor) => handleTecidosSelecionadosUpdate(item.idItemEstoque, novoValor)}
+                                                        disablePortal
+                                                        size="small"
+                                                        options={tecidos}
+                                                        getOptionLabel={(option) => option.descricao}
+                                                        noOptionsText={"Nenhum tecido encontrado"}
+                                                        sx={{ width: "35vw", marginBottom: '0.5rem' }}
+                                                        renderInput={(params) => <TextField {...params} />}
+                                                    />
+                                                    <div>
+                                                        {item.confeccaoRoupa.map(confeccao => (
+                                                            <div className={estoque_styles.container}>
+                                                                <p>{confeccao.tecido.descricao}:</p>
+                                                                <TextField required id={confeccao.tecido.idTecido} defaultValue={confeccao.qtdTecido} label="Quantidade (em metros)"
+                                                                    onChange={(e) => handleAdicionarQtdTecidoUpdate(item.idItemEstoque, e)}
+                                                                    sx={{
+                                                                        m: 1,
+                                                                        "& .MuiOutlinedInput-input": { height: "0.1rem" }, width: '11rem',
+                                                                        '& input': { textAlign: 'center' }
+                                                                    }}
+                                                                    slotProps={{ inputLabel: { shrink: true, tyle: { color: 'blue' } } }} />
+                                                                <IconButton id={confeccao.tecido.idTecido} onClick={(e) => handleRemoverTecidoUpdate(item.idItemEstoque, e.currentTarget.id)}>
+                                                                    <ClearIcon fontSize="large" color="action" sx={{ color: "rgba(143, 140, 140, 1)", cursor: "pointer" }} />
+                                                                </IconButton>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </>
                                             ) : <></>}
                                         </div>
@@ -807,7 +885,7 @@ export function Estoque() {
                                             <p key="descricao" style={{ width: '100%', marginBottom: '2rem' }}>{item.descricao}</p>
                                             <h3>Complemento:</h3>
                                             <p key="complemento" style={{ width: '100%', marginBottom: '2rem' }}>{item.complemento}</p>
-                                            <h3>Peso:</h3>
+                                            <h3>Peso (em gramas):</h3>
                                             <p key="peso" style={{ width: '100%', marginBottom: '2rem' }}>{item.peso}</p>
                                             <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}:</h3>
                                             <p key="qtdMinimo" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdMinimo}</p>
@@ -817,7 +895,7 @@ export function Estoque() {
                                                 <h3>Receber notificações</h3>
                                                 <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === 0 ? "Não" : "Sim"}</p>
                                                 <h3>Tecidos:</h3>
-                                                {item.confeccaoRoupa.map((dado) => <p>{(tecidos.find(tecido => tecido.idItemEstoque == dado.tecido.idTecido)).descricao + ` (${dado.qtdTecido} gramas)`}</p>)}
+                                                {item.confeccaoRoupa.map((dado) => <p>{(tecidos.find(tecido => tecido.idItemEstoque == dado.tecido.idTecido)).descricao + ` (${dado.qtdTecido} metros)`}</p>)}
                                             </>) : null}
                                         </div>
                                         <div>
