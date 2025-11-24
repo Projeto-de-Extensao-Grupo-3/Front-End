@@ -145,17 +145,6 @@ export function Perfil() {
         }
     };
 
-
-    // const handleLogout = () => {
-    //     // Remove tudo relacionado à sessão
-    //     sessionStorage.removeItem('authToken');
-    //     sessionStorage.removeItem('usuario');
-    //     sessionStorage.removeItem('idUsuario');
-
-    //     // Redireciona para a página inicial
-    //     navigate('/');
-    // };
-
     // Mostra/oculta senha no cadastro
     const handleClickShowPassword = () => {
         setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -191,7 +180,7 @@ export function Perfil() {
                             <div className={styles.logo}>
                                 <img
                                     src={venuste}
-                                    alt="Foto de perfil"
+                                    alt="Logo Venuste"
                                 />
                             </div>
 

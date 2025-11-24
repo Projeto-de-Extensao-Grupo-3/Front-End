@@ -77,7 +77,7 @@ export function Navbar(props) {
                 <div onClick={() => redirecionar("/estoque")} className={styles.link} style={{ fontFamily: weights[1] }}>Estoque</div>
                 <div onClick={() => redirecionar("/categorias")} className={styles.link} style={{ fontFamily: weights[2] }}>Categorias</div>
 
-                {hasPermission("VISUALIZAR_DASHBOARD") && (
+                {hasPermission("VISUALIZAR DASHBOARD") && (
                 <div onClick={() => redirecionar("/dashboard")} className={styles.link} style={{ fontFamily: weights[3] }}>Dashboard</div>
                 )}
                 <div onClick={() => redirecionar("/funcionarios")} className={styles.link} style={{ fontFamily: weights[4] }}>Funcionários</div>

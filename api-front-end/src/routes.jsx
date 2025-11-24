@@ -9,6 +9,7 @@ import { Dashboard } from "./Pages/Dashboard/Dashboard";
 import { Funcionarios } from "./Pages/Funcionarios/Funcionarios";
 import { Estoque } from "./Pages/Estoque/Estoque";
 import { Prateleiras } from "./Pages/Prateleiras/Prateleiras.jsx";
+import { EsqueciMinhaSenha } from "./Pages/RecuperacaoDeSenha/EsqueciMinhaSenha.jsx";
 
 export const routes = createBrowserRouter([
     {
@@ -55,6 +56,10 @@ export const routes = createBrowserRouter([
     },{
         path: "/prateleiras",
         element: <Prateleiras />,
+        errorElement: <div>Erro </div>
+    },{
+        path: "/esqueci-minha-senha",
+        element: <EsqueciMinhaSenha />,
         errorElement: <div>Erro </div>
     }
 ]);

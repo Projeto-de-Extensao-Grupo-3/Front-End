@@ -80,3 +80,16 @@
 .indicator {
     font-size: large;
 }
+
+.linkSenha {
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.2s ease-in-out;
+}
+
+.linkSenha:hover {
+    color: #111;
+  text-decoration: underline;
+}
+

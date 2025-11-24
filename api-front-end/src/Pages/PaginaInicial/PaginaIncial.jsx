@@ -15,6 +15,7 @@ import Collapse from '@mui/material/Collapse';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
+import { Link } from "react-router-dom";
 
 export function PaginaInicial(){
 
@@ -137,6 +138,9 @@ export function PaginaInicial(){
                         <div className={styles.divBotao}>
                             <Button type="submit" className={styles.botao} variant="contained">Entrar</Button>
                         </div>
+                        <Link to="/esqueci-minha-senha" className={styles.linkSenha}>
+                            Esqueci minha senha
+                        </Link>
                     </form>
                     <div className={styles.divBotao}>
                         <Button className={styles.botao} onClick={handlePopupOpen} variant="outlined">Como registrar?</Button>

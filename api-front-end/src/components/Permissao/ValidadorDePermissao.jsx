@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
     if (token) {
       const decoded = jwtDecode(token);
       setPermissoes(decoded.permissoes || []);
-      console.log("Permissões carregadas:", decoded.permissoes || []);
+      // console.log("Permissões carregadas:", decoded.permissoes || []);
     }
   }, []);
 
