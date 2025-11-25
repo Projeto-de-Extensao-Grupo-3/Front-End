@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
-import { CategoryScale, scales } from 'chart.js';
+import { CategoryScale, plugins, scales } from 'chart.js';
 import Chart from "chart.js/auto";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import styles from "./produtos.module.css"
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import IconButton from '@mui/material/IconButton';
-import { maxHeight } from '@mui/system';
 
 
 Chart.register(CategoryScale);
@@ -22,6 +21,7 @@ export function GraficoCustos() {
     const [lucro, setLucro] = useState([]);
     const [max, setMax] = useState(60);
 
+    const [isSplit, setIsSplit] = useState(true);
     const [first, setFirst] = useState(0);
     const [last, setLast] = useState(5); // 5 elementos [0,1,2,3,4] (splice exclui o 5)
 
@@ -35,8 +35,13 @@ export function GraficoCustos() {
         ]
     })
 
+
     const handlePrevious = () => {
         if (first == 0) {
+            return;
+        }
+        if (!isSplit) {
+            console.log("poggers?")
             return;
         }
         setFirst(first - 5);
@@ -49,6 +54,10 @@ export function GraficoCustos() {
         }
         setFirst(first + 5);
         setLast(last + 5);
+    }
+
+    const handleSetSplit = () => {
+        setIsSplit(!isSplit)
     }
 
     const chamarApi = useEffect(() => {
@@ -173,8 +182,9 @@ export function GraficoCustos() {
     }, [])
 
     const atualizarTabela = useEffect(() => {
-        setChartData({
-            labels: labels.slice(first, last),
+        if (isSplit) {
+            setChartData({
+                labels: labels.slice(first, last),
             datasets: [
                 {
                     label: "Custo de Mão de Obra (R$)",
@@ -190,7 +200,26 @@ export function GraficoCustos() {
                 }
             ]
         })
-    }, [labels, dadosCostura, dadosTecido, lucro, first, last])
+        } else {
+            setChartData({
+                labels: labels,
+                    datasets: [
+                {
+                    label: "Custo de Mão de Obra (R$)",
+                    data: dadosCostura
+                }, 
+                {
+                    label: "Custo de Material (R$)",
+                    data: dadosTecido
+                },
+                {
+                    label: "Lucro (R$)",
+                    data: lucro
+                }
+            ]
+        })
+        }
+    }, [labels, dadosCostura, dadosTecido, lucro, first, last, isSplit])
 
     const options = {
         maintainAspectRatio: true,
@@ -203,6 +232,12 @@ export function GraficoCustos() {
             y: {
                 stacked: true,
                 max: max
+            }
+        },
+        plugins : {
+            title: {
+                display: true,
+                text: "Composição de custos por Peça de roupa"
             }
         }
     }
@@ -218,6 +253,9 @@ export function GraficoCustos() {
             <div className={styles.divButtons}>
                 <IconButton onClick={() => handlePrevious()}>
                     <NavigateBeforeIcon  sx={styleButtons}/>
+                </IconButton>
+                <IconButton onClick={() => handleSetSplit()}>
+                    {isSplit ? "5 por Vez" : "Todos"}
                 </IconButton>
                 <IconButton onClick={() => handleNext()}>
                     <NavigateNextIcon sx={styleButtons}/>
