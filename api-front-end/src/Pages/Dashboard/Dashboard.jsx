@@ -4,6 +4,7 @@ import { Navbar } from "../../components/Navbar/Navbar"
 import { DashProdutos } from "../../components/DashProdutos/DashProdutos"
 import styles from "./dashboard.module.css"
 import { DashDefeitos } from "../../components/DashDefeitos/DashDefeitos";
+import { DashVendas } from "../../components/DashVendas/DashVendas";
 
 export function Dashboard() {
 
@@ -21,7 +22,7 @@ export function Dashboard() {
                 <Filtro currentPage={currentPage} handleChangePage={handleChangePage}/>
                 <div className={styles.containerDash}>{
                     currentPage == 'produtos' ? <DashProdutos /> : 
-                    currentPage == 'vendas' ? <div></div> :
+                    currentPage == 'vendas' ? <DashVendas /> :
                     <DashDefeitos />
                 }
                     {/* <div className={`${styles.conteudoDash}`}>

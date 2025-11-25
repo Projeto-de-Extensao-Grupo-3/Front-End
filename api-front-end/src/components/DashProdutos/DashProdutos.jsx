@@ -1,5 +1,6 @@
 import styles from "../../Pages/Dashboard/dashboard.module.css"
 import { GraficoMargemLucro } from "./GraficoMargemLucro"
+import { GraficoCustos } from "./GraficoCustos"
 import { TabelaBaixoGiro } from "./TabelaBaixoGiro"
 
 export function DashProdutos() {
@@ -10,7 +11,7 @@ export function DashProdutos() {
                     <GraficoMargemLucro />
                 </div>
                 <div className={`${styles.conteudoGraficos}`}>
-                    <h2>Algo aqui?</h2>
+                    <GraficoCustos />
                 </div>
             </div>
             <div className={`${styles.conteudoDash}`}>

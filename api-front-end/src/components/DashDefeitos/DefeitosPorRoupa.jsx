@@ -45,10 +45,6 @@ export function DefeitosPorRoupa() {
             "produto": "Saia Pregas bege",
             "qtd_defeitos": 19,
         },]
-        let total_defeitos = 0;
-        retorno.forEach(dado => total_defeitos+=dado.qtd_defeitos)
-
-        retorno.forEach(dado => (dado.qtd_defeitos = dado.qtd_defeitos / total_defeitos * 100).toFixed())
 
         setDados(retorno)
 
@@ -59,7 +55,7 @@ export function DefeitosPorRoupa() {
                 <TableHead>
                     <TableRow>
                         <TableCell>Produto</TableCell>
-                        <TableCell>Defeitos (comparado ao todo)</TableCell>
+                        <TableCell>Defeitos %</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>

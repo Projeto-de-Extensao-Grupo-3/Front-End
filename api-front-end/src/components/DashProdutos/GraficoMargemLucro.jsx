@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { CategoryScale } from 'chart.js';
 import Chart from "chart.js/auto";
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 Chart.register(CategoryScale);
+Chart.register(ChartDataLabels);
+
 
 export function GraficoMargemLucro() {
     
@@ -14,7 +17,7 @@ export function GraficoMargemLucro() {
         labels: labels,
         datasets: [
             {
-                label: "Margem de lucro por peça",
+                label: "Margem de lucro por peça %",
                 data: dados
             }
         ]
@@ -56,14 +59,18 @@ export function GraficoMargemLucro() {
             labels: labels,
             datasets: [
                 {
-                    label: "Margem de lucro por peça",
+                    label: "Margem de lucro por peça %",
                     data: dados
                 }
             ]
         })
     }, [labels, dados])
 
+    const options = {
+        indexAxis: 'y'
+    }
+
     return (
-        <Bar data={chartData} />
+        <Bar data={chartData} options={options}/>
     )
 }

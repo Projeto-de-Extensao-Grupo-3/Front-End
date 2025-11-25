@@ -14,7 +14,7 @@ export function DefeitosPorCostureira() {
         labels: labels,
         datasets: [
             {
-                label: "Defeitos por costureira",
+                label: "Defeitos por costureira %",
                 data: dados
             }
         ]
@@ -46,7 +46,7 @@ export function DefeitosPorCostureira() {
 
         // dados
         aux = [];
-        retorno.forEach(dado => aux.push(dado['qtd_defeitos'] / dado['qtd_total_entregas'] * 100))
+        retorno.forEach(dado => aux.push((dado['qtd_defeitos'] / dado['qtd_total_entregas'] * 100).toFixed(1)))
         setDados(aux)
 
     }, [])
@@ -56,7 +56,7 @@ export function DefeitosPorCostureira() {
             labels: labels,
             datasets: [
                 {
-                    label: "Taxa de defeitos por costureira",
+                    label: "Taxa de defeitos por costureira %",
                     data: dados
                 }
             ]
