@@ -7,61 +7,24 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Paper } from "@mui/material";
 import { useState } from 'react';
+import axios from 'axios';
+import {useMediaQuery} from "@mui/material";
 
 export function TabelaBaixoGiro() {
 
+    const matches = useMediaQuery('(min-width: 600px)')
     const [dados, setDados] = useState([]);
 
     const obterDadosTabela = useEffect(() => {
-        const retorno = [
-            {
-                "produto": "Vestido azul florido",
-                "total_vendido": 0.0,
-                "qtd_vendas": 0,
-                "estoque_atual": 0.0,
-                "dias_sem_vender": "Nunca vendeu",
-                "status_recomendacao": "CRÍTICO - Nunca vendeu"
-            },
-            {
-                "produto": "Camisa vermelha lisa",
-                "total_vendido": 0.0,
-                "qtd_vendas": 0,
-                "estoque_atual": 0.0,
-                "dias_sem_vender": "Nunca vendeu",
-                "status_recomendacao": "CRÍTICO - Nunca vendeu"
-            },
-            {
-                "produto": "Bermuda cinza com listras vermelhas",
-                "total_vendido": 0.0,
-                "qtd_vendas": 0,
-                "estoque_atual": 0.0,
-                "dias_sem_vender": "Nunca vendeu",
-                "status_recomendacao": "CRÍTICO - Nunca vendeu"
-            },
-            {
-                "produto": "Tecido vermelho liso",
-                "total_vendido": 0.0,
-                "qtd_vendas": 0,
-                "estoque_atual": 0.0,
-                "dias_sem_vender": "Nunca vendeu",
-                "status_recomendacao": "CRÍTICO - Nunca vendeu"
-            },
-            {
-                "produto": "Tecido azul florido",
-                "total_vendido": 0.0,
-                "qtd_vendas": 0,
-                "estoque_atual": 0.0,
-                "dias_sem_vender": "Nunca vendeu",
-                "status_recomendacao": "CRÍTICO - Nunca vendeu"
-            }
-        ]
-
-        setDados(retorno)
+        axios.get("/api/itens-estoque/produtos-giro-baixo")
+            .then((response) => {
+                setDados(response.data)
+            })
 
     }, []);
 
     return (
-        <TableContainer component={Paper}>
+        <TableContainer component={Paper} sx={{maxHeight : 400, width: matches ? '70%' : '100%', maxWidth: matches ? 'none' : 300}}>
             <Table>
                 <TableHead>
                     <TableRow>
@@ -77,11 +40,11 @@ export function TabelaBaixoGiro() {
                     {dados.map((data) => (
                         <TableRow key={data.produto}>
                             <TableCell>{data.produto}</TableCell>
-                            <TableCell >{data.total_vendido}</TableCell>
-                            <TableCell>{data.qtd_vendas}</TableCell>
-                            <TableCell>{data.estoque_atual}</TableCell>
-                            <TableCell>{data.dias_sem_vender}</TableCell>
-                            <TableCell>{data.status_recomendacao}</TableCell>
+                            <TableCell >{data.totalVendido}</TableCell>
+                            <TableCell>{data.quantidadeVendas}</TableCell>
+                            <TableCell>{data.estoqueAtual}</TableCell>
+                            <TableCell>{data.diasSemVender}</TableCell>
+                            <TableCell>{data.statusRecomendacao}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

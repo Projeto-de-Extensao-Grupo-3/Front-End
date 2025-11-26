@@ -45,3 +45,22 @@
     justify-content: center;
     align-items: center;
 }
+
+@media (max-width: 1001px) {
+    .sectionDash {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 1200px) {
+    .conteudoDash {
+        flex-direction: column;
+        justify-content: flex-start;
+        height: fit-content;
+        margin-bottom: 100px;
+    }
+
+    .conteudoGraficos {
+        min-height: 400px;
+    }
+}

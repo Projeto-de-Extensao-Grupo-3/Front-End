@@ -7,7 +7,7 @@ import styles from "./produtos.module.css"
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import IconButton from '@mui/material/IconButton';
-
+import axios from 'axios';
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
@@ -20,6 +20,7 @@ export function GraficoMargemLucro() {
     const [isSplit, setIsSplit] = useState(true);
     const [first, setFirst] = useState(0);
     const [last, setLast] = useState(5); // 5 elementos [0,1,2,3,4] (splice exclui o 5)
+    const [max, setMax] = useState(100)
 
     const [chartData, setChartData] = useState({
         labels: labels,
@@ -36,7 +37,6 @@ export function GraficoMargemLucro() {
             return;
         }
         if (!isSplit) {
-            console.log("poggers?")
             return;
         }
         setFirst(first - 5);
@@ -55,35 +55,28 @@ export function GraficoMargemLucro() {
         setIsSplit(!isSplit)
     }
 
+    
+
     const chamarApi = useEffect(() => {
-        // Apos chamada de api, logica permanece similar
-        const retorno = [{
-            "id_roupa": 1,
-            "descricao": "Vestido azul florido",
-            "margem_lucro_%": 21.59
-        },
-        {
-            "id_roupa": 2,
-            "descricao": "Camisa vermelha lisa",
-            "margem_lucro_%": 22.49
-        },
-        {
-            "id_roupa": 3,
-            "descricao": "Bermuda cinza com listras vermelhas",
-            "margem_lucro_%": 35.89
-        }]
+        axios.get("/api/lotes-item-estoque/margem-lucro-produtos")
+            .then((response) => {
+                // labels (nome das roupas)                
+                let data = response.data;
+                data.sort((a, b) => b.margemLucro - a.margemLucro) // ordenando por ordem lucro desc
+                setMax(data[0].margemLucro + 10)
 
-        // labels (nome das roupas)
-        let aux = [];
-        retorno.forEach(dado => aux.push(dado['descricao']));
-        setLabels(aux)
-
-
-        // dados
-        aux = [];
-        retorno.forEach(dado => aux.push(dado['margem_lucro_%']))
-        setDados(aux)
-
+                let aux = [];
+                data.forEach(dado => aux.push(dado['nomeProduto']));
+                setLabels(aux)
+        
+        
+                // dados
+                aux = [];
+                data.forEach(dado => aux.push(dado['margemLucro']))
+                setDados(aux)
+            }).catch((error) => {
+                console.error("Falha ao obter os dados de margem de lucro:" + error)
+            })
     }, [])
 
     const atualizarTabela = useEffect(()=> {
@@ -108,14 +101,21 @@ export function GraficoMargemLucro() {
                 ]
             })
         }
-    }, [labels, dados, isSplit])
+    }, [labels, dados, isSplit, first, last])
 
     const options = {
+        maintainAspectRatio: false,
+        responsive: true,
         indexAxis: 'y',
         plugins : {
             title: {
                 display: true,
                 text: "Margem de lucro por peça"
+            }
+        },
+        scales: {
+            x: {
+                max: max
             }
         }
     }
@@ -127,7 +127,7 @@ export function GraficoMargemLucro() {
     }
 
     return (
-                <div className={styles.main}>
+        <div className={styles.main}>
             <div className={styles.divButtons}>
                 <IconButton onClick={() => handlePrevious()}>
                     <NavigateBeforeIcon  sx={styleButtons}/>

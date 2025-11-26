@@ -1,6 +1,6 @@
 .card {
     width: 100%;
-    height: 60px;
+    height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -8,5 +8,20 @@
     color: #EDFFFA;
     cursor: pointer;
     border: 1px solid #2D2D33;
-    /* background-color: #2932BB; */
+}
+
+@media (max-width: 1001px) {
+    .card {
+        width: 80%;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        justify-self: center;
+        margin-bottom: 10px;
+        color: #EDFFFA;
+        cursor: pointer;
+        border: 1px solid #2D2D33;
+        /* background-color: #2932BB; */
+    }    
 }

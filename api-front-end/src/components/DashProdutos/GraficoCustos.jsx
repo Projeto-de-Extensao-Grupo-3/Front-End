@@ -7,7 +7,7 @@ import styles from "./produtos.module.css"
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import IconButton from '@mui/material/IconButton';
-
+import axios from 'axios';
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -155,29 +155,35 @@ export function GraficoCustos() {
             }
         ]
 
-        retorno.sort((a, b) => b.preco_venda - a.preco_venda)
-        setMax(retorno[0].preco_venda)
+        axios.get("/api/lotes-item-estoque/peca-maior-mao-obra")
+            .then((response) => {
+                let data = response.data;
 
-        // labels (nome das roupas)
-        let aux = [];
-        retorno.forEach(dado => aux.push(dado['descricao']));
-        setLabels(aux)
+                data.sort((a, b) => b.preco - a.preco)
+                setMax(data[0].preco)
+        
+                // labels (nome das roupas)
+                let aux = [];
+                data.forEach(dado => aux.push(dado['descricao']));
+                setLabels(aux)
+        
+        
+                // dadosCostura
+                aux = [];
+                data.forEach(dado => aux.push(Number(dado['custoCostureira']).toFixed(1)))
+                setDadosCostura(aux)
+        
+                // dadosTecido
+                aux = [];
+                data.forEach(dado => aux.push(Number(dado['custoTecidos'])).toFixed(1))
+                setDadosTecido(aux)
+        
+                // lucro
+                aux = [];
+                data.forEach(dado => aux.push((Number(dado['preco'] - (dado['custoCostureira'] + dado['custoTecidos'])).toFixed(1))))
+                setLucro(aux)
+            })
 
-
-        // dadosCostura
-        aux = [];
-        retorno.forEach(dado => aux.push(dado['custo_costura']))
-        setDadosCostura(aux)
-
-        // dadosTecido
-        aux = [];
-        retorno.forEach(dado => aux.push(dado['custo_tecido']))
-        setDadosTecido(aux)
-
-        // lucro
-        aux = [];
-        retorno.forEach(dado => aux.push(dado['preco_venda'] - (dado['custo_costura'] + dado['custo_tecido'])))
-        setLucro(aux)
 
     }, [])
 
@@ -222,7 +228,7 @@ export function GraficoCustos() {
     }, [labels, dadosCostura, dadosTecido, lucro, first, last, isSplit])
 
     const options = {
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         responsive: true,
         // indexAxis: 'y'
         scales: {
