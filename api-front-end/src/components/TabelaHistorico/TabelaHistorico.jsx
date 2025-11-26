@@ -97,6 +97,11 @@ export function TabelaHistorico(props) {
         setPage(newPage)
     }
 
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(event.target.value);
+        setPage(0)
+    }
+
     const obterDadosTabela = useEffect(() => {
         let endpoint = 'paginado'
         if (props.tipoMovimentacao == 1) { 
