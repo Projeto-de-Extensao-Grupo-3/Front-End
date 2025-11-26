@@ -752,9 +752,9 @@ export function Estoque() {
                     </div>
                 </div>
                 <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
-                {dadosAtualizacao.length > 0 ? (
+                {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
-                        {dadosAtualizacao.map(item => (
+                        {data.map(item => (
                             <BarraVisualizacao key={item.idItemEstoque}
                                 children={
                                     <>
