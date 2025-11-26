@@ -33,10 +33,10 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 const theme = createTheme({
     palette: {
         saida: {
-            main: '#ef5350',
-            light: '#f44336',
-            dark: '#d32f2f',
-            contrastText: '#fff'
+            main: '#B85700',
+            light: '#ca6105ff',
+            dark: '#a95103ff',
+            contrastText: '#ffffffff'
         },
     }
 });
