@@ -16,8 +16,9 @@ import MenuItem from '@mui/material/MenuItem';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Autocomplete from '@mui/material/Autocomplete';
-import InputAdornment from '@mui/material/InputAdornment';
 import axios from 'axios';
+import { AuthContext } from '../../components/Permissao/ValidadorDePermissao.jsx';
+import { useContext } from "react";
 
 export function Estoque() {
 
@@ -620,6 +621,8 @@ export function Estoque() {
         }
     }, [alertOpen]);
 
+    const { hasPermission } = useContext(AuthContext);
+
     /*=====================================================================*/
 
     return (
@@ -631,6 +634,7 @@ export function Estoque() {
                     <div className={styles.barra_pesquisa}>
                         <BarraPesquisa func={buscarItemEstoque} busca={pesquisa} width='90%' />
                     </div>
+                {hasPermission("CADASTRAR ITEM ESTOQUE") && (
                     <div>
                         <JanelaCadastro func={uploadImagemS3}
                             limparCampos={limparCampos}
@@ -750,12 +754,13 @@ export function Estoque() {
                                 </>
                             } />
                     </div>
+                )}
                 </div>
                 <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
                 {dadosAtualizacao.length > 0 ? (
                     <div className={styles.lista_parceiros}>
                         {dadosAtualizacao.map(item => (
-                            <BarraVisualizacao key={item.idItemEstoque}
+                            <BarraVisualizacao key={item.idItemEstoque} pagina={"estoque"}
                                 children={
                                     <>
                                         <li className={styles.liImagem}> <img src={item.imagem.url} className={styles.imagemItem} style={{ height: matches ? "6rem" : "4rem" }} /> </li>

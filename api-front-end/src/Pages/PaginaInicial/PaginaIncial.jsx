@@ -33,7 +33,7 @@ export function PaginaInicial(){
 
         // Prevent default necessário, pois "submit" do formulário recarrega a página atual,
         // Sobrescrevendo o navigate.
-
+        
         e.preventDefault();
         // Eventualmente, a requisição para o back será feita aqui. Por enquanto, apenas redirecionamento sem validação
         // Será necessário diferenciar entre registro rápido e login normal (corte de escopo?)

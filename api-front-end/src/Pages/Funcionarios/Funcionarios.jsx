@@ -15,6 +15,8 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import axios from 'axios';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { AuthContext } from '../../components/Permissao/ValidadorDePermissao.jsx';
+import { useContext } from 'react';
 import { formatTelefone, aplicarMascaraTelefone, formatCnpj, formatCpf, aplicarMascaraCnpj, aplicarMascaraCpf, validarEmail } from '../../functions/utils.js';
 
 export function Funcionarios() {
@@ -301,6 +303,8 @@ export function Funcionarios() {
         setHelperTextEmail("");
     }
 
+    const { hasPermission } = useContext(AuthContext);
+
     /*======================================================================*/
 
     return (
@@ -311,6 +315,8 @@ export function Funcionarios() {
                     <div className={styles.barra_pesquisa}>
                         <BarraPesquisa func={buscarFuncionario} busca={"Buscar funcionário por nome"} width='90%'/>
                     </div>
+
+                {hasPermission("CADASTRAR FUNCIONARIOS") && (
                     <div>
                         <JanelaCadastro func={cadastrarFuncionario}
                             cadastroDisabled={isCadastroDisabled}
@@ -364,6 +370,7 @@ export function Funcionarios() {
                                 </>
                             } />
                     </div>
+                    )}
                 </div>
                 <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
                 {data.length > 0 ? (
@@ -433,6 +440,7 @@ export function Funcionarios() {
                                 }
                                 title={`Informações do funcionário`}
                                 altura={"35vh"}
+                                pagina={"funcionarios"}
                             />
                         ))}
                     </div>

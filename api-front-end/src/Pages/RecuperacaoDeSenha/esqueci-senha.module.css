@@ -1,4 +1,100 @@
 .base {
     padding: 0;
-    background-color: #EDFFFA;
+    background-color: #f1f0f0;
 }
+
+.box {
+    padding-top: 40px;
+    width: 80vw;
+    height: 80vh;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.form {
+    width: 100%;
+    height: 60%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.popUp {
+    position: absolute;
+}
+
+@media (max-width: 600px) {
+
+    .input {
+        width: 90%;
+        min-width: 180px;
+    }
+
+    .divBotao {
+        width: 90%;
+        min-width: 180px;
+    }
+
+    .botao {
+        width: 100%;
+    }
+
+    .box {
+        padding-top: 40px;
+        width: 70vw;
+        height: 50vh;
+    }
+
+
+}
+
+@media (min-width: 600px) {
+    .divBotao {
+        width: 20%;
+        min-width: 180px;
+    }
+
+    .botao {
+        width: 100%;
+    }
+    
+    .input {
+        width: 40%;
+        min-width: 400px;
+    }
+}
+
+
+.content {
+    display: flex;
+    justify-content: center;
+    /* align-items: center; */
+    width: 100vw;
+    height: 90vh;
+}
+
+.indicator {
+    color: #000; 
+  font-size: 35px; 
+  font-weight: bold; 
+  text-align: center; 
+  text-shadow: 2px 2px 4px rgba(180, 180, 180, 0.2); 
+  margin-top: 20px;
+}
+
+.linkSenha {
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  transition: color 0.2s ease-in-out;
+}
+
+.linkSenha:hover {
+    color: #111;
+  text-decoration: underline;
+}
+

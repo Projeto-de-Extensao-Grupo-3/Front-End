@@ -6,19 +6,34 @@ import InfoIcon from '@mui/icons-material/Info';
 import { useEffect, useState } from "react";
 import { JanelaInfo } from "../JanelaInfo/JanelaInfo";
 import { JanelaDeletar } from "../JanelaDeletar/JanelaDeletar";
+import { AuthContext } from '../Permissao/ValidadorDePermissao.jsx';
+import { useContext } from "react";
 
 // Preciso achar um nome melhor para esse componente
 export function BarraVisualizacao(props) {
     const [dados, setDados] = useState(props.dados);
+    const [ permissao, setPermissao ] = useState("");
 
     useEffect(() => {
         setDados(props.dados)
     }, [props.dados])
 
+     useEffect(() => {
+        if(props.pagina === "funcionarios"){
+            setPermissao("EDITAR FUNCIONARIOS");
+        }else{
+            setPermissao("EDITAR ESTOQUE");
+        }
+    }, [props.pagina])
+
+    const { hasPermission } = useContext(AuthContext);
+
     return(
         <div className={styles.card}>
             <ul className={styles.uul}>
                 {props.children}
+
+                { hasPermission(permissao) && (
                     <li>
                     <JanelaCadastro
                         cadastroDisabled={props.cadastroDisabled}
@@ -33,6 +48,7 @@ export function BarraVisualizacao(props) {
                         </>
                     } action={props.acao} message={props.confirm}/>
                     </li>
+                )}
                     <li>
                     <JanelaInfo 
                         info={props.info}
@@ -42,6 +58,8 @@ export function BarraVisualizacao(props) {
                             <InfoIcon fontSize="large" color="action" sx={{ color: "rgba(60, 60, 60, 1)", cursor: "pointer" }}/>
                         }/>
                     </li>
+                    
+                {hasPermission(permissao) && (
                     <li>
                     <JanelaDeletar
                         children={
@@ -51,6 +69,7 @@ export function BarraVisualizacao(props) {
                         dadoTitle={props.dadoTitle}
                         />
                     </li>
+                )}
             </ul>
         </div>
     )

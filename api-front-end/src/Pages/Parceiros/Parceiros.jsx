@@ -347,7 +347,7 @@ export function Parceiros() {
                 {data.length > 0 ? (
                     <div className={styles.lista_parceiros}>
                         {data.map(item => (
-                            <BarraVisualizacao key={item.id}
+                            <BarraVisualizacao key={item.id} pagina={"parceiros"}
                                 children={
                                     <>
                                         <li className={styles.liTextoLargo}>Nome: <br /> {item.nome} </li>
