@@ -6,7 +6,7 @@
 .main {
     display: flex;
     flex-direction: column;
-    background-color: #EDFFFA;
+    background-color: #eaeaea;
     filter: brightness(100%); /*Necessário para blackout no popup*/
     padding-bottom: 50px;
 }

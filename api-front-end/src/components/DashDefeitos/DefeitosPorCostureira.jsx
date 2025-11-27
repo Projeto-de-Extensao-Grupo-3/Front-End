@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { CategoryScale } from 'chart.js';
 import Chart from "chart.js/auto";
+import axios from 'axios';
 
 Chart.register(CategoryScale);
 
@@ -21,34 +22,21 @@ export function DefeitosPorCostureira() {
     })
 
     const chamarApi = useEffect(() => {
-        // Apos chamada de api, logica permanece similar
-        const retorno = [{
-            "costureira": "Maria",
-            "qtd_defeitos": 9,
-            "qtd_total_entregas": 102
-        },
-        {
-            "costureira": "Rosanjela",
-            "qtd_defeitos": 20,
-            "qtd_total_entregas": 153
-        },
-        {
-            "costureira": "Soeli",
-            "qtd_defeitos": 1,
-            "qtd_total_entregas": 84
-        }]
 
-        // labels
-        let aux = [];
-        retorno.forEach(dado => aux.push(dado['costureira']));
-        setLabels(aux)
+        axios.get("/api/saidas-estoque/taxa-defeito-costura")
+            .then((response) => {
+                let data = response.data;
 
-
-        // dados
-        aux = [];
-        retorno.forEach(dado => aux.push((dado['qtd_defeitos'] / dado['qtd_total_entregas'] * 100).toFixed(1)))
-        setDados(aux)
-
+                let aux = [];
+                data.forEach(dado => aux.push(dado['nomeCostureira']));
+                setLabels(aux)
+        
+        
+                // dados
+                aux = [];
+                data.forEach(dado => aux.push((dado['qtdDefeito'] / dado['totalPeças'] * 100).toFixed(1)))
+                setDados(aux)
+            })
     }, [])
 
     const atualizarTabela = useEffect(() => {
@@ -63,7 +51,21 @@ export function DefeitosPorCostureira() {
         })
     }, [labels, dados])
 
+    const options = {
+        scales: {
+            y: {
+                max: 100
+            }
+        },
+        plugins : {
+            title: {
+                display: true,
+                text: "Taxa de defeitos por costureira"
+            }
+        }
+    }
+
     return (
-        <Bar data={chartData} />
+        <Bar data={chartData} options={options}/>
     )
 }

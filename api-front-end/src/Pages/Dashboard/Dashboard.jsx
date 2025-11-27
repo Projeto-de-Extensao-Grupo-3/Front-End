@@ -22,8 +22,7 @@ export function Dashboard() {
                 <Filtro currentPage={currentPage} handleChangePage={handleChangePage}/>
                 <div className={styles.containerDash}>{
                     currentPage == 'produtos' ? <DashProdutos /> : 
-                    currentPage == 'vendas' ? <DashVendas /> :
-                    <DashDefeitos />
+                    currentPage == 'vendas' ? <DashVendas /> : <DashDefeitos />
                 }
                     {/* <div className={`${styles.conteudoDash}`}>
                         <div className={`${styles.conteudoGraficos}`}>

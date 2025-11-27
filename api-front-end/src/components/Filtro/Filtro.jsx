@@ -7,33 +7,35 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Box from "@mui/material/Box";
 import { PageSelector } from "../PageSelectorDash/PageSelector";
+import { useMediaQuery } from "@mui/material";
 export function Filtro(props) {
     // Responsividade: usa Box do MUI para adaptar o layout
-
+    const matches = useMediaQuery('(min-width: 1000px)')
     return (
         <Box sx={{
-            width: { xs: '100%', sm: 320 },
+            width: matches ? { xs: '100%', sm: 320 } : '100%',
             minWidth: 0,
-            p: 2,
-            borderRight: { sm: '1px solid #000000a2' },
+            p: matches ? 2 : 0,
+            borderRight: matches ? { sm: '1px solid #000000a2' } : 'none',
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
-            background: '#fff',
+            background: '#fff'
         }}>
-            <h1>Gráficos</h1>
+            <h1 style={{width: matches ? '100%' : '80%', alignSelf: 'center', paddingTop: matches ? 0 : '10px'}}>Segmento</h1>
+            <br />
             <div>
-                <div onClick={() => props.handleChangePage('produtos')}>
+                <div style={{display: 'flex', width: '100%', justifyContent: 'center'}} onClick={() => props.handleChangePage('produtos')}>
                     <PageSelector nomePagina="Produtos" ativo={props.currentPage == 'produtos'}/>
                 </div>
-                <div onClick={() => props.handleChangePage('defeitos')}>
+                <div style={{display: 'flex', width: '100%', justifyContent: 'center'}}  onClick={() => props.handleChangePage('defeitos')}>
                     <PageSelector nomePagina="Defeitos" ativo={props.currentPage == 'defeitos'}/>
                 </div>
-                <div onClick={() => props.handleChangePage('vendas')}>
+                <div style={{display: 'flex', width: '100%', justifyContent: 'center'}}  onClick={() => props.handleChangePage('vendas')}>
                     <PageSelector nomePagina="Vendas" ativo={props.currentPage == 'vendas'}/>
                 </div>
             </div>
-            <h1>Filtros</h1>
+            {/* <h1>Filtros</h1>
             <h3 className={styles.noBold}>Janela dos registros:</h3>
             <Box sx={{
                 display: 'flex',
@@ -57,7 +59,7 @@ export function Filtro(props) {
                     size="small"
                     sx={{ flex: 1, minWidth: 0 }}
                 />
-            </Box>
+            </Box> */}
 
             {/* <h2>Gráfico de Barras</h2>
             <h3 className={styles.noBold}>Mostrar: 7 roupas</h3>

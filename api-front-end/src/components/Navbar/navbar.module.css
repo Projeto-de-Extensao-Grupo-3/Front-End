@@ -9,13 +9,13 @@
 }
 
 .emptyCard {
-    background-color: #2932BB;
+    background-color: #073C78;
     width: 100vw;
     height: 70px;
 }
 
 .card {
-    background-color: #2932BB;
+    background-color: #073C78;
     width: 100%;
     height: 70px;
     display: flex;

@@ -7,50 +7,21 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Paper } from "@mui/material";
 import { useState } from 'react';
+import axios from 'axios';
 
 export function DefeitosPorRoupa() {
 
     const [dados, setDados] = useState([]);
 
     const chamarApi = useEffect(() => {
-        // Apos chamada de api, logica permanece similar
-        const retorno = [{
-            "produto": "Vestido azul florido",
-            "qtd_defeitos": 9,
-        }, {
-            "produto": "Camisa vermelha lisa",
-            "qtd_defeitos": 7,
-        }, {
-            "produto": "Bermuda cinza com listras vermelhas",
-            "qtd_defeitos": 12,
-        }, {
-            "produto": "Vestido azul e preto",
-            "qtd_defeitos": 1,
-        }, {
-            "produto": "Vestido branco e dourado",
-            "qtd_defeitos": 2,
-        }, {
-            "produto": "Camiseta Estampa Florida",
-            "qtd_defeitos": 4,
-        }, {
-            "produto": "Camiseta Branca sem Estampa",
-            "qtd_defeitos": 5,
-        }, {
-            "produto": "Jeans Rasgado",
-            "qtd_defeitos": 22,
-        }, {
-            "produto": "Jeans Baggy",
-            "qtd_defeitos": 12,
-        }, {
-            "produto": "Saia Pregas bege",
-            "qtd_defeitos": 19,
-        },]
-
-        setDados(retorno)
-
+        axios.get('/api/itens-estoque/defeitos-por-roupa')
+            .then((response) => {
+                setDados(response.data)
+            })
     }, [])
+
     return (
-        <TableContainer component={Paper} sx={{maxHeight : 400, width: '70%'}}>
+        <TableContainer component={Paper} sx={{maxHeight : 800, width: '70%'}}>
             <Table stickyHeader>
                 <TableHead>
                     <TableRow>
@@ -60,9 +31,9 @@ export function DefeitosPorRoupa() {
                 </TableHead>
                 <TableBody>
                     {dados.map((data) => (
-                        <TableRow key={data.produto}>
-                            <TableCell>{data.produto}</TableCell>
-                            <TableCell >{data.qtd_defeitos.toFixed(2)}%</TableCell>
+                        <TableRow key={data.roupa}>
+                            <TableCell>{data.roupa}</TableCell>
+                            <TableCell >{data.taxaDefeitoPercentual.toFixed(2)}%</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
