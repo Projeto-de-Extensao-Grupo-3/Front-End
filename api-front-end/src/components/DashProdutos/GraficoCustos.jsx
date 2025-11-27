@@ -13,7 +13,7 @@ Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
 
-export function GraficoCustos() {
+export function GraficoCustos(props) {
 
     const [labels, setLabels] = useState([]);
     const [dadosCostura, setDadosCostura] = useState([]);
@@ -155,34 +155,35 @@ export function GraficoCustos() {
             }
         ]
 
-        axios.get("/api/lotes-item-estoque/peca-maior-mao-obra")
-            .then((response) => {
-                let data = response.data;
+        axios.get("/api/lotes-item-estoque/peca-maior-mao-obra", {
+            params: props.filters
+        }).then((response) => {
+            let data = response.data;
 
-                data.sort((a, b) => b.preco - a.preco)
-                setMax(data[0].preco)
-        
-                // labels (nome das roupas)
-                let aux = [];
-                data.forEach(dado => aux.push(dado['descricao']));
-                setLabels(aux)
-        
-        
-                // dadosCostura
-                aux = [];
-                data.forEach(dado => aux.push(Number(dado['custoCostureira']).toFixed(1)))
-                setDadosCostura(aux)
-        
-                // dadosTecido
-                aux = [];
-                data.forEach(dado => aux.push(Number(dado['custoTecidos'])).toFixed(1))
-                setDadosTecido(aux)
-        
-                // lucro
-                aux = [];
-                data.forEach(dado => aux.push((Number(dado['preco'] - (dado['custoCostureira'] + dado['custoTecidos'])).toFixed(1))))
-                setLucro(aux)
-            })
+            data.sort((a, b) => b.preco - a.preco)
+            setMax(data[0].preco)
+
+            // labels (nome das roupas)
+            let aux = [];
+            data.forEach(dado => aux.push(dado['descricao']));
+            setLabels(aux)
+
+
+            // dadosCostura
+            aux = [];
+            data.forEach(dado => aux.push(Number(dado['custoCostureira']).toFixed(1)))
+            setDadosCostura(aux)
+
+            // dadosTecido
+            aux = [];
+            data.forEach(dado => aux.push(Number(dado['custoTecidos'])).toFixed(1))
+            setDadosTecido(aux)
+
+            // lucro
+            aux = [];
+            data.forEach(dado => aux.push((Number(dado['preco'] - (dado['custoCostureira'] + dado['custoTecidos'])).toFixed(1))))
+            setLucro(aux)
+        })
 
 
     }, [])
@@ -191,39 +192,39 @@ export function GraficoCustos() {
         if (isSplit) {
             setChartData({
                 labels: labels.slice(first, last),
-            datasets: [
-                {
-                    label: "Custo de Mão de Obra (R$)",
-                    data: dadosCostura.slice(first, last)
-                }, 
-                {
-                    label: "Custo de Material (R$)",
-                    data: dadosTecido.slice(first, last)
-                },
-                {
-                    label: "Lucro (R$)",
-                    data: lucro.slice(first, last)
-                }
-            ]
-        })
+                datasets: [
+                    {
+                        label: "Custo de Mão de Obra (R$)",
+                        data: dadosCostura.slice(first, last)
+                    },
+                    {
+                        label: "Custo de Material (R$)",
+                        data: dadosTecido.slice(first, last)
+                    },
+                    {
+                        label: "Lucro (R$)",
+                        data: lucro.slice(first, last)
+                    }
+                ]
+            })
         } else {
             setChartData({
                 labels: labels,
-                    datasets: [
-                {
-                    label: "Custo de Mão de Obra (R$)",
-                    data: dadosCostura
-                }, 
-                {
-                    label: "Custo de Material (R$)",
-                    data: dadosTecido
-                },
-                {
-                    label: "Lucro (R$)",
-                    data: lucro
-                }
-            ]
-        })
+                datasets: [
+                    {
+                        label: "Custo de Mão de Obra (R$)",
+                        data: dadosCostura
+                    },
+                    {
+                        label: "Custo de Material (R$)",
+                        data: dadosTecido
+                    },
+                    {
+                        label: "Lucro (R$)",
+                        data: lucro
+                    }
+                ]
+            })
         }
     }, [labels, dadosCostura, dadosTecido, lucro, first, last, isSplit])
 
@@ -240,7 +241,7 @@ export function GraficoCustos() {
                 max: max
             }
         },
-        plugins : {
+        plugins: {
             title: {
                 display: true,
                 text: "Composição de custos por Peça de roupa"
@@ -258,13 +259,13 @@ export function GraficoCustos() {
         <div className={styles.main}>
             <div className={styles.divButtons}>
                 <IconButton onClick={() => handlePrevious()}>
-                    <NavigateBeforeIcon  sx={styleButtons}/>
+                    <NavigateBeforeIcon sx={styleButtons} />
                 </IconButton>
                 <IconButton onClick={() => handleSetSplit()}>
                     {isSplit ? "5 por Vez" : "Todos"}
                 </IconButton>
                 <IconButton onClick={() => handleNext()}>
-                    <NavigateNextIcon sx={styleButtons}/>
+                    <NavigateNextIcon sx={styleButtons} />
                 </IconButton>
             </div>
             <div className={styles.divGrafico}>

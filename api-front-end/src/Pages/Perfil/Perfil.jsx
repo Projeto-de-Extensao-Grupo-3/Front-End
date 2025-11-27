@@ -13,7 +13,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import venuste from "../../../public/venuste_ico.png";
+import venuste from "../../../src/assets/venuste_ico.png";
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';

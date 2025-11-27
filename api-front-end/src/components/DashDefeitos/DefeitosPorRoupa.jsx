@@ -9,19 +9,20 @@ import { Paper } from "@mui/material";
 import { useState } from 'react';
 import axios from 'axios';
 
-export function DefeitosPorRoupa() {
+export function DefeitosPorRoupa(props) {
 
     const [dados, setDados] = useState([]);
 
     const chamarApi = useEffect(() => {
-        axios.get('/api/itens-estoque/defeitos-por-roupa')
-            .then((response) => {
-                setDados(response.data)
-            })
+        axios.get('/api/itens-estoque/defeitos-por-roupa', {
+            params: props.filters
+        }).then((response) => {
+            setDados(response.data)
+        })
     }, [])
 
     return (
-        <TableContainer component={Paper} sx={{maxHeight : 800, width: '70%'}}>
+        <TableContainer component={Paper} sx={{ maxHeight: 800, width: '70%' }}>
             <Table stickyHeader>
                 <TableHead>
                     <TableRow>

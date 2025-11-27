@@ -1,16 +1,60 @@
 import { useState } from "react";
 import styles from "./filtro.module.css";
 import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
 import Box from "@mui/material/Box";
+import Button from '@mui/material/Button';
 import { PageSelector } from "../PageSelectorDash/PageSelector";
 import { useMediaQuery } from "@mui/material";
+import dayjs from "dayjs";
+
 export function Filtro(props) {
     // Responsividade: usa Box do MUI para adaptar o layout
     const matches = useMediaQuery('(min-width: 1000px)')
+
+    const [dataInicio, setDataInicio] = useState(dayjs().subtract(12, 'months').format('YYYY-MM-DD'));
+    const [dataFim, setDataFim] = useState(dayjs().format('YYYY-MM-DD'));
+    const [categoria, setCategoria] = useState("");
+    const [caracteristica, setCaracteristica] = useState("");
+
+    const handleDataInicio = (event) => {
+        let newDate = event.target.value;
+        newDate = dayjs(newDate).format('YYYY-MM-DD');
+        if (dayjs(newDate).isAfter(dataFim)) {
+            return;
+        }
+        setDataInicio(newDate);
+    }
+
+    const handleDataFim = (event) => {
+        let newDate = event.target.value;
+        newDate = dayjs(newDate).format('YYYY-MM-DD');
+        if (dayjs(newDate).isBefore(dataFim)) {
+            return;
+        }
+        setDataFim(newDate);
+    }
+
+    const handleCaracteristica = (event) => {
+        setCaracteristica(event.target.value)
+    }
+
+    const handleCategoria = (event) => {
+        setCategoria(event.target.value)
+    }
+
+    const updateData = () => {
+        if (!dayjs(dataInicio).isValid()) {
+            // Alerta data de início
+            return;
+        }
+        if (!dayjs(dataFim).isValid()) {
+            // Alerta data de fim
+            return;
+        }
+        props.handleFilters(dataInicio, dataFim, caracteristica, categoria)
+
+    }
+
     return (
         <Box sx={{
             width: matches ? { xs: '100%', sm: 320 } : '100%',
@@ -35,11 +79,11 @@ export function Filtro(props) {
                     <PageSelector nomePagina="Vendas" ativo={props.currentPage == 'vendas'}/>
                 </div>
             </div>
-            {/* <h1>Filtros</h1>
+            <h1>Filtros</h1>
             <h3 className={styles.noBold}>Janela dos registros:</h3>
             <Box sx={{
                 display: 'flex',
-                flexDirection: 'row',
+                flexDirection: 'column',
                 gap: 2,
                 width: '100%',
                 alignItems: 'flex-start',
@@ -50,43 +94,49 @@ export function Filtro(props) {
                     type="date"
                     InputLabelProps={{ shrink: true }}
                     size="small"
+                    fullWidth
+                    value={dataInicio}
+                    onChange={(event) => handleDataInicio(event)}
                     sx={{ flex: 1, minWidth: 0 }}
                 />
                 <TextField
                     label="Fim"
                     type="date"
                     InputLabelProps={{ shrink: true }}
+                    fullWidth
                     size="small"
+                    value={dataFim}
+                    onChange={(event) => handleDataFim(event)}
                     sx={{ flex: 1, minWidth: 0 }}
                 />
-            </Box> */}
-
-            {/* <h2>Gráfico de Barras</h2>
-            <h3 className={styles.noBold}>Mostrar: 7 roupas</h3>
-            <FormControl fullWidth size="small" sx={{ mb: 1 }}>
-                <InputLabel id="mostrar-label">Mostrar</InputLabel>
-                <Select
-                    labelId="mostrar-label"
-                    id="mostrar"
-                    label="Mostrar"
-                    defaultValue={"7"}
-                >
-                    <MenuItem value={"7"}>Mais Vendidos</MenuItem>
-                </Select>
-            </FormControl>
-
-            <h2>Gráfico de Linhas</h2>
-            <FormControl fullWidth size="small">
-                <InputLabel id="considerar-label">Considerar</InputLabel>
-                <Select
-                    labelId="considerar-label"
-                    id="considerar"
-                    label="Considerar"
-                    defaultValue={"7"}
-                >
-                    <MenuItem value={"7"}>Todas as Roupas</MenuItem>
-                </Select>
-            </FormControl> */}
+            </Box>
+            <h3 className={styles.noBold}>Produtos:</h3>
+            <Box sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+                width: '100%',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+            }}>
+                <TextField 
+                    label="Caracteristica"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    value={caracteristica}
+                    onChange={(event) => handleCaracteristica(event)}
+                    sx={{ flex: 1, minWidth: 0 }}
+                />
+                <TextField 
+                    label="Categoria"
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                    value={categoria}
+                    onChange={(event) => handleCategoria(event)}
+                    sx={{ flex: 1, minWidth: 0 }}
+                />
+            </Box>
+            <Button variant="contained" onClick={() => updateData()}>Confirmar</Button>
         </Box>
     );
 }

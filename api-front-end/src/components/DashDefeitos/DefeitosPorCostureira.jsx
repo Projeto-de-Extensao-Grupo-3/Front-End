@@ -6,10 +6,10 @@ import axios from 'axios';
 
 Chart.register(CategoryScale);
 
-export function DefeitosPorCostureira() {
+export function DefeitosPorCostureira(props) {
 
-    const [labels, setLabels] = useState();
-    const [dados, setDados] = useState();
+    const [labels, setLabels] = useState([]);
+    const [dados, setDados] = useState([]);
 
     const [chartData, setChartData] = useState({
         labels: labels,
@@ -23,20 +23,21 @@ export function DefeitosPorCostureira() {
 
     const chamarApi = useEffect(() => {
 
-        axios.get("/api/saidas-estoque/taxa-defeito-costura")
-            .then((response) => {
-                let data = response.data;
+        axios.get("/api/saidas-estoque/taxa-defeito-costura", {
+            params: props.filters
+        }).then((response) => {
+            let data = response.data;
 
-                let aux = [];
-                data.forEach(dado => aux.push(dado['nomeCostureira']));
-                setLabels(aux)
-        
-        
-                // dados
-                aux = [];
-                data.forEach(dado => aux.push((dado['qtdDefeito'] / dado['totalPeças'] * 100).toFixed(1)))
-                setDados(aux)
-            })
+            let aux = [];
+            data.forEach(dado => aux.push(dado['nomeCostureira']));
+            setLabels(aux)
+
+
+            // dados
+            aux = [];
+            data.forEach(dado => aux.push((dado['qtdDefeito'] / dado['totalPeças'] * 100).toFixed(1)))
+            setDados(aux)
+        })
     }, [])
 
     const atualizarTabela = useEffect(() => {
@@ -57,7 +58,7 @@ export function DefeitosPorCostureira() {
                 max: 100
             }
         },
-        plugins : {
+        plugins: {
             title: {
                 display: true,
                 text: "Taxa de defeitos por costureira"
@@ -66,6 +67,6 @@ export function DefeitosPorCostureira() {
     }
 
     return (
-        <Bar data={chartData} options={options}/>
+        <Bar data={chartData} options={options} />
     )
 }

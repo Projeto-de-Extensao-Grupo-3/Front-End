@@ -8,7 +8,7 @@ import axios from 'axios';
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
-export function GraficoVendas() {
+export function GraficoVendas(props) {
 
     const [labels, setLabels] = useState();
     const [dadosBarra, setDadosBarra] = useState();
@@ -26,26 +26,27 @@ export function GraficoVendas() {
 
     const chamarApi = useEffect(() => {
 
-        axios.get('/api/itens-estoque/evolucao-vendas')
-            .then((response) => {
-                let data = response.data;
+        axios.get('/api/itens-estoque/evolucao-vendas', {
+            params: props.filters
+        }).then((response) => {
+            let data = response.data;
 
-                // labels
-                let aux = [];
-                data.forEach(dado => aux.push(dado['mes_atual']));
-                setLabels(aux)
-        
-        
-                // dadosBarra
-                aux = [];
-                data.forEach(dado => aux.push(dado['totalVendasAtual']))
-                setDadosBarra(aux)
-        
-                // dadosLinha
-                aux = []
-                data.forEach(dado => aux.push(dado['crescimentoPercentual']))
-                setDadosLinha(aux)
-            })
+            // labels
+            let aux = [];
+            data.forEach(dado => aux.push(dado['mes_atual']));
+            setLabels(aux)
+
+
+            // dadosBarra
+            aux = [];
+            data.forEach(dado => aux.push(dado['totalVendasAtual']))
+            setDadosBarra(aux)
+
+            // dadosLinha
+            aux = []
+            data.forEach(dado => aux.push(dado['crescimentoPercentual']))
+            setDadosLinha(aux)
+        })
     }, [])
 
     const atualizarTabela = useEffect(() => {
@@ -55,7 +56,7 @@ export function GraficoVendas() {
                 {
                     label: "Vendas por mês (Quantidade de transações)",
                     data: dadosBarra
-                }, 
+                },
                 {
                     label: "Crescimento por mês (%)",
                     data: dadosLinha,

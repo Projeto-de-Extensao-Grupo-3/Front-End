@@ -12,8 +12,8 @@ Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
 
-export function GraficoMargemLucro() {
-    
+export function GraficoMargemLucro(props) {
+
     const [labels, setLabels] = useState([]);
     const [dados, setDados] = useState([]);
 
@@ -55,31 +55,30 @@ export function GraficoMargemLucro() {
         setIsSplit(!isSplit)
     }
 
-    
-
     const chamarApi = useEffect(() => {
-        axios.get("/api/lotes-item-estoque/margem-lucro-produtos")
-            .then((response) => {
-                // labels (nome das roupas)                
-                let data = response.data;
-                data.sort((a, b) => b.margemLucro - a.margemLucro) // ordenando por ordem lucro desc
-                setMax(data[0].margemLucro + 10)
+        axios.get(`/api/lotes-item-estoque/margem-lucro-produtos`, {
+            params: props.filters
+        }).then((response) => {
+            // labels (nome das roupas)                
+            let data = response.data;
+            data.sort((a, b) => b.margemLucro - a.margemLucro) // ordenando por ordem lucro desc
+            setMax(data[0].margemLucro + 10)
 
-                let aux = [];
-                data.forEach(dado => aux.push(dado['nomeProduto']));
-                setLabels(aux)
-        
-        
-                // dados
-                aux = [];
-                data.forEach(dado => aux.push(dado['margemLucro']))
-                setDados(aux)
-            }).catch((error) => {
-                console.error("Falha ao obter os dados de margem de lucro:" + error)
-            })
-    }, [])
+            let aux = [];
+            data.forEach(dado => aux.push(dado['nomeProduto']));
+            setLabels(aux)
 
-    const atualizarTabela = useEffect(()=> {
+
+            // dados
+            aux = [];
+            data.forEach(dado => aux.push(dado['margemLucro']))
+            setDados(aux)
+        }).catch((error) => {
+            console.error("Falha ao obter os dados de margem de lucro:" + error)
+        })
+    }, [props.filters])
+
+    const atualizarTabela = useEffect(() => {
         if (isSplit) {
             setChartData({
                 labels: labels.slice(first, last),
@@ -107,7 +106,7 @@ export function GraficoMargemLucro() {
         maintainAspectRatio: false,
         responsive: true,
         indexAxis: 'y',
-        plugins : {
+        plugins: {
             title: {
                 display: true,
                 text: "Margem de lucro por peça"
@@ -120,7 +119,7 @@ export function GraficoMargemLucro() {
         }
     }
 
-        const styleButtons = {
+    const styleButtons = {
         width: '50px',
         height: '50px',
         cursor: 'pointer'
@@ -130,13 +129,13 @@ export function GraficoMargemLucro() {
         <div className={styles.main}>
             <div className={styles.divButtons}>
                 <IconButton onClick={() => handlePrevious()}>
-                    <NavigateBeforeIcon  sx={styleButtons}/>
+                    <NavigateBeforeIcon sx={styleButtons} />
                 </IconButton>
                 <IconButton onClick={() => handleSetSplit()}>
                     {isSplit ? "5 por Vez" : "Todos"}
                 </IconButton>
                 <IconButton onClick={() => handleNext()}>
-                    <NavigateNextIcon sx={styleButtons}/>
+                    <NavigateNextIcon sx={styleButtons} />
                 </IconButton>
             </div>
             <div className={styles.divGrafico}>

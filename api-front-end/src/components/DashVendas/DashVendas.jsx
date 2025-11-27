@@ -1,16 +1,12 @@
 import styles from "../../Pages/Dashboard/dashboard.module.css"
 import { GraficoVendas } from "./GraficoVendas"
 
-export function DashVendas() {
+export function DashVendas(props) {
     return (
         <div style={{width: '100%', height: '100%', display: "flex"}}>
             <div className={`${styles.graficoVenda}`}>
-                <GraficoVendas />
+                <GraficoVendas filters={props.filters} />
             </div>
-            {/* <div className={`${styles.kpiVenda}`}>
-                <div>
-                </div>
-            </div> */}
         </div>
     )
 }

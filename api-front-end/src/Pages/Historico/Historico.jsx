@@ -265,6 +265,10 @@ export function Historico() {
                         return;
                     })
                 })
+            }).catch((error) => {
+                console.log("Erro ao criar lote: " + error);
+                dispatch({ type: 'alert', severity: 'error', title: 'Ocorreu um erro!', message: "Ocorreu um erro!" });
+                return
             })
             dispatch({ type: 'registro', tipoItem: '', display: 'none' })
             dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de entrada concluído com sucesso!" });
