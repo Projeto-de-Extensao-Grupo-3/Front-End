@@ -19,6 +19,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Typography from '@mui/material/Typography';
 
 export function Perfil() {
 
@@ -34,7 +35,9 @@ export function Perfil() {
     const [erroNovaSenhaDiferente, setErroNovaSenhaDiferente] = useState("");
 
     // Variável para mostrar/ocultar senha no cadastro
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordSenha, setShowPasswordSenha] = useState(false);
+    const [showPasswordNovaSenha, setShowPasswordNovaSenha] = useState(false);
+    const [showPasswordConfirmarSenha, setShowPasswordConfirmarSenha] = useState(false);
 
     // Variáveis para alertas
     const [alertOpen, setAlertOpen] = useState(false);
@@ -58,6 +61,18 @@ export function Perfil() {
                 });
         }
     }, []);
+
+    useEffect(() => {
+        if (!popupSenhaAberto) {
+            setErroSenhaInvalida("");
+            setErroNovaSenhaInvalida("");
+            setErroNovaSenhaDiferente("");
+            setShowPasswordSenha(false);
+            setShowPasswordNovaSenha(false);
+            setShowPasswordConfirmarSenha(false);
+
+        }
+    }, [popupSenhaAberto]);
 
     const atualizarFuncionario = async (event) => {
         event.preventDefault();
@@ -140,14 +155,23 @@ export function Perfil() {
             if (error.response?.status === 400) {
                 setErroSenhaInvalida("A senha atual está incorreta");
             } else {
-                console.error("Erro ao atualizar senha:", error);
+            setAlertType("error");
+            setAlertTitle("Erro ao alterar senha");
+            setAlertMessage(`Ocorreu um erro ao tentar alterar a senha.`);
+            setAlertOpen(true);
             }
         }
     };
 
     // Mostra/oculta senha no cadastro
     const handleClickShowPassword = () => {
-        setShowPassword((prevShowPassword) => !prevShowPassword);
+        setShowPasswordSenha((prevShowPassword) => !prevShowPassword);
+    };
+    const handleClickShowPasswordNovaSenha = () => {
+        setShowPasswordNovaSenha((prevShowPasswordNovaSenha) => !prevShowPasswordNovaSenha);
+    };
+    const handleClickShowPasswordConfirmarSenha = () => {
+        setShowPasswordConfirmarSenha((prevShowPasswordConfirmarSenha) => !prevShowPasswordConfirmarSenha);
     };
 
     // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
@@ -262,74 +286,66 @@ export function Perfil() {
                     <form onSubmit={atualizarSenha} id='formAtualizarSenha'>
                         <h3>Senha</h3>
                         <OutlinedInput
-                            autoFocus
                             required
                             name="senhaAtual"
-                            label="Senha Atual"
                             fullWidth
                             error={!!erroSenhaInvalida}
-                            helperText={erroSenhaInvalida}
-                            type={showPassword ? 'text' : 'password'}
-                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined"
+                            type={showPasswordSenha ? 'text' : 'password'}
+                            sx={{ width: '35vw' }}
                             endAdornment={
                                 <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    <IconButton onClick={handleClickShowPassword} edge="end">
+                                        {showPasswordSenha ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
                             }
                         />
+                        <Typography variant="caption" color="error" sx={{ marginBottom: "2rem" }}>
+                            {erroSenhaInvalida}
+                        </Typography>
+                        <br /> <br />
 
                         <h3>Nova Senha</h3>
                         <OutlinedInput
-                            autoFocus
                             required
                             name="novaSenha"
-                            label="Nova Senha"
                             fullWidth
                             error={!!erroNovaSenhaInvalida}
-                            helperText={erroNovaSenhaInvalida}
-                            type={showPassword ? 'text' : 'password'}
-                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined"
+                            type={showPasswordNovaSenha ? 'text' : 'password'}
+                            sx={{ width: '35vw' }}
                             endAdornment={
                                 <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    <IconButton onClick={handleClickShowPasswordNovaSenha} edge="end">
+                                        {showPasswordNovaSenha ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
                             }
                         />
+                        <Typography variant="caption" color="error" sx={{ marginBottom: "2rem" }}>
+                            {erroNovaSenhaInvalida}
+                        </Typography>
+                        <br /> <br />
+
                         <h3>Confirmar Nova Senha</h3>
                         <OutlinedInput
-                            autoFocus
                             required
                             name="confirmarNovaSenha"
-                            label="Confirmar Nova Senha"
                             fullWidth
                             error={!!erroNovaSenhaDiferente}
-                            helperText={erroNovaSenhaDiferente}
-                            type={showPassword ? 'text' : 'password'}
-                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined"
+                            type={showPasswordConfirmarSenha ? 'text' : 'password'}
+                            sx={{ width: '35vw' }}
                             endAdornment={
                                 <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label="toggle password visibility"
-                                        onClick={handleClickShowPassword}
-                                        edge="end"
-                                    >
-                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    <IconButton onClick={handleClickShowPasswordConfirmarSenha} edge="end">
+                                        {showPasswordConfirmarSenha ? <VisibilityOff /> : <Visibility />}
                                     </IconButton>
                                 </InputAdornment>
                             }
                         />
+                        <Typography variant="caption" color="error" sx={{ marginBottom: "2rem" }}>
+                            {erroNovaSenhaDiferente}
+                        </Typography>
+
 
                     </form>
                     <br />

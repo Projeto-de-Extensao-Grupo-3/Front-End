@@ -4,32 +4,45 @@ import TextField from '@mui/material/TextField'
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/Navbar/Navbar"
-import Collapse from '@mui/material/Collapse';
-import Alert from '@mui/material/Alert';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
+import AlertDialog from "../../components/AlertDialog/AlertDialog";
 
 export function EsqueciMinhaSenha() {
 
+        const navigate = useNavigate();
+    
+        const redirecionar = (path) => {
+            navigate(path);
+        }
 
     const [email, setEmail] = useState('');
-    const [alertAberto, setAlertAberto] = useState(false)
 
-    const handlePopupOpen = () => { 
-        setBoolPopupOpen(true);
-    }
+        // Variáveis para alertas
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            return axios.post("http://localhost:8080/esqueci-minha-senha", {
+            await axios.post("http://localhost:8080/funcionarios/esqueci-minha-senha", {
                 email: email
             });
+            console.log("EMAIL ENVIADO" );
+            setAlertType("success");
+            setAlertTitle("Email enviado com sucesso!");
+            setAlertMessage(`Um email para recuperação de senha foi enviado para ${email}.`);
+            setAlertOpen(true);
+            redirecionar("/");
         } catch (err) {
             console.error(err);
-            alert("Erro ao enviar email de recuperação.");
+            console.log("EMAIL NÃO ENVIADO" );
+            setAlertType("error");
+            setAlertTitle("Erro ao enviar email");
+            setAlertMessage(`Ocorreu um erro ao tentar enviar o email para ${email}.`);
+            setAlertOpen(true);
             setAlertAberto(true)
         }
     }
@@ -38,6 +51,9 @@ export function EsqueciMinhaSenha() {
         <div className={styles.base}>
             <Navbar vazio={true} />
             <div className={styles.content}>
+
+                <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
+
                 <div className={styles.box}>
                     <span className={styles.indicator}>Recuperação de Senha</span>
                     <form onSubmit={handleSubmit} className={styles.form}>
@@ -50,30 +66,13 @@ export function EsqueciMinhaSenha() {
                             />
                         </div>
 
-                        <Collapse in={alertAberto}>
-                            <Alert severity="warning" variant="standard"
-                                action={
-                                    <IconButton
-                                        aria-label="fechar"
-                                        color="inherit"
-                                        size="small"
-                                        onClick={() => {
-                                            setAlertAberto(false);
-                                        }}
-                                    >
-                                        <CloseIcon fontSize="inherit" />
-                                    </IconButton>
-                                }
-                                sx={{ mb: 2 }}
-                            >
-                                Erro ao enviar email de recuperação.
-                            </Alert>
-                        </Collapse>
                         <div className={styles.divBotao}>
                             <Button type="submit" className={styles.botao} variant="contained">Enviar email</Button>
                         </div>
                     </form>
-
+                    <div className={styles.divBotao}>
+                        <Button className={styles.botao}  onClick={() => redirecionar("/")} variant="outlined">Voltar</Button>
+                    </div>
                 </div>
             </div>
         </div>

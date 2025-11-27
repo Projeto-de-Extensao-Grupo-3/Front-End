@@ -316,7 +316,7 @@ export function Funcionarios() {
                         <BarraPesquisa func={buscarFuncionario} busca={"Buscar funcionário por nome"} width='90%'/>
                     </div>
 
-                {hasPermission("CADASTRAR FUNCIONARIOS") && (
+                {hasPermission("EDITAR FUNCIONARIOS") && (
                     <div>
                         <JanelaCadastro func={cadastrarFuncionario}
                             cadastroDisabled={isCadastroDisabled}
@@ -342,7 +342,8 @@ export function Funcionarios() {
                                     </div>
                                     <div>
                                         <h3>CPF</h3>
-                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="cpf" required={true} onChange={(e) => { setAtribute(e.target.value, "cpf"); formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao); }}
+                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="cpf" required={true} onChange={(e) => { setAtribute(e.target.value, "cpf"); }}
+                                            //  formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao);
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>Senha</h3>
                                         <OutlinedInput size='small' type={showPassword ? 'text' : 'password'} key="senha" required={true} onChange={(e) => setAtribute(e.target.value, "senha")}
