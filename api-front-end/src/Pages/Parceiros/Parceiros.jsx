@@ -53,7 +53,7 @@ export function Parceiros() {
             .then(response => {
                 setData(response.data);
                 console.log(response.data)
-                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data);
+                setDadosAtualizacao(response.data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -289,6 +289,8 @@ export function Parceiros() {
 
     // Reseta o estado dos campos do formulário de cadastro
     const limparCampos = () => {
+        setOperations(operations+1);
+        setDadosCadastro({});
         setErrorTelefone(false);
         setHelperTextTelefone("");
         setErrorIdentificacao(false);

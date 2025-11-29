@@ -57,9 +57,9 @@ export function Funcionarios() {
     const listarFuncionarios = () => {
         axios.get(`/api/funcionarios`)
             .then(response => {
-                console.log(response.data);
                 setData(response.data);
-                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data);
+                console.log(response.data);
+                setDadosAtualizacao(response.data);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -248,9 +248,9 @@ export function Funcionarios() {
 
     // Lista funcionários e permissões ao carregar a página e após operações
     useEffect(() => {
-        listarFuncionarios();
-        listarPermissoes();
         setLoadMsg("Carregando dados...");
+        listarPermissoes();
+        listarFuncionarios();
     }, [operations]);
 
     // Seta os atributos do funcionário para cadastro
@@ -295,6 +295,8 @@ export function Funcionarios() {
 
     // Reseta o estado dos campos do formulário de cadastro
     const limparCampos = () => {
+        setOperations(operations+1);
+        setDadosCadastro({});
         setErrorTelefone(false);
         setHelperTextTelefone("");
         setErrorIdentificacao(false);
@@ -342,7 +344,7 @@ export function Funcionarios() {
                                     </div>
                                     <div>
                                         <h3>CPF</h3>
-                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="cpf" required={true} onChange={(e) => { setAtribute(e.target.value, "cpf"); }}
+                                        <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="cpf" required={true} onChange={(e) => { setAtribute(e.target.value, "cpf"); formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao) }}
                                             //  formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao);
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>Senha</h3>
