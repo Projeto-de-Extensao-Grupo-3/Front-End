@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./filtro.module.css";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
 import Button from '@mui/material/Button';
-import { PageSelector } from "../PageSelectorDash/PageSelector";
 import { useMediaQuery } from "@mui/material";
+import { makeStyles } from '@mui/material'
 import dayjs from "dayjs";
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import axios from 'axios';  
 
 export function Filtro(props) {
     // Responsividade: usa Box do MUI para adaptar o layout
@@ -13,8 +18,39 @@ export function Filtro(props) {
 
     const [dataInicio, setDataInicio] = useState(dayjs().subtract(12, 'months').format('YYYY-MM-DD'));
     const [dataFim, setDataFim] = useState(dayjs().format('YYYY-MM-DD'));
-    const [categoria, setCategoria] = useState("");
-    const [caracteristica, setCaracteristica] = useState("");
+    const [categoria, setCategoria] = useState("Todas");
+    const [caracteristica, setCaracteristica] = useState("Todas");
+
+    const [listCaracteristicas, setListCaracteristicas] = useState([]);
+
+    const [dadosTecido, setDadosTecido] = useState([])
+    const [dadosRoupa, setDadosRoupa] = useState([])
+
+    const obterCaracteristicas = useEffect(() => {
+        axios.get("/api/categorias/tipo/caracteristica")
+            .then(response => setListCaracteristicas(response.data))
+            .catch(error => {
+                if (error.response?.status === 401) navigate('/');
+                console.error("Erro ao obter os dados de Características:", error);
+            });
+    }, [])
+
+    const obterCategorias = useEffect(() => {
+    
+        axios.get("/api/categorias/tipo/tecido").then(
+            response => {
+                setDadosTecido(response.data)
+            }).catch(error => {
+                console.log("Erro ao obter os dados de Tecidos: ", error)
+            })
+
+        axios.get("/api/categorias/tipo/roupa").then(
+            response => {
+                setDadosRoupa(response.data)
+            }).catch(error => {
+                console.log("Erro ao obter os dados de Roupas: ", error)
+            })
+    }, [])
 
     const handleDataInicio = (event) => {
         let newDate = event.target.value;
@@ -51,9 +87,13 @@ export function Filtro(props) {
             // Alerta data de fim
             return;
         }
-        props.handleFilters(dataInicio, dataFim, caracteristica, categoria)
+
+        console.log(dataInicio, dataFim, caracteristica, categoria)
+        props.handleFilters(dataInicio, dataFim, caracteristica == "Todas" ? "" : caracteristica, categoria == "Todas" ? "" : categoria)
 
     }
+
+    
 
     return (
         <Box sx={{
@@ -66,17 +106,35 @@ export function Filtro(props) {
             gap: 2,
             background: '#fff'
         }}>
-            <h1 style={{width: matches ? '100%' : '80%', alignSelf: 'center', paddingTop: matches ? 0 : '10px'}}>Segmento</h1>
+            <h1 style={{ width: matches ? '100%' : '80%', alignSelf: 'center', paddingTop: matches ? 0 : '10px' }}>Segmento</h1>
             <br />
-            <div>
-                <div style={{display: 'flex', width: '100%', justifyContent: 'center'}} onClick={() => props.handleChangePage('produtos')}>
-                    <PageSelector nomePagina="Produtos" ativo={props.currentPage == 'produtos'}/>
+            <div className={styles.pageSelector}>
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }} onClick={() => props.handleChangePage('produtos')}>
+                    <Button
+                        onClick={() => props.handleChangePage('produtos')}
+                        sx={{ height: '90%', width: '100%' }}
+                        variant={props.currentPage == 'produtos' ? 'contained' : 'outlined'}
+                    >
+                        Produtos
+                    </Button>
+                    {/* <PageSelector nomePagina="Produtos" ativo={props.currentPage == 'produtos'}/> */}
                 </div>
-                <div style={{display: 'flex', width: '100%', justifyContent: 'center'}}  onClick={() => props.handleChangePage('defeitos')}>
-                    <PageSelector nomePagina="Defeitos" ativo={props.currentPage == 'defeitos'}/>
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }} onClick={() => props.handleChangePage('defeitos')}>
+                    <Button
+                        sx={{ height: '90%', width: '100%' }}
+                        variant={props.currentPage == 'defeitos' ? 'contained' : 'outlined'}>
+                        Defeitos
+                    </Button>
+                    {/* <PageSelector nomePagina="Defeitos" ativo={props.currentPage == 'defeitos'}/> */}
                 </div>
-                <div style={{display: 'flex', width: '100%', justifyContent: 'center'}}  onClick={() => props.handleChangePage('vendas')}>
-                    <PageSelector nomePagina="Vendas" ativo={props.currentPage == 'vendas'}/>
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }} onClick={() => props.handleChangePage('vendas')}>
+                    <Button
+                        sx={{ height: '90%', width: '100%' }}
+                        variant={props.currentPage == 'vendas' ? 'contained' : 'outlined'}
+                    >
+                        Vendas
+                    </Button>
+                    {/* <PageSelector nomePagina="Vendas" ativo={props.currentPage == 'vendas'}/> */}
                 </div>
             </div>
             <h1>Filtros</h1>
@@ -119,15 +177,40 @@ export function Filtro(props) {
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',
             }}>
-                <TextField 
-                    label="Caracteristica"
-                    InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    value={caracteristica}
-                    onChange={(event) => handleCaracteristica(event)}
-                    sx={{ flex: 1, minWidth: 0 }}
-                />
-                <TextField 
+                <FormControl fullWidth>
+                    <InputLabel id="label-caracteristica">Caracteristica</InputLabel>
+                    <Select 
+                        labelId="label-caracteristica" 
+                        label="Caracteristica" 
+                        value={caracteristica} 
+                        onChange={(event) => handleCaracteristica(event)} 
+                        fullWidth
+                        MenuProps={{ style: { maxHeight: 400} }}
+                        >
+                        <MenuItem selected value={"Todas"}>Todas</MenuItem>
+                        {listCaracteristicas.map((caracteristica) => (
+                            <MenuItem value={caracteristica.nome}>{caracteristica.nome}</MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
+                <FormControl fullWidth>
+                    <InputLabel id="label-categoria">Categoria</InputLabel>
+                    <Select 
+                        sx={{maxHeight: '500px'}}
+                        labelId="label-categoria" 
+                        label="Categoria" 
+                        value={categoria} 
+                        onChange={(event) => handleCategoria(event)} 
+                        fullWidth
+                        MenuProps={{ style: { maxHeight: 400} }}
+                        >
+                        <MenuItem selected value={"Todas"}>Todas</MenuItem>
+                            {dadosRoupa.map((categoria) => (
+                                <MenuItem value={categoria.nome}>{categoria.nome}</MenuItem>
+                            ))}
+                    </Select>
+                </FormControl>
+                <TextField
                     label="Categoria"
                     InputLabelProps={{ shrink: true }}
                     fullWidth

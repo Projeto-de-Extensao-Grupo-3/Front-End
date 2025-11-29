@@ -13,8 +13,8 @@ import axios from 'axios';
 import { NumericFormat } from 'react-number-format';
 
 // @MUI
-import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
@@ -43,7 +43,6 @@ const theme = createTheme({
 
 
 function reducer(state, action) {
-
     switch (action.type) {
         case 'simples': {
             return {
@@ -53,15 +52,14 @@ function reducer(state, action) {
         }
         case 'registro_add': {
             var index = state.itensDisponiveis.indexOf(action.value);
-            if (state.tipoItem == 'entrada') {
-                action.value.isRoupa = action.value.tipoItem == 'roupa'
-            }
             if (index > -1) {
-                action.value.quantidadeNova = 1;
-                if (!action.value.isRoupa) {
-                    action.value.quantidadeNova += 99; // começar em 100 gramas
-                }
-                action.value.precoNovo = Number(action.value.preco).toFixed(2);
+
+                let nomeVarPreco = state.tipoItem == 'saida' ? 'precoItem' : 'preco'
+                let quantidade = action.value.tipoItem == 'roupa' ? 1 : 50;
+                let precoNovo = Number(action.value[nomeVarPreco]).toFixed(2);
+                let newObject = action.value;
+                newObject.quantidadeNova = Number(quantidade);
+                newObject.precoItem = precoNovo;
                 return {
                     ...state,
                     itensDisponiveis: state.itensDisponiveis.splice(index, 1),
@@ -88,15 +86,15 @@ function reducer(state, action) {
             var index = state.itensParaRegistrar.indexOf(action.value)
             var asNumber = action.newValue.toString()
             asNumber = asNumber.match(/\d/g);
-            if (index < 0 || asNumber == null) {
-                // Necessário manter aqui devido a ambiente dev rodar essa função duas vezes
+            if (index < 0) {
                 return { ...state }
+            }
+            if (asNumber == null) {
+                // Necessário manter aqui devido a ambiente dev rodar essa função duas vezes
+                asNumber = [0];
             }
             asNumber = asNumber.join("");
             asNumber = Number(asNumber)
-            if (index < 0 || action.newValue < 0 || action.newValue > Number(action.value.qtdItem)) {
-                return { ...state };
-            }
             if (action.field == 'quantidadeNova') {
                 action.value.quantidadeNova = asNumber;
             } else if (action.field == 'preco') {
@@ -147,7 +145,7 @@ export function Historico() {
         idParceiroEscolhido: -1,
         motivo: '',
 
-        tipoItem: 0,
+        tipoItem: "",
         displayPopup: "none",
         auxSelectItensSaida: 0,
 
@@ -160,11 +158,37 @@ export function Historico() {
 
     const [values, dispatch] = useReducer(reducer, initialState);
 
-    globalThis.values = values
+    const [isPostReady, setIsPostReady] = useState(false);
 
-    useEffect(() => {
+    const handlePostReady = useEffect(() => {
+        if (values.itensParaRegistrar.length == 0) {
+            setIsPostReady(false);
+            return;
+        }
+        for (let i = 0; i < values.itensParaRegistrar.length; i++) {
+            let item = values.itensParaRegistrar[i]
+            if (item.quantidadeNova <= 0) {
+                setIsPostReady(false)
+                return;
+            }
+
+            if (values.tipoItem == 'saida' && item.quantidadeNova > item.qtdItem) {
+                setIsPostReady(false)
+                return;
+            }
+
+            if (values.tipoItem != 'saida' && values.idParceiroEscolhido == -1) {
+                setIsPostReady(false)
+                return;
+            }
+        }
+        setIsPostReady(true)
+
+    }, [values]);
+
+    const setPageName = useEffect(() => {
         document.title = "Histórico"
-    });
+    }, []);
 
     const handleBlackout = useEffect(() => {
         if (values.displayPopup == 'none') {
@@ -187,6 +211,7 @@ export function Historico() {
                 }).catch(error => {
                     console.log("Erro ao obter dados de lotes em estoque: " + error)
                 });
+
             let auxParceiro = []
             axios.get(`/api/parceiros/listagem/costureira`)
                 .then(response => {
@@ -194,33 +219,38 @@ export function Historico() {
                 }).catch(error => {
                     console.log("Erro ao obter dados de parceiros: " + error)
                 });
+
             axios.get(`/api/parceiros/listagem/fornecedor`)
                 .then(response => {
                     response.data.forEach((e) => auxParceiro.push(e))
                 }).catch(error => {
                     console.log("Erro ao obter dados de parceiros: " + error)
                 });
+
             dispatch({ type: 'simples', field: 'parceiros', value: auxParceiro })
         }
     }, [values.displayPopup]);
 
     const handleRegistrar = () => {
-        if (values.itensParaRegistrar.length == 0) {
-            dispatch({ type: 'alert', severity: 'warning', title: 'Nenhum item escolhido!', message: "Escolha um ou mais itens para registrar!" });
-            return;
-        } else if (values.tipoItem == 'saida') {
-            values.itensParaRegistrar.forEach((item) => {
-                if (item.quantidadeNova == 0) {
-                    dispatch({ type: 'alert', severity: 'warning', title: 'Quantidade incorreta para um ou mais itens!', message: "Todos os itens devem estar com ao menos 1 unidade saindo!" });
-                    return null;
-                }
-            })
+        let motivo = values.motivo;
+
+        if (values.motivo == "") {
+            motivo = "Não determinado";
+        }
+
+        if (values.motivo == "" && values.tipoItem == 'saida' && values.idParceiroEscolhido) {
+            motivo = "Venda (Não determinado)";
+        }
+
+        console.log(values.tipoItem)
+
+        if (values.tipoItem == 'saida') {
             values.itensParaRegistrar.forEach((item) =>
                 axios.post(`/api/saidas-estoque`, {
                     data: dayjs().format('YYYY-MM-DD'),
                     hora: dayjs().format('HH:mm:ss'),
                     qtdSaida: item.quantidadeNova,
-                    motivoSaida: values.motivo,
+                    motivoSaida: motivo,
                     responsavel: {
                         idFuncionario: sessionStorage.getItem('idFuncionario')
                     },
@@ -236,17 +266,11 @@ export function Historico() {
             dispatch({ type: 'registro', tipoItem: '', display: 'none' })
             dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de saída concluído com sucesso!" });
             dispatch({ type: 'simples', field: 'triggerAtualizar', value: values.triggerAtualizar + 1 })
+            obterDados('paginadoSaida', 1, 9)
         } else if (values.tipoItem == 'entrada') {
-            if (values.idParceiroEscolhido == -1) {
-                dispatch({ type: 'alert', severity: 'warning', title: 'Escolha um parceiro!', message: "Um parceiro é necessário para entrada de itens!" });
-                return null;
-            }
-            if (values.motivo == "") {
-                dispatch({ type: 'simples', field: 'motivo', value: "Não especificado" })
-            }
             let lote = 0;
             axios.post(`api/lotes`, {
-                descricao: values.motivo,
+                descricao: motivo,
                 dataEntrada: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
                 parceiro: values.idParceiroEscolhido,
                 responsavel: sessionStorage.getItem('idFuncionario')
@@ -268,17 +292,19 @@ export function Historico() {
             }).catch((error) => {
                 console.log("Erro ao criar lote: " + error);
                 dispatch({ type: 'alert', severity: 'error', title: 'Ocorreu um erro!', message: "Ocorreu um erro!" });
-                return
+                return;
             })
             dispatch({ type: 'registro', tipoItem: '', display: 'none' })
             dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de entrada concluído com sucesso!" });
             dispatch({ type: 'simples', field: 'triggerAtualizar', value: values.triggerAtualizar + 1 })
+            obterDados('paginado', 1, 9)
         }
-        return null;
     };
 
+    globalThis.values = values
+
     const obterDados = (endpoint, page, limit) => {
-        return axios.get(`/api/lotes-item-estoque/${endpoint}?page=${page}&limit=${limit}`) 
+        return axios.get(`/api/lotes-item-estoque/${endpoint}?page=${page}&limit=${limit}`)
     }
 
     return (
@@ -313,7 +339,7 @@ export function Historico() {
                             </div>
                         </div>
                         <br />
-                        <TabelaHistorico  tipoMovimentacao={values.tipoMovimentacao} triggerAtualizar={values.triggerAtualizar} obter={obterDados}/>
+                        <TabelaHistorico tipoMovimentacao={values.tipoMovimentacao} triggerAtualizar={values.triggerAtualizar} obter={obterDados} />
                     </div>
                 </div>
             </div>
@@ -362,7 +388,7 @@ export function Historico() {
                                                 <TableCell>{values.tipoItem == 'saida' ? "Lote" : "Imagem"}</TableCell>
                                                 <TableCell>Item</TableCell>
                                                 <TableCell>Quantidade</TableCell>
-                                                <TableCell>{values.tipoItem == 'saida' ? "Preço" : "Custo"}</TableCell>
+                                                <TableCell>{values.tipoItem == 'saida' ? "Preço (Venda)" : "Custo (Despesa)"}</TableCell>
                                                 <TableCell>Tirar Item</TableCell>
                                             </TableRow>
                                         </TableHead>
@@ -408,8 +434,10 @@ export function Historico() {
                                                                     newValue: e.target.value,
                                                                     field: 'quantidadeNova'
                                                                 })
+
                                                             }
-                                                            suffix={item.tipoItem == 'roupa' ? ' unidade(s)' : ' gramas'}
+                                                            suffix={item.tipoItem == 'roupa' ? ' unidade(s)' : ' metro(s)'}
+
                                                         />
                                                     </TableCell>
                                                     <TableCell>
@@ -424,6 +452,8 @@ export function Historico() {
                                                                     field: 'preco'
                                                                 })
                                                             }
+                                                            suffix={item.tipoItem == 'roupa' ? ' por peça' : ' por metro'}
+
                                                         />
                                                     </TableCell>
                                                     <TableCell>
@@ -441,8 +471,13 @@ export function Historico() {
                                     label={values.tipoItem == 'saida' ? "Motivo de saída (opcional)" : "Descrição do lote (opcional)"}
                                     value={values.motivo}
                                     onChange={(event) => dispatch({ type: 'simples', field: 'motivo', value: event.target.value })}
+                                    sx={{ width: '500px' }}
                                 />
-                                <Button onClick={() => handleRegistrar()} variant={values.itensParaRegistrar.length > 0 ? "contained" : "outlined"} disabled={values.itensParaRegistrar.length == 0}>Confirmar</Button>
+                                <Button
+                                    onClick={() => handleRegistrar()}
+                                    variant="contained"
+                                    disabled={!isPostReady}
+                                >Confirmar</Button>
                             </div>
                         </Paper>
                     </div>

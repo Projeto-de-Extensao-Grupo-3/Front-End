@@ -111,6 +111,7 @@ export function TabelaHistorico(props) {
             .then((response) => {
                 setTableData(response.data.conteudo)
                 setTableSize(response.data.totalRegistros)
+                console.log(response.data.conteudo)
             }).catch((error) => {
                 console.error(`Erro ao obter os dados de ${props.tipoMovimentacao}: ` + error)
             });
@@ -128,6 +129,7 @@ export function TabelaHistorico(props) {
                             <TableCell>Lote</TableCell>
                             <TableCell>{props.tipoMovimentacao == 0 ? "Origem" : "Destino"}</TableCell>
                             <TableCell>Horário</TableCell>
+                            {/* <TableCell>Motivo</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -141,6 +143,7 @@ export function TabelaHistorico(props) {
                                 <TableCell>
                                     {props.tipoMovimentacao == 0 ? dayjs(data.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(data.saidaEstoque).format('HH:mm:ss DD/MM/YY')}
                                 </TableCell>
+                                {/* <TableCell>{data.motivo}</TableCell> */}
                             </TableRow>
                         ))}
                     </TableBody>

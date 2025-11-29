@@ -8,8 +8,10 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
+import { Paper } from '@mui/material';
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
+
 
 
 export function GraficoMargemLucro(props) {
@@ -59,6 +61,12 @@ export function GraficoMargemLucro(props) {
         axios.get(`/api/lotes-item-estoque/margem-lucro-produtos`, {
             params: props.filters
         }).then((response) => {
+            if (response.status == 204) {
+                setMax(0);
+                setLabels([]);
+                setDados([]);
+                return;
+            }
             // labels (nome das roupas)                
             let data = response.data;
             data.sort((a, b) => b.margemLucro - a.margemLucro) // ordenando por ordem lucro desc
@@ -138,8 +146,11 @@ export function GraficoMargemLucro(props) {
                     <NavigateNextIcon sx={styleButtons} />
                 </IconButton>
             </div>
-            <div className={styles.divGrafico}>
+            <div className={styles.divGrafico}>{
+                labels.length > 0 ?
                 <Bar data={chartData} options={options} />
+                :  <Paper sx={{ p: '40px' }} elevation={4}>Nenhum dado a ser exibido, tente mudar os filtros</Paper>
+                }
             </div>
         </div>
     )

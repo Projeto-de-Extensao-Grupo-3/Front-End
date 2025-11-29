@@ -14,7 +14,7 @@ export function DashProdutos(props) {
                     <GraficoCustos filters={props.filters} />
                 </div>
             </div>
-            <div className={`${styles.conteudoDash}`}>
+            <div className={`${styles.conteudoDash}`} style={{width: '100%'}}>
                 <div>
                     <TabelaBaixoGiro filters={props.filters} />
                 </div>

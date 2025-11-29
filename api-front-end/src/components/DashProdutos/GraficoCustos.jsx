@@ -8,6 +8,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
+import { Paper } from '@mui/material';
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -158,6 +159,14 @@ export function GraficoCustos(props) {
         axios.get("/api/lotes-item-estoque/peca-maior-mao-obra", {
             params: props.filters
         }).then((response) => {
+            if (response.status == 204) {
+                setLabels([]);
+                setDadosCostura([]);
+                setDadosTecido([]);
+                setLucro([]);
+                setMax(0);
+                return;
+            }
             let data = response.data;
 
             data.sort((a, b) => b.preco - a.preco)
@@ -186,7 +195,7 @@ export function GraficoCustos(props) {
         })
 
 
-    }, [])
+    }, [props.filters])
 
     const atualizarTabela = useEffect(() => {
         if (isSplit) {
@@ -224,7 +233,7 @@ export function GraficoCustos(props) {
                         data: lucro
                     }
                 ]
-            })
+            })  
         }
     }, [labels, dadosCostura, dadosTecido, lucro, first, last, isSplit])
 
@@ -269,7 +278,11 @@ export function GraficoCustos(props) {
                 </IconButton>
             </div>
             <div className={styles.divGrafico}>
-                <Bar data={chartData} options={options} />
+                {
+                labels.length > 0 
+                ? <Bar data={chartData} options={options} />
+                : <Paper sx={{p: '40px'}} elevation={4}>Nenhum dado a ser exibido, tente mudar os filtros</Paper>
+                }
             </div>
         </div>
     )
