@@ -18,6 +18,8 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import AlertDialog from '../../components/AlertDialog/AlertDialog';
+
 
 export function Caracteristicas() {
 
@@ -26,6 +28,12 @@ export function Caracteristicas() {
     useEffect(() => {
         document.title = "Características";
     }, []);
+
+        // Variáveis para alertas
+        const [alertOpen, setAlertOpen] = useState(false);
+        const [alertTitle, setAlertTitle] = useState("");
+        const [alertMessage, setAlertMessage] = useState("");
+        const [alertType, setAlertType] = useState("");
 
     const [popupAdicionarAberto, setPopupAdicionarAberto] = useState(false)
     const [popupRemoverAberto, setPopupRemoverAberto] = useState(false)
@@ -56,9 +64,17 @@ export function Caracteristicas() {
                 .then(() => {
                     setPopupAdicionarAberto(false)
                     reload();
+                    setAlertType("success");
+                    setAlertTitle("Caracteristica cadastrada com sucesso!");
+                    setAlertMessage(`Os dados ${nome} foram cadastrados com sucesso.`);
+                    setAlertOpen(true);
                 })
                 .catch(error => {
-                    console.error("Erro ao cadastrar Categoria: ", error);
+                    setAlertType("warning");
+                            setAlertTitle("Cadastro já existente!");
+                            setAlertMessage(`Já existe uma caracteristica cadastrada com o nome informado.`);
+                            setAlertOpen(true);
+                    console.error("Erro ao cadastrar Caracteristica: ", error);
                 });
         }
     }
@@ -80,6 +96,10 @@ export function Caracteristicas() {
             .then(() => {
                 setPopupRemoverAberto(false);
                 reload();
+                                        setAlertType("success");
+                        setAlertTitle("Caracteristica removida com sucesso!");
+                        setAlertMessage(`Os dados ${nome} foram removidos com sucesso.`);
+                        setAlertOpen(true);
             })
             .catch(error => console.error("Erro ao remover:", error));
 
@@ -104,8 +124,16 @@ export function Caracteristicas() {
             });
             setPopupAtualizarAberto(false);
             reload();
+                                    setAlertType("success");
+                        setAlertTitle("Caracteristica cadastrada com sucesso!");
+                        setAlertMessage(`Os dados ${nome} foram cadastrados com sucesso.`);
+                        setAlertOpen(true);
         } catch (error) {
-            console.error("Erro ao atualizar Categoria:", error);
+            console.error("Erro ao atualizar Caracteristica:", error);
+              setAlertType("warning");
+                            setAlertTitle("Cadastro já existente!");
+                            setAlertMessage(`Já existe uma caracteristica cadastrada com o nome informado.`);
+                            setAlertOpen(true);
         }
     };
 
@@ -125,19 +153,51 @@ export function Caracteristicas() {
         reload(); // agora funciona
     }, []);
 
+    const [filtroCaracteristica, setFiltroCaracteristica] = useState("");
+
+    // Filtra os itens conforme o texto digitado
+    const dadosCaracteristicasFiltrado = dadosCaracteristicas.filter((categoria) =>
+        categoria.nome.toLowerCase().includes(filtroCaracteristica.toLowerCase())
+    );
+
     return (
         <div>
             <Navbar vazio={false} pageNumber={2} />
             <Seletor rotaPaginaUm="/Categorias" rotaPaginaDois="/Caracteristicas" pagina paginaUm="Categorias" paginaDois="Características" valor="Características" />
             <div className={styles.main}>
+
+        <AlertDialog
+                alertType={alertType}
+                alertTitle={alertTitle}
+                alertMessage={alertMessage}
+                state={alertOpen}
+            />
+
                 <div className={styles.listCategorias}>
-                    <Paper >
+
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="Pesquisar Caracteristica..."
+                        fullWidth
+                        value={filtroCaracteristica}
+                        onChange={(e) => setFiltroCaracteristica(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <Paper style={{ maxHeight: 300, overflowY: 'auto' }}>
                         <List>
-                            <ListItem key={0}>Caracteristicas</ListItem>
+                            <ListItem style={{ fontWeight: 'bold', textAlign: 'center' }} key={0}>Características</ListItem>
                             <Divider style={{ width: '100%' }} orientation='horizontal' component="li" />
-                            {dadosCaracteristicas.map((caracteristica) =>
-                                <ListItem key={caracteristica.id}>
-                                    {caracteristica.nome}
+                            {dadosCaracteristicasFiltrado.map((categoria) => (
+                                <ListItem key={categoria.id}>
+                                    {categoria.nome}
+                                </ListItem>
+                            ))}
+
+                            {dadosCaracteristicasFiltrado.length === 0 && (
+                                <ListItem style={{ opacity: 0.6, fontStyle: "italic" }}>
+                                    Nenhum resultado encontrado...
                                 </ListItem>
                             )}</List>
                     </Paper>

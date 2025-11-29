@@ -1,20 +1,19 @@
-.listCategorias {
-    width: 30%;
-    max-width: 600px;
-    min-width: 300px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
 .main {
-    width: 100vw;
+    width: 100%;         /* antes era 100vw → causava overflow */
     padding-top: 50px;
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
-    justify-content: space-around;
-    height: 80vh;
+    justify-content: center;
+    gap: 20px;
+}
+
+.listCategorias {
+    width: 100%;
+    max-width: 600px;     /* bom */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box; /* garante que padding não estoura */
 }
 
 .divBotoes {

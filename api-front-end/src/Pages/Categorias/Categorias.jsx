@@ -6,7 +6,6 @@ import { Seletor } from "../../components/SeletorSubpagina/Seletor";
 import { Paper } from '@mui/material';
 import styles from "./categorias.module.css"
 import { useEffect, useState } from 'react';
-import api from "../../provider/api"
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -19,6 +18,8 @@ import axios from "axios";
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
+import Box from '@mui/material/Box';
+
 
 export function Categorias() {
 
@@ -207,9 +208,9 @@ export function Categorias() {
         const idCategoriaPai = popupEscolhido === "Roupa" ? 2 : 1;
 
         const duplicado = false;
-        if(idCategoriaPai === 2){
-        const duplicado = dadosRoupa.some(r => r.nome === nome);
-        }else{
+        if (idCategoriaPai === 2) {
+            const duplicado = dadosRoupa.some(r => r.nome === nome);
+        } else {
             const duplicado = dadosTecido.some(r => r.nome === nome);
         }
 
@@ -272,6 +273,7 @@ export function Categorias() {
             })
     }
 
+
     // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
     useEffect(() => {
         if (alertOpen) {
@@ -283,36 +285,89 @@ export function Categorias() {
         }
     }, [alertOpen]);
 
+    const [filtroRoupa, setFiltroRoupa] = useState("");
+
+    // Filtra os itens conforme o texto digitado
+    const dadosRoupaFiltrado = dadosRoupa.filter((categoria) =>
+        categoria.nome.toLowerCase().includes(filtroRoupa.toLowerCase())
+    );
+
+    const [filtroTecido, setFiltroTecido] = useState("");
+
+    // Filtra os itens conforme o texto digitado
+    const dadosTecidoFiltrado = dadosTecido.filter((categoria) =>
+        categoria.nome.toLowerCase().includes(filtroTecido.toLowerCase())
+    );
+
     return (
         <div>
             <Navbar vazio={false} pageNumber={2} />
             <Seletor rotaPaginaUm="/Categorias" rotaPaginaDois="/Caracteristicas" paginaUm="Categorias" paginaDois="Características" valor="Categorias" />
             <div className={styles.main}>
+
+
                 <div className={styles.listCategorias}>
-                    <Paper >
+
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="Pesquisar Roupa..."
+                        fullWidth
+                        value={filtroRoupa}
+                        onChange={(e) => setFiltroRoupa(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <Paper style={{ maxHeight: 300, overflowY: 'auto' }}>
                         <List>
-                            <ListItem key={0}>Roupas</ListItem>
+                            <ListItem style={{ fontWeight: 'bold', textAlign: 'center' }} key={0}>Roupas</ListItem>
                             <Divider style={{ width: '100%' }} orientation='horizontal' component="li" />
-                            {dadosRoupa.map((categoria) =>
+                            {dadosRoupaFiltrado.map((categoria) => (
                                 <ListItem key={categoria.id}>
                                     {categoria.nome}
                                 </ListItem>
+                            ))}
+
+                            {dadosRoupaFiltrado.length === 0 && (
+                                <ListItem style={{ opacity: 0.6, fontStyle: "italic" }}>
+                                    Nenhum resultado encontrado...
+                                </ListItem>
                             )}</List>
                     </Paper>
+
                     <div className={styles.divBotoes}>
                         <Button onClick={() => handlePopupAdicionarAbrir("Roupa")} variant='contained'>Adicionar Categoria</Button>
                         <Button onClick={() => handlePopupRemoverAbrir("Roupa")} variant='contained'>Remover Categoria</Button>
                         <Button onClick={() => handlePopupAtualizarAbrir("Roupa")} variant='contained'> Atualizar Categoria</Button>
                     </div>
                 </div>
+
+
                 <div className={styles.listCategorias}>
-                    <Paper >
+
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="Pesquisar Tecido..."
+                        fullWidth
+                        value={filtroTecido}
+                        onChange={(e) => setFiltroTecido(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+
+                    <Paper style={{ maxHeight: 300, overflowY: 'auto' }}>
                         <List>
-                            <ListItem key={0}>Tecidos</ListItem>
+                            <ListItem style={{ fontWeight: 'bold', textAlign: 'center' }} key={0}>Tecidos</ListItem>
                             <Divider style={{ width: '100%' }} orientation='horizontal' component="li" />
-                            {dadosTecido.map((categoria) =>
+                            {dadosTecidoFiltrado.map((categoria) => (
                                 <ListItem key={categoria.id}>
                                     {categoria.nome}
+                                </ListItem>
+                            ))}
+
+                            {dadosTecidoFiltrado.length === 0 && (
+                                <ListItem style={{ opacity: 0.6, fontStyle: "italic" }}>
+                                    Nenhum resultado encontrado...
                                 </ListItem>
                             )}</List>
                     </Paper>
