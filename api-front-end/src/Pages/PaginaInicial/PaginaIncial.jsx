@@ -9,7 +9,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useEffect } from "react"
-import api from "../../provider/api"
+import { useContext } from "react";
+import { AuthContext } from "../../components/Permissao/ValidadorDePermissao.jsx";
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import CloseIcon from '@mui/icons-material/Close';
@@ -28,6 +29,9 @@ export function PaginaInicial(){
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [alertAberto, setAlertAberto] = useState(false)
+
+    // Carregar Permissões
+    const { carregarPermissoes } = useContext(AuthContext);
 
     const handleSubmit = (e) => {
 
@@ -50,6 +54,7 @@ export function PaginaInicial(){
                 sessionStorage.setItem('authToken', response.data.token)
                 sessionStorage.setItem('usuario', response.data.nome)
                 sessionStorage.setItem('idFuncionario', response.data.idFuncionario)
+                carregarPermissoes(); 
                 setTimeout(() => {
                     navigate('/historico')
                 }

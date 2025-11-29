@@ -6,20 +6,26 @@ export const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [permissoes, setPermissoes] = useState([]);
 
-  useEffect(() => {
+  const carregarPermissoes = () => {
     const token = sessionStorage.getItem("authToken");
     if (token) {
       const decoded = jwtDecode(token);
+          console.log("Permissões carregadas:", decoded.permissoes);
       setPermissoes(decoded.permissoes || []);
-       console.log("Permissões carregadas:", decoded.permissoes || []);
+    } else {
+      setPermissoes([]);
     }
+  };
+
+  useEffect(() => {
+    carregarPermissoes();
   }, []);
 
   const hasPermission = (name) =>
     permissoes.some((p) => p.descricao === name);
 
   return (
-    <AuthContext.Provider value={{ permissoes, hasPermission }}>
+    <AuthContext.Provider value={{ permissoes, hasPermission, carregarPermissoes }}>
       {children}
     </AuthContext.Provider>
   );
