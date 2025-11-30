@@ -412,7 +412,6 @@ export function Estoque() {
                 setAlertOpen(true);
                 setDadosCadastro([]);
                 listarItensEstoque(); // Recarrega a lista de itens para mostrar o novo cadastro
-                setOperations(operations + 1);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -421,7 +420,6 @@ export function Estoque() {
                 setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${atualizarDados}. Entre em contato com o suporte.`);
                 setAlertOpen(true);
                 setDadosCadastro([]);
-                setOperations(operations + 1);
             });
     }
 
@@ -832,22 +830,29 @@ export function Estoque() {
                                                         renderInput={(params) => <TextField {...params} />}
                                                     />
                                                     <div>
-                                                        {item.confeccaoRoupa.map(confeccao => (
-                                                            <div className={estoque_styles.container}>
-                                                                <p>{confeccao.tecido.descricao}:</p>
-                                                                <TextField required id={confeccao.tecido.idTecido} defaultValue={confeccao.qtdTecido} label="Quantidade (em metros)"
-                                                                    onChange={(e) => handleAdicionarQtdTecidoUpdate(item.idItemEstoque, e)}
-                                                                    sx={{
-                                                                        m: 1,
-                                                                        "& .MuiOutlinedInput-input": { height: "0.1rem" }, width: '11rem',
-                                                                        '& input': { textAlign: 'center' }
-                                                                    }}
-                                                                    slotProps={{ inputLabel: { shrink: true, tyle: { color: 'blue' } } }} />
-                                                                <IconButton id={confeccao.tecido.idTecido} onClick={(e) => handleRemoverTecidoUpdate(item.idItemEstoque, e.currentTarget.id)}>
-                                                                    <ClearIcon fontSize="large" color="action" sx={{ color: "rgba(143, 140, 140, 1)", cursor: "pointer" }} />
-                                                                </IconButton>
-                                                            </div>
-                                                        ))}
+                                                        {item.confeccaoRoupa.map(confeccao => {
+                                                            const tecidoEncontrado = tecidos.find(tecido => tecido.idItemEstoque === confeccao.tecido.idTecido);
+                                                            if (!tecidoEncontrado) {
+                                                                return
+                                                            }
+                                                            return (
+                                                                <div key={confeccao.tecido.idTecido} className={estoque_styles.container}>
+                                                                    <p>{tecidoEncontrado.descricao}:</p>
+                                                                    <TextField required key={`qtd-${confeccao.tecido.idTecido}`} id={confeccao.tecido.idTecido} value={confeccao.qtdTecido}
+                                                                        label="Quantidade (em metros)"
+                                                                        onChange={(e) => handleAdicionarQtdTecidoUpdate(item.idItemEstoque, e)}
+                                                                        sx={{
+                                                                            m: 1,
+                                                                            "& .MuiOutlinedInput-input": { height: "0.1rem" }, width: '11rem',
+                                                                            '& input': { textAlign: 'center' }
+                                                                        }}
+                                                                        slotProps={{ inputLabel: { shrink: true, tyle: { color: 'blue' } } }} />
+                                                                    <IconButton id={confeccao.tecido.idTecido} onClick={(e) => handleRemoverTecidoUpdate(item.idItemEstoque, e.currentTarget.id)}>
+                                                                        <ClearIcon fontSize="large" color="action" sx={{ color: "rgba(143, 140, 140, 1)", cursor: "pointer" }} />
+                                                                    </IconButton>
+                                                                </div>
+                                                            )
+                                                        })}
                                                     </div>
                                                 </>
                                             ) : <></>}
@@ -912,7 +917,15 @@ export function Estoque() {
                                                 <h3>Receber notificações</h3>
                                                 <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === false ? "Não" : "Sim"}</p>
                                                 <h3>Tecidos:</h3>
-                                                {item.confeccaoRoupa.map((dado) => <p>{(tecidos.find(tecido => tecido.idItemEstoque == dado.tecido.idTecido)).descricao + ` (${dado.qtdTecido} metros)`}</p>)}
+                                                {console.log(tecidos)}
+                                                {item.confeccaoRoupa.map((dado) => {
+                                                    const tecidoEncontrado = tecidos.find(tecido => tecido.idItemEstoque === dado.tecido.idTecido);
+                                                    return (
+                                                        <p key={`tecido-${dado.tecido.idTecido}`} style={{ marginBottom: '0.5rem' }}>
+                                                            {tecidoEncontrado ? `${tecidoEncontrado.descricao} (${dado.qtdTecido} metros)` : null}
+                                                        </p>
+                                                    )
+                                                })}
                                             </>) : null}
                                         </div>
                                         <div>
