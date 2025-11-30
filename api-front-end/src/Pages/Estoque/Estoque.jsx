@@ -70,6 +70,9 @@ export function Estoque() {
     // Variável para responsividade
     const matches = useMediaQuery('(min-width:600px)');
 
+    // Controla o recarregamento da imagem após atualização
+    const [imageUpdateCount, setImageUpdateCount] = useState(0);
+
     // Armazena a imagem cadastrada (id e url retornados pelo endpoint de cadastro de imagem)
     let imagemCadastro;
 
@@ -81,9 +84,9 @@ export function Estoque() {
     const listarItensEstoque = () => {
         axios.get(`/api/itens-estoque/categorias?tipo=${itemEstoque}`)
             .then(response => {
-                console.log(response.data);
                 setData(response.data);
-                if (dadosAtualizacao.length === 0) setDadosAtualizacao(response.data); // Inicializa os dados de atualização com os dados obtidos na listagem
+                console.log(response.data);
+                setDadosAtualizacao(response.data); // Inicializa os dados de atualização com os dados obtidos na listagem
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -236,6 +239,7 @@ export function Estoque() {
     }
 
     const atualizarItemEstoque = (dados) => {
+        console.log(dados)
         if (imagem.length != 0) atualizarImagemS3(dados.imagem.url);
         console.log(caracteristicasAtualizacao);
         const caracteristicasCadastro = caracteristicasAtualizacao.length === 0 ? dados.caracteristicas : caracteristicasAtualizacao // Mantém as características atuais se nenhuma nova for selecionada
@@ -246,13 +250,13 @@ export function Estoque() {
                 "peso": ${dados.peso}
                 "qtdMinimo": ${dados.qtdMinimo}
                 "qtdArmazenado": ${dados.qtdArmazenado}
-                "notificar": ${dados.notificar}
+                "notificar": ${notificarAtualizacao}
                 "categoria":
-                    "idCategoria": ${dados.categoria.idCategoria}
+                    "idCategoria": ${dados.categoria.idCategoria !== undefined ? dados.categoria.idCategoria : dados.categoria[0].id}
                 }
                 "caracteristicas": ${caracteristicasIds}
                 "plateleira":
-                    "idPrateleira": ${dados.prateleira.idPrateleira}
+                    "idPrateleira": ${dados.prateleira.idPrateleira !== undefined ? dados.prateleira.idPrateleira : dados.prateleira[0].id}
                 }
                 "preco": ${dados.preco}
                 "imagem":
@@ -267,13 +271,13 @@ export function Estoque() {
                 "peso": dados.peso,
                 "qtdMinimo": dados.qtdMinimo,
                 "qtdArmazenado": dados.qtdArmazenado,
-                "notificar": dados.notificar,
+                "notificar": typeof notificarAtualizacao === "boolean" ? notificarAtualizacao : dados.notificar,
                 "categoria": {
-                    "idCategoria": dados.categoria.idCategoria
+                    "idCategoria": dados.categoria.idCategoria !== undefined ? dados.categoria.idCategoria : dados.categoria[0].id
                 },
                 "caracteristicas": caracteristicasIds,
                 "plateleira": {
-                    "idPrateleira": dados.prateleira.idPrateleira
+                    "idPrateleira": dados.prateleira.idPrateleira !== undefined ? dados.prateleira.idPrateleira : dados.prateleira[0].id
                 },
                 "preco": dados.preco,
                 "imagem": {
@@ -311,6 +315,7 @@ export function Estoque() {
                 setAlertMessage(`Os dados ${atualizarDados} foram atualizados com sucesso.`);
                 setAlertOpen(true);
                 setDadosCadastro([]);
+                listarItensEstoque(); // Recarrega a lista de itens para refletir as mudanças de tecidos
                 setOperations(operations + 1);
             })
             .catch(error => {
@@ -406,6 +411,7 @@ export function Estoque() {
                 setAlertMessage(`Os dados ${atualizarDados} foram cadastrados com sucesso.`);
                 setAlertOpen(true);
                 setDadosCadastro([]);
+                listarItensEstoque(); // Recarrega a lista de itens para mostrar o novo cadastro
                 setOperations(operations + 1);
             })
             .catch(error => {
@@ -461,11 +467,11 @@ export function Estoque() {
     // Carrega os dados iniciais
     useEffect(() => {
         listarItensEstoque();
+        setLoadMsg("Carregando dados...");
         listarTecidos();
         listarPrateleiras();
         listarCaracteristicas();
         listarCategorias();
-        setLoadMsg("Carregando dados...");
     }, [itemEstoque, operations]);
 
     // Atualiza informações da tela conforme o tipo de item de estoque selecionado
@@ -523,18 +529,24 @@ export function Estoque() {
 
     // Controla mudança na seleção de notificar para atualização
     const handleNotificarChange = (item, e, key) => {
+        console.log(e.target.value);
         setNotificarAtualizacao(e.target.value);
     };
 
     // Limpa os campos do formulário de cadastro
     const limparCampos = () => {
+        setOperations(operations+1);
+        setTecidosSelecionados([]);
+        setCategoriaAtualizacao("");
+        setPrateleiraAtualizacao("");
+        setPrateleiraAtualizacao("");
+        setNotificarAtualizacao("");
         setImagem([]); // Limpa o arquivo de imagem selecionado
         setDadosCadastro({}); // Limpa os dados de cadastro
         setCategoriaCadastro("");
         setCaracteristicasAtualizacao([]);
         setPrateleiraCadastro("");
         setImagePreview(""); // Limpa o preview da imagem
-        setTecidosSelecionados([]);
     }
 
     // Controla o upload da imagem e cria o preview
@@ -746,7 +758,7 @@ export function Estoque() {
                                             sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>Imagem</h3>
                                         <Button variant="contained" component="label">
-                                            Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg" hidden />
+                                            Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg, .webp" hidden />
                                         </Button>
                                         <br />
                                         <img style={{ width: matches ? "10em" : "4rem" }} src={imagePreview} alt="" />
@@ -767,7 +779,7 @@ export function Estoque() {
                                         <hr />
                                         <li className={styles.liTextoLargo}>Descrição: <br /> {item.descricao} </li>
                                         <hr />
-                                        <li className={styles.liTextoLargo}>Quantidade em estoque: <br /> {item.qtdArmazenado} </li>
+                                        <li className={styles.liTextoLargo}>Quant. em estoque {itemEstoque === "Roupa" ? "(unidades)" : "(metros)"}: <br /> {item.qtdArmazenado} </li>
                                         <hr />
                                     </>}
                                 limparCampos={limparCampos}
@@ -898,7 +910,7 @@ export function Estoque() {
                                             <p key="qtdArmazenado" style={{ width: '100%', marginBottom: '2rem' }}>{item.qtdArmazenado}</p>
                                             {itemEstoque === "Roupa" ? (<>
                                                 <h3>Receber notificações</h3>
-                                                <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === 0 ? "Não" : "Sim"}</p>
+                                                <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === false ? "Não" : "Sim"}</p>
                                                 <h3>Tecidos:</h3>
                                                 {item.confeccaoRoupa.map((dado) => <p>{(tecidos.find(tecido => tecido.idItemEstoque == dado.tecido.idTecido)).descricao + ` (${dado.qtdTecido} metros)`}</p>)}
                                             </>) : null}
