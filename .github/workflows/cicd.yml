@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./ # pasta com Dockerfile e build estático
-          file: ./Dockerfile # ajuste se o Dockerfile estiver em outro local (ex: ./Dockerfile)
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_REPOSITORY }}:latest
           build-args: |
@@ -54,7 +54,7 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
-          timeout: 120
+          timeout: 120s
           script: |
             # Reiniciar containers
             docker compose down
