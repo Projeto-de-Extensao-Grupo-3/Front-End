@@ -57,6 +57,6 @@ jobs:
           timeout: 120s
           script: |
             # Reiniciar containers
-            docker compose down
-            docker compose up --pull always
+            docker compose down || true
+            nohup docker compose up -d --pull always &
     
