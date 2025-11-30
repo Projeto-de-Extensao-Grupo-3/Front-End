@@ -98,7 +98,7 @@ export function Caracteristicas() {
                 reload();
                                         setAlertType("success");
                         setAlertTitle("Caracteristica removida com sucesso!");
-                        setAlertMessage(`Os dados ${nome} foram removidos com sucesso.`);
+                        setAlertMessage(`Caracteristica removida com sucesso.`);
                         setAlertOpen(true);
             })
             .catch(error => console.error("Erro ao remover:", error));
@@ -125,8 +125,8 @@ export function Caracteristicas() {
             setPopupAtualizarAberto(false);
             reload();
                                     setAlertType("success");
-                        setAlertTitle("Caracteristica cadastrada com sucesso!");
-                        setAlertMessage(`Os dados ${nome} foram cadastrados com sucesso.`);
+                        setAlertTitle("Caracteristica atualizada com sucesso!");
+                        setAlertMessage(`Dados Atualizados com sucesso.`);
                         setAlertOpen(true);
         } catch (error) {
             console.error("Erro ao atualizar Caracteristica:", error);

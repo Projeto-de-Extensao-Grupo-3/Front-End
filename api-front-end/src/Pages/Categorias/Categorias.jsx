@@ -179,7 +179,7 @@ export function Categorias() {
                 console.log(response.data);
                 setAlertType("success");
                 setAlertTitle("Remoção bem sucedida!");
-                setAlertMessage(`Categoria "${nome}" apagada com sucesso.`);
+                setAlertMessage(`Categoria apagada com sucesso.`);
                 setAlertOpen(true);
                 getDados();
             })
