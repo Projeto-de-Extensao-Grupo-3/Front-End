@@ -11,60 +11,108 @@ import { Estoque } from "./Pages/Estoque/Estoque";
 import { Prateleiras } from "./Pages/Prateleiras/Prateleiras.jsx";
 import { EsqueciMinhaSenha } from "./Pages/RecuperacaoDeSenha/EsqueciMinhaSenha.jsx";
 import { CriarNovaSenha } from "./Pages/RecuperacaoDeSenha/CriarNovaSenha.jsx";
+import { ProtectedRoute } from "./components/protectRoute/ProtectRoute.jsx";
 
 export const routes = createBrowserRouter([
+
+    // 🔓 Páginas livres (sem login)
     {
         path: "/",
-        element: <PaginaInicial/>,
+        element: (
+            <PaginaInicial />
+        ),
         errorElement: <div>Erro</div>
     },
     {
+        path: "/esqueci-minha-senha",
+        element: <EsqueciMinhaSenha />,
+        errorElement: <div>Erro</div>
+    },
+    {
+        path: "/criar-nova-senha",
+        element: <CriarNovaSenha />,
+        errorElement: <div>Erro</div>
+    },
+        // 🔒 Páginas bloqueadas
+    {
         path: "/historico",
-        element: <Historico/>,
+        element: (
+            <ProtectedRoute>
+                <Historico />
+            </ProtectedRoute>
+        ),
         errorElement: <div>Erro</div>
     },
     {
         path: "/estoque",
-        element: <Estoque/>,
+        element: (
+            <ProtectedRoute>
+                <Estoque />
+            </ProtectedRoute>
+        ),
         errorElement: <div>Erro</div>
     },
     {
         path: "/parceiros",
-        element: <Parceiros/>,
+        element: (
+            <ProtectedRoute>
+                <Parceiros />
+            </ProtectedRoute>
+        ),
         errorElement: <div>Erro</div>
     },
-     {
+    {
         path: "/perfil",
-        element: <Perfil/>,
+        element: (
+            <ProtectedRoute>
+                <Perfil />
+            </ProtectedRoute>
+        ),
         errorElement: <div>Erro</div>
-    },{
+    },
+    {
         path: "/categorias",
-        element: <Categorias/>,
+        element: (
+            <ProtectedRoute>
+                <Categorias />
+            </ProtectedRoute>
+        ),
         errorElement: <div>Erro</div>
-    },{
+    },
+    {
         path: "/caracteristicas",
-        element: <Caracteristicas />,
+        element: (
+            <ProtectedRoute>
+                <Caracteristicas />
+            </ProtectedRoute>
+        ),
         errorElement: <div>Erro</div>
-    },{
+    },
+    {
         path: "/dashboard",
-        element: <Dashboard />,
+        element: (
+            <ProtectedRoute>
+                <Dashboard />
+            </ProtectedRoute>
+        ),
         errorElement: <div>Erro</div>
     },
     {
         path: "/funcionarios",
-        element: <Funcionarios/>,
+        element: (
+            <ProtectedRoute>
+                <Funcionarios />
+            </ProtectedRoute>
+        ),
         errorElement: <div>Erro</div>
-    },{
+    },
+    {
         path: "/prateleiras",
-        element: <Prateleiras />,
-        errorElement: <div>Erro </div>
-    },{
-        path: "/esqueci-minha-senha",
-        element: <EsqueciMinhaSenha />,
-        errorElement: <div>Erro </div>
-    },{
-        path: "/criar-nova-senha",
-        element: <CriarNovaSenha />,
-        errorElement: <div>Erro </div>
+        element: (
+            <ProtectedRoute>
+                <Prateleiras />
+            </ProtectedRoute>
+        ),
+        errorElement: <div>Erro</div>
     }
 ]);
