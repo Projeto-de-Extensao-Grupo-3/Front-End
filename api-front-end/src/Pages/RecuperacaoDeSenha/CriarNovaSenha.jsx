@@ -2,6 +2,7 @@ import styles from "./esqueci-senha.module.css"
 import { useState } from "react"
 import { Navbar } from "../../components/Navbar/Navbar"
 import axios from "axios"
+import { useNavigate } from "react-router-dom";
 
 // Material UI
 import {
@@ -13,6 +14,8 @@ import { Visibility, VisibilityOff, Close as CloseIcon } from "@mui/icons-materi
 import AlertDialog from "../../components/AlertDialog/AlertDialog"
 
 export function CriarNovaSenha() {
+
+  const navigate = useNavigate();
 
   // Estados de alerta (unificados)
   const [alert, setAlert] = useState({
@@ -68,7 +71,10 @@ export function CriarNovaSenha() {
         title: "Alteração bem sucedida!",
         message: "A senha foi alterada com sucesso."
       });
-
+      setTimeout(() => {
+                    navigate("/")
+                }
+                , 3000);
     } catch (err) {
       console.error(err);
       setAlert({

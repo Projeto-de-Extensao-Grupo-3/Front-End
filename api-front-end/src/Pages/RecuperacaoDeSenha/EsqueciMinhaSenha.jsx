@@ -9,11 +9,7 @@ import AlertDialog from "../../components/AlertDialog/AlertDialog";
 
 export function EsqueciMinhaSenha() {
 
-        const navigate = useNavigate();
-    
-        const redirecionar = (path) => {
-            navigate(path);
-        }
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
 
@@ -35,7 +31,10 @@ export function EsqueciMinhaSenha() {
             setAlertTitle("Email enviado com sucesso!");
             setAlertMessage(`Um email para recuperação de senha foi enviado para ${email}.`);
             setAlertOpen(true);
-            redirecionar("/");
+            setTimeout(() => {
+                    navigate("/")
+                }
+                , 3000);
         } catch (err) {
             console.error(err);
             console.log("EMAIL NÃO ENVIADO" );
@@ -71,7 +70,7 @@ export function EsqueciMinhaSenha() {
                         </div>
                     </form>
                     <div className={styles.divBotao}>
-                        <Button className={styles.botao}  onClick={() => redirecionar("/")} variant="outlined">Voltar</Button>
+                        <Button className={styles.botao}  onClick={() => navigate("/")} variant="outlined">Voltar</Button>
                     </div>
                 </div>
             </div>

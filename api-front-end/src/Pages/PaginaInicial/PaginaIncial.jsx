@@ -17,6 +17,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
 import { Link } from "react-router-dom";
+import venuste from "../../../src/assets/venuste_ico.png";
 
 export function PaginaInicial(){
 
@@ -102,7 +103,16 @@ export function PaginaInicial(){
             </Dialog>
             <div className={styles.content}>
                 <div className={styles.box}>
-                    <span className={styles.indicator}>Insira seu dados para entrar no sistema</span>
+
+                            <div className={styles.logo}>
+                                <img
+                                    src={venuste}
+                                    alt="Logo Venuste"
+                                />
+                            </div>
+                            <br />
+{/* 
+                    <span className={styles.indicator}>Insira seu dados para entrar no sistema</span> */}
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <div className={styles.input}>
                             <TextField

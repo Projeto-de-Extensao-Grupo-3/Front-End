@@ -7,10 +7,9 @@
     padding-top: 40px;
     width: 80vw;
     height: 80vh;
-    
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-start;
     align-items: center;
 }
 
@@ -19,8 +18,9 @@
     height: 60%;
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 .popUp {
@@ -56,6 +56,7 @@
     .divBotao {
         width: 20%;
         min-width: 180px;
+        padding-bottom: 0%;
     }
 
     .botao {
@@ -65,6 +66,7 @@
     .input {
         width: 40%;
         min-width: 400px;
+        padding-bottom: 3%;
     }
 }
 
@@ -86,6 +88,7 @@
   cursor: pointer;
   font-size: 14px;
   transition: color 0.2s ease-in-out;
+  padding-top: 1%;
 }
 
 .linkSenha:hover {
@@ -93,3 +96,10 @@
   text-decoration: underline;
 }
 
+.logo{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    height: auto;
+    margin-bottom: 1rem;
+}
