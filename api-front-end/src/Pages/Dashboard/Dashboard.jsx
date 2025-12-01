@@ -38,12 +38,8 @@ export function Dashboard() {
             <div className={styles.sectionDash}>
                 <Filtro currentPage={currentPage} handleChangePage={handleChangePage} handleFilters={handleFilters}/>
                 <div className={styles.containerDash}>{
-                    currentPage == 'produtos' ? 
-                    <div></div>
-                    : currentPage == 'vendas' ? 
-                    <div></div> 
-                    : 
-                    <div></div>
+                    currentPage == 'produtos' ? <DashProdutos filters={filters} /> :
+                    currentPage == 'vendas' ? <DashVendas filters={filters}  /> : <DashDefeitos filters={filters} />
                 }
                 </div>
             </div>

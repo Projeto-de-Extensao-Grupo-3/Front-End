@@ -31,6 +31,7 @@ export function Filtro(props) {
     const obterCaracteristicas = useEffect(() => {
         api.get("/categorias/tipo/Característica")
             .then((response) => {
+                console.log(response.data)
                 if (response.status == 204) {
                     setListCaracteristicas([]);
                     return;
