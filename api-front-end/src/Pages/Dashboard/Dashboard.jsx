@@ -36,7 +36,7 @@ export function Dashboard() {
         <div>
             <Navbar pageNumber={3}/>
             <div className={styles.sectionDash}>
-                {/* <Filtro currentPage={currentPage} handleChangePage={handleChangePage} handleFilters={handleFilters}/> */}
+                <Filtro currentPage={currentPage} handleChangePage={handleChangePage} handleFilters={handleFilters}/>
                 <div className={styles.containerDash}>{
                     currentPage == 'produtos' ? 
                     <div></div>
