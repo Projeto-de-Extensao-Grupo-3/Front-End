@@ -35,7 +35,9 @@ export function DefeitosPorCostureira(props) {
         }).then((response) => {
             console.log(response.data)
             if (response.status == 204) {
-                setLabels(0);
+                setLabels([]);
+                setTotal([]);
+                setDefeitos([]);
                 return;
             }
             let data = response.data;
