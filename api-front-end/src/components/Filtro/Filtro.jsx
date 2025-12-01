@@ -212,14 +212,6 @@ export function Filtro(props) {
                             ))}
                     </Select>
                 </FormControl>
-                <TextField
-                    label="Categoria"
-                    InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    value={categoria}
-                    onChange={(event) => handleCategoria(event)}
-                    sx={{ flex: 1, minWidth: 0 }}
-                />
             </Box>
             <Button variant="contained" onClick={() => updateData()}>Confirmar</Button>
         </Box>
