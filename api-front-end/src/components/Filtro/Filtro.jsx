@@ -30,24 +30,25 @@ export function Filtro(props) {
 
     const obterCaracteristicas = useEffect(() => {
         api.get("/categorias/tipo/caracteristica")
-            .then(response => setListCaracteristicas(response.data))
-            .catch(error => {
+            .then((response) => {
+                if (response.status == 204) {
+                    setListCaracteristicas([]);
+                    return;
+                }
+                setListCaracteristicas(response.data)
+            }).catch(error => {
                 if (error.response?.status === 401) navigate('/');
                 console.error("Erro ao obter os dados de Características:", error);
             });
     }, [])
 
     const obterCategorias = useEffect(() => {
-    
-        api.get("/categorias/tipo/tecido").then(
-            response => {
-                setDadosTecido(response.data)
-            }).catch(error => {
-                console.log("Erro ao obter os dados de Tecidos: ", error)
-            })
-
         api.get("/categorias/tipo/roupa").then(
-            response => {
+            (response) => {
+                if (response.status == 204) {
+                    setDadosRoupa([]);
+                    return;
+                }
                 setDadosRoupa(response.data)
             }).catch(error => {
                 console.log("Erro ao obter os dados de Roupas: ", error)
@@ -194,9 +195,9 @@ export function Filtro(props) {
                         MenuProps={{ style: { maxHeight: 400} }}
                         >
                         <MenuItem selected value={"Todas"}>Todas</MenuItem>
-                        {listCaracteristicas.map((caracteristica) => (
+                        {Array.isArray(listCaracteristicas) ? listCaracteristicas.map((caracteristica) => (
                             <MenuItem value={caracteristica.nome}>{caracteristica.nome}</MenuItem>
-                        ))}
+                        )) : <MenuItem></MenuItem>}
                     </Select>
                 </FormControl>
                 <FormControl fullWidth>
@@ -211,9 +212,9 @@ export function Filtro(props) {
                         MenuProps={{ style: { maxHeight: 400} }}
                         >
                         <MenuItem selected value={"Todas"}>Todas</MenuItem>
-                            {dadosRoupa.map((categoria) => (
+                            {Array.isArray(dadosRoupa) ? dadosRoupa.map((categoria) => (
                                 <MenuItem value={categoria.nome}>{categoria.nome}</MenuItem>
-                            ))}
+                            )) :  <MenuItem></MenuItem>}
                     </Select>
                 </FormControl>
             </Box>
