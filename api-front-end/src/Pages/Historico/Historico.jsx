@@ -208,6 +208,9 @@ export function Historico() {
             let endpoint = values.tipoItem == 'saida' ? 'lotes/lotesEmEstoque' : 'itens-estoque/itensResumidos';
             api.get(`/${endpoint}`)
                 .then(response => {
+                    if (response.status == 204 || response.data.length == 0) {
+                        dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] })
+                    }
                     dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
                 }).catch(error => {
                     console.log("Erro ao obter dados de lotes em estoque: " + error)
@@ -267,7 +270,6 @@ export function Historico() {
             dispatch({ type: 'registro', tipoItem: '', display: 'none' })
             dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de saída concluído com sucesso!" });
             dispatch({ type: 'simples', field: 'triggerAtualizar', value: values.triggerAtualizar + 1 })
-            obterDados('paginadoSaida', 1, 9)
         } else if (values.tipoItem == 'entrada') {
             let lote = 0;
             api.post(`lotes`, {
@@ -298,11 +300,8 @@ export function Historico() {
             dispatch({ type: 'registro', tipoItem: '', display: 'none' })
             dispatch({ type: 'alert', severity: 'success', title: 'Registro bem sucedido!', message: "Novo registro de entrada concluído com sucesso!" });
             dispatch({ type: 'simples', field: 'triggerAtualizar', value: values.triggerAtualizar + 1 })
-            obterDados('paginado', 1, 9)
         }
     };
-
-    globalThis.values = values
 
     const obterDados = (endpoint, page, limit) => {
         return api.get(`/lotes-item-estoque/${endpoint}?page=${page}&limit=${limit}`)

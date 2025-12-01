@@ -12,6 +12,7 @@ import { Prateleiras } from "./Pages/Prateleiras/Prateleiras.jsx";
 import { EsqueciMinhaSenha } from "./Pages/RecuperacaoDeSenha/EsqueciMinhaSenha.jsx";
 import { CriarNovaSenha } from "./Pages/RecuperacaoDeSenha/CriarNovaSenha.jsx";
 import { ProtectedRoute } from "./components/protectRoute/ProtectRoute.jsx";
+import { Erro } from "./Pages/Erro/Erro.jsx";
 
 export const routes = createBrowserRouter([
 
@@ -113,6 +114,6 @@ export const routes = createBrowserRouter([
                 <Prateleiras />
             </ProtectedRoute>
         ),
-        errorElement: <div>Erro</div>
+        errorElement: <Erro />
     }
 ]);
