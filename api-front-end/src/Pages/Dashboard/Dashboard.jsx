@@ -9,32 +9,32 @@ import dayjs from "dayjs";
 
 export function Dashboard() {
 
-    const [currentPage, setCurrentPage] = useState('produtos');
+    // const [currentPage, setCurrentPage] = useState('produtos');
 
-    const [filters, setFilters] = useState({
-            dataInicio: dayjs().subtract(12, 'months').format('YYYY-MM-DD'),
-            dataFim: dayjs().format('YYYY-MM-DD'),
-            caracteristica: "",
-            categoria: ""
-    });
+    // const [filters, setFilters] = useState({
+    //         dataInicio: dayjs().subtract(12, 'months').format('YYYY-MM-DD'),
+    //         dataFim: dayjs().format('YYYY-MM-DD'),
+    //         caracteristica: "",
+    //         categoria: ""
+    // });
 
-    const handleFilters = (dataInicio, dataFim, caracteristica, categoria) => {
-        const object = {
-            dataInicio: dataInicio,
-            dataFim: dataFim,
-            caracteristica: caracteristica,
-            categoria: categoria
-        }
-        setFilters(object);
-    };
+    // const handleFilters = (dataInicio, dataFim, caracteristica, categoria) => {
+    //     const object = {
+    //         dataInicio: dataInicio,
+    //         dataFim: dataFim,
+    //         caracteristica: caracteristica,
+    //         categoria: categoria
+    //     }
+    //     setFilters(object);
+    // };
 
-    const handleChangePage = (newPage) => {
-        setCurrentPage(newPage);
-    }
+    // const handleChangePage = (newPage) => {
+    //     setCurrentPage(newPage);
+    // }
 
     return( 
         <div>
-            <Navbar pageNumber={3}/>
+            {/* <Navbar pageNumber={3}/>
             <div className={styles.sectionDash}>
                 <Filtro currentPage={currentPage} handleChangePage={handleChangePage} handleFilters={handleFilters}/>
                 <div className={styles.containerDash}>{
@@ -46,7 +46,7 @@ export function Dashboard() {
                     <div></div>
                 }
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }
