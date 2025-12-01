@@ -52,7 +52,7 @@ export function TabelaBaixoGiro(props) {
                                     <TableCell >{data.totalVendido}</TableCell>
                                     <TableCell>{data.quantidadeVendas}</TableCell>
                                     <TableCell>{data.estoqueAtual}</TableCell>
-                                    <TableCell>{data.diasSemVender}</TableCell>
+                                    <TableCell>{data.diasSemVender == null ? 'Nunca vendeu' : data.diasSemVender}</TableCell>
                                     <TableCell>{data.statusRecomendacao}</TableCell>
                                 </TableRow>
                             ))}
