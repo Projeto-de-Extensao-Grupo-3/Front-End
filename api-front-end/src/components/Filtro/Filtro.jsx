@@ -95,6 +95,10 @@ export function Filtro(props) {
 
     }
 
+    const changePage = (newPage) => {
+        props.changePage(newPage)
+    }
+
     
 
     return (
@@ -111,32 +115,32 @@ export function Filtro(props) {
             <h1 style={{ width: matches ? '100%' : '80%', alignSelf: 'center', paddingTop: matches ? 0 : '10px' }}>Segmento</h1>
             <br />
             <div className={styles.pageSelector}>
-                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }} onClick={() => props.handleChangePage('produtos')}>
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }}>
                     <Button
-                        onClick={() => props.handleChangePage('produtos')}
+                        onClick={() => changePage('produtos')}
                         sx={{ height: '90%', width: '100%' }}
                         variant={props.currentPage == 'produtos' ? 'contained' : 'outlined'}
                     >
                         Produtos
                     </Button>
-                    {/* <PageSelector nomePagina="Produtos" ativo={props.currentPage == 'produtos'}/> */}
                 </div>
-                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }} onClick={() => props.handleChangePage('defeitos')}>
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }}>
                     <Button
+                        onClick={() => changePage('defeitos')}
+                        variant={props.currentPage == 'defeitos' ? 'contained' : 'outlined'}
                         sx={{ height: '90%', width: '100%' }}
-                        variant={props.currentPage == 'defeitos' ? 'contained' : 'outlined'}>
+                    >
                         Defeitos
                     </Button>
-                    {/* <PageSelector nomePagina="Defeitos" ativo={props.currentPage == 'defeitos'}/> */}
                 </div>
-                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }} onClick={() => props.handleChangePage('vendas')}>
+                <div style={{ display: 'flex', width: '100%', justifyContent: 'center', height: '25%' }} >
                     <Button
+                        onClick={() => changePage('vendas')}
                         sx={{ height: '90%', width: '100%' }}
                         variant={props.currentPage == 'vendas' ? 'contained' : 'outlined'}
                     >
                         Vendas
                     </Button>
-                    {/* <PageSelector nomePagina="Vendas" ativo={props.currentPage == 'vendas'}/> */}
                 </div>
             </div>
             <h1>Filtros</h1>

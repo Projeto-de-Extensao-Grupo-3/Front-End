@@ -18,19 +18,19 @@ export function Dashboard() {
             categoria: ""
     });
 
-    // const handleFilters = (dataInicio, dataFim, caracteristica, categoria) => {
-    //     const object = {
-    //         dataInicio: dataInicio,
-    //         dataFim: dataFim,
-    //         caracteristica: caracteristica,
-    //         categoria: categoria
-    //     }
-    //     setFilters(object);
-    // };
+    const handleFilters = (dataInicio, dataFim, caracteristica, categoria) => {
+        const object = {
+            dataInicio: dataInicio,
+            dataFim: dataFim,
+            caracteristica: caracteristica,
+            categoria: categoria
+        }
+        setFilters(object);
+    };
 
-    // const handleChangePage = (newPage) => {
-    //     setCurrentPage(newPage);
-    // }
+    const handleChangePage = (newPage) => {
+        setCurrentPage(newPage);
+    }
 
     return( 
         <div>
