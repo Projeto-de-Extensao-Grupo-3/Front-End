@@ -270,7 +270,7 @@ export function Historico() {
             obterDados('paginadoSaida', 1, 9)
         } else if (values.tipoItem == 'entrada') {
             let lote = 0;
-            api.post(`api/lotes`, {
+            api.post(`lotes`, {
                 descricao: motivo,
                 dataEntrada: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
                 parceiro: values.idParceiroEscolhido,
