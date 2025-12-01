@@ -390,7 +390,7 @@ export function Historico() {
                                                 <TableCell>Item</TableCell>
                                                 <TableCell>Quantidade</TableCell>
                                                 <TableCell>{values.tipoItem == 'saida' ? "Preço (Venda)" : "Custo (Despesa)"}</TableCell>
-                                                <TableCell>Tirar Item</TableCell>
+                                                <TableCell>Remover Item</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>

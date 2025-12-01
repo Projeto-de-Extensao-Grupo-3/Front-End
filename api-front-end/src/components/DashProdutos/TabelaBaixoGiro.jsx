@@ -20,6 +20,10 @@ export function TabelaBaixoGiro(props) {
         api.get("/itens-estoque/produtos-giro-baixo", {
             params: props.filters
         }).then((response) => {
+            if (response.status == 204) {
+                setDados([]);
+                return;
+            }
             setDados(response.data)
         })
 
