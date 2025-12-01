@@ -1,7 +1,7 @@
 import { Paper } from "@mui/material"
 import { useRouteError } from "react-router-dom"
 
-export function Erro(error) {
+export function Erro() {
     let error = useRouteError();
     console.log(error)
     return (
