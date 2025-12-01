@@ -31,7 +31,7 @@ export function TabelaBaixoGiro(props) {
 
     return (<div>
         {
-            dados.length > 0
+            Array.isArray(dados)
                 ?
                 <TableContainer component={Paper} sx={{ maxHeight: 400, width: '100%' }}>
                     <Table>
@@ -59,7 +59,7 @@ export function TabelaBaixoGiro(props) {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                : <Paper sx={{ p: '40px' }} elevation={4}>Nenhum dado a ser exibido, tente mudar os filtros</Paper>
+            : <Paper sx={{ p: '40px' }} elevation={4}>Nenhum dado a ser exibido, tente mudar os filtros</Paper>
         }
     </div>
     )

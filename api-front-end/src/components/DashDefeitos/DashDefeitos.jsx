@@ -7,10 +7,10 @@ export function DashDefeitos(props) {
         <div style={{width: '100%', height: '100%'}}>
             <div className={`${styles.conteudoDash}`} style={{height: '100%'}}>
                 <div className={`${styles.conteudoGraficos}`} style={{width: '65%'}}>
-                    <DefeitosPorCostureira filters={props.filters} />
+                    {/* <DefeitosPorCostureira filters={props.filters} /> */}
                 </div>
                 <div className={`${styles.conteudoGraficos}`} style={{width: '35%'}}>
-                    <DefeitosPorRoupa filters={props.filters}/>
+                    {/* <DefeitosPorRoupa filters={props.filters}/> */}
                 </div>
             </div>
             {/* <div className={`${styles.conteudoDash}`}>

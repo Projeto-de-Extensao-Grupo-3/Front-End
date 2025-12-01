@@ -29,9 +29,8 @@ export function DefeitosPorRoupa(props) {
     return (
 
         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {
-                dados.length > 0
-                    ? <TableContainer component={Paper} sx={{ maxHeight: 800, width: '70%' }}>
+            {Array.isArray(dados) ?
+                    <TableContainer component={Paper} sx={{ maxHeight: 800, width: '70%' }}>
                         <Table stickyHeader>
                             <TableHead>
                                 <TableRow>
@@ -49,8 +48,8 @@ export function DefeitosPorRoupa(props) {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    : <Paper sx={{ p: '40px'}} elevation={4}>Nenhum dado a ser exibido, tente mudar os filtros</Paper>
-            }
+                    
+            : <Paper sx={{ p: '40px'}} elevation={4}>Nenhum dado a ser exibido, tente mudar os filtros</Paper>}
         </div>
     )
 }
