@@ -8,15 +8,15 @@ export function DashProdutos(props) {
         <div style={{width: '100%', height: '100%'}}>
             <div className={`${styles.conteudoDash}`}>
                 <div className={`${styles.conteudoGraficos}`}>
-                    {/* <GraficoMargemLucro filters={props.filters}/> */}
+                    <GraficoMargemLucro filters={props.filters}/>
                 </div>
                 <div className={`${styles.conteudoGraficos}`}>
-                    {/* <GraficoCustos filters={props.filters} /> */}
+                    <GraficoCustos filters={props.filters} />
                 </div>
             </div>
             <div className={`${styles.conteudoDash}`} style={{width: '100%'}}>
                 <div>
-                    {/* <TabelaBaixoGiro filters={props.filters} /> */}
+                    <TabelaBaixoGiro filters={props.filters} />
                 </div>
             </div>
 

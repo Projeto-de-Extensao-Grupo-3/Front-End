@@ -29,9 +29,9 @@ export function Filtro(props) {
     const [dadosRoupa, setDadosRoupa] = useState([])
 
     const obterCaracteristicas = useEffect(() => {
-        api.get("/categorias/tipo/Característica")
+        api.get(`/categorias/tipo/Característica`)
             .then((response) => {
-                console.log(response.data)
+                console.log(response)
                 if (response.status == 204) {
                     setListCaracteristicas([]);
                     return;
