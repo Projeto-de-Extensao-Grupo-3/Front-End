@@ -19,6 +19,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import axios from 'axios';
 import { AuthContext } from '../../components/Permissao/ValidadorDePermissao.jsx';
 import { useContext } from "react";
+import { api } from '../../provider/api.js';
 
 export function Estoque() {
 
@@ -82,7 +83,7 @@ export function Estoque() {
     /*======================== Funções de requisição ======================*/
 
     const listarItensEstoque = () => {
-        axios.get(`/api/itens-estoque/categorias?tipo=${itemEstoque}`)
+        api.get(`/itens-estoque/categorias?tipo=${itemEstoque}`)
             .then(response => {
                 setData(response.data);
                 console.log(response.data);
@@ -94,7 +95,7 @@ export function Estoque() {
     }
 
     const listarTecidos = () => { // Apesar de já estar listando ItemEstoque,é necessário listar tecidos para serem relacionados com roupa
-        axios.get(`/api/itens-estoque/categorias?tipo=Tecido`)
+        api.get(`/itens-estoque/categorias?tipo=Tecido`)
             .then(response => {
                 console.log(response.data);
                 setTecidos(response.data);
@@ -105,7 +106,7 @@ export function Estoque() {
     }
 
     const listarCaracteristicas = () => {
-        axios.get(`/api/categorias/tipo/Característica`)
+        api.get(`/categorias/tipo/Característica`)
             .then(response => {
                 const listaCaracteristicas = response.data;
                 setCaracteristicas(listaCaracteristicas.map(caracteristica => {
@@ -119,7 +120,7 @@ export function Estoque() {
     }
 
     const listarPrateleiras = () => {
-        axios.get(`/api/prateleiras`)
+        api.get(`/prateleiras`)
             .then(response => {
                 console.log(response.data);
                 setPrateleiras(response.data);
@@ -130,7 +131,7 @@ export function Estoque() {
     }
 
     const listarCategorias = () => {
-        axios.get(`/api/categorias/tipo/${itemEstoque}`)
+        api.get(`/categorias/tipo/${itemEstoque}`)
             .then(response => {
                 console.log(response.data);
                 setCategorias(response.data);
@@ -144,7 +145,7 @@ export function Estoque() {
         if (descricao == "") {
             listarItensEstoque();
         } else {
-            axios.get(`/api/itens-estoque/${itemEstoque}/filtros?descricao=${descricao}`)
+            api.get(`/itens-estoque/${itemEstoque}/filtros?descricao=${descricao}`)
                 .then(response => {
                     console.log(response.data);
                     if (response.data.length === 0) {
@@ -170,7 +171,7 @@ export function Estoque() {
     const uploadImagemS3 = () => {
         let urlImagem;
         const nomeImagem = gerarNomeImagem();
-        axios.post(`/api/s3/upload/${nomeImagem}.jpg`, imagem, {
+        api.post(`/s3/upload/${nomeImagem}.jpg`, imagem, {
             headers: {
                 'Content-Type': imagem.type,
             },
@@ -195,7 +196,7 @@ export function Estoque() {
     const atualizarImagemS3 = (urlImagemCadastrada) => {
         const nomeImagem = urlImagemCadastrada.match("(?<=com/).*$")[0]; // Extrai o nome da imagem da URL
         console.log(nomeImagem)
-        axios.post(`/api/s3/upload/${nomeImagem}`, imagem, {
+        api.post(`/s3/upload/${nomeImagem}`, imagem, {
             headers: {
                 'Content-Type': imagem.type,
             },
@@ -217,7 +218,7 @@ export function Estoque() {
     }
 
     const cadastrarImagem = (urlImagem) => {
-        axios.post('/api/imagens',
+        api.post('/imagens',
             {
                 "url": urlImagem
             }
@@ -264,7 +265,7 @@ export function Estoque() {
                     "url": ${dados.imagem.url}
                 }
             }`)
-        axios.put(`/api/itens-estoque/${dados.idItemEstoque}`,
+        api.put(`/itens-estoque/${dados.idItemEstoque}`,
             {
                 "descricao": dados.descricao,
                 "complemento": dados.complemento,
@@ -305,7 +306,7 @@ export function Estoque() {
         let confeccaoRoupa = confeccaoAtualizar;
         for (const item of confeccaoRoupa) delete item.tecido.descricao;
 
-        axios.post(`/api/itens-estoque/tecidos/${id}`,
+        api.post(`/itens-estoque/tecidos/${id}`,
             confeccaoRoupa
         )
             .then(response => {
@@ -354,7 +355,7 @@ export function Estoque() {
                     "url": ${imagemCadastro.url}
                 }
             }`)
-        axios.post(`/api/itens-estoque`,
+        api.post(`/itens-estoque`,
             {
                 "descricao": dadosCadastro.descricao,
                 "complemento": dadosCadastro.complemento,
@@ -401,7 +402,7 @@ export function Estoque() {
         let confeccaoRoupa = tecidosSelecionados;
         for (const item of confeccaoRoupa) delete item.tecido.descricao;
 
-        axios.post(`/api/itens-estoque/tecidos/${id}`,
+        api.post(`/itens-estoque/tecidos/${id}`,
             confeccaoRoupa
         )
             .then(response => {
@@ -424,7 +425,7 @@ export function Estoque() {
     }
 
     const deletarItemEstoque = (dados) => { // Função de remoção lógica do item em estoque
-        axios.put(`/api/itens-estoque/${dados.idItemEstoque}`,
+        api.put(`/itens-estoque/${dados.idItemEstoque}`,
             {
                 "descricao": dados.descricao,
                 "complemento": null,

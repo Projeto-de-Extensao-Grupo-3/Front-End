@@ -3,6 +3,7 @@ import { useState } from "react"
 import { Navbar } from "../../components/Navbar/Navbar"
 import axios from "axios"
 import { useNavigate } from "react-router-dom";
+import { api } from "../../provider/api";
 
 // Material UI
 import {
@@ -60,7 +61,7 @@ export function CriarNovaSenha() {
     }
 
     try {
-      await axios.post("http://localhost:8080/funcionarios/resetar-senha", {
+      await api.post("http://localhost:8080/funcionarios/resetar-senha", {
         token,
         novaSenha
       });

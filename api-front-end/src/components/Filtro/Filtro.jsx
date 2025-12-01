@@ -11,6 +11,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import axios from 'axios';  
+import { api } from "../../provider/api";
+
 
 export function Filtro(props) {
     // Responsividade: usa Box do MUI para adaptar o layout
@@ -27,7 +29,7 @@ export function Filtro(props) {
     const [dadosRoupa, setDadosRoupa] = useState([])
 
     const obterCaracteristicas = useEffect(() => {
-        axios.get("/api/categorias/tipo/caracteristica")
+        api.get("/categorias/tipo/caracteristica")
             .then(response => setListCaracteristicas(response.data))
             .catch(error => {
                 if (error.response?.status === 401) navigate('/');
@@ -37,14 +39,14 @@ export function Filtro(props) {
 
     const obterCategorias = useEffect(() => {
     
-        axios.get("/api/categorias/tipo/tecido").then(
+        api.get("/categorias/tipo/tecido").then(
             response => {
                 setDadosTecido(response.data)
             }).catch(error => {
                 console.log("Erro ao obter os dados de Tecidos: ", error)
             })
 
-        axios.get("/api/categorias/tipo/roupa").then(
+        api.get("/categorias/tipo/roupa").then(
             response => {
                 setDadosRoupa(response.data)
             }).catch(error => {

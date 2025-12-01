@@ -19,7 +19,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import Box from '@mui/material/Box';
-
+import { api } from '../../provider/api';
 
 export function Categorias() {
 
@@ -97,7 +97,7 @@ export function Categorias() {
         }
         if (!duplicado) {
             if (popupEscolhido == "Roupa") {
-                axios.post("/api/categorias", {
+                api.post("/categorias", {
                     "nome": nome,
                     "categoriaPai": {
                         "idCategoria": 2
@@ -127,7 +127,7 @@ export function Categorias() {
                         handlePopupAdicionarFechar()
                     })
             } else if (popupEscolhido == "Tecido") { // if como failsafe
-                axios.post("/api/categorias", {
+                api.post("/categorias", {
                     "nome": nome,
                     "categoriaPai": {
                         "idCategoria": 1
@@ -174,7 +174,7 @@ export function Categorias() {
 
         console.log(id)
 
-        axios.delete(`/api/categorias/${id}`)
+        api.delete(`/categorias/${id}`)
             .then(response => {
                 console.log(response.data);
                 setAlertType("success");
@@ -224,7 +224,7 @@ export function Categorias() {
             return;
         }
 
-        axios.put(`/api/categorias/${id}`,
+        api.put(`/categorias/${id}`,
             {
                 "nome": nome,
                 "categoriaPai": {
@@ -258,14 +258,14 @@ export function Categorias() {
     const initialState = useEffect(() => { getDados(); }, [])
 
     const getDados = () => {
-        axios.get("/api/categorias/tipo/tecido").then(
+        api.get("/categorias/tipo/tecido").then(
             response => {
                 setDadosTecido(response.data)
             }).catch(error => {
                 console.log("Erro ao obter os dados de Tecidos: ", error)
             })
 
-        axios.get("/api/categorias/tipo/roupa").then(
+        api.get("/categorias/tipo/roupa").then(
             response => {
                 setDadosRoupa(response.data)
             }).catch(error => {

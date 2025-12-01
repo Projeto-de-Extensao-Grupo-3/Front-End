@@ -9,6 +9,7 @@ import { Paper } from "@mui/material";
 import { useState } from 'react';
 import axios from 'axios';
 import { useMediaQuery } from "@mui/material";
+import { api } from "../../provider/api";
 
 export function TabelaBaixoGiro(props) {
 
@@ -16,7 +17,7 @@ export function TabelaBaixoGiro(props) {
     const [dados, setDados] = useState([]);
 
     const obterDadosTabela = useEffect(() => {
-        axios.get("/api/itens-estoque/produtos-giro-baixo", {
+        api.get("/itens-estoque/produtos-giro-baixo", {
             params: props.filters
         }).then((response) => {
             setDados(response.data)

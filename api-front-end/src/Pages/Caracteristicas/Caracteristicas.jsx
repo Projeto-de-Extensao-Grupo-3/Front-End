@@ -19,7 +19,7 @@ import axios from 'axios';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
-
+import { api } from '../../provider/api';
 
 export function Caracteristicas() {
 
@@ -57,7 +57,7 @@ export function Caracteristicas() {
             }
         })
         if (!duplicado) {
-            axios.post("/api/categorias", {
+            api.post("/categorias", {
                 nome: nome,
                 categoriaPai: { idCategoria: 3 }
             })
@@ -92,7 +92,7 @@ export function Caracteristicas() {
 
         console.log(id)
 
-        axios.delete(`/api/categorias/caracteristica/${id}`)
+        api.delete(`/categorias/caracteristica/${id}`)
             .then(() => {
                 setPopupRemoverAberto(false);
                 reload();
@@ -118,7 +118,7 @@ export function Caracteristicas() {
         }
 
         try {
-            await axios.put(`/api/categorias/${id}`, {
+            await api.put(`/categorias/${id}`, {
                 nome,
                 categoriaPai: { idCategoria: 3 },
             });
@@ -141,7 +141,7 @@ export function Caracteristicas() {
     const [dadosCaracteristicas, setDadosCaracteristicas] = useState([])
 
     const reload = () => {
-        axios.get("/api/categorias/tipo/caracteristica")
+        api.get("/categorias/tipo/caracteristica")
             .then(response => setDadosCaracteristicas(response.data))
             .catch(error => {
                 if (error.response?.status === 401) navigate('/');

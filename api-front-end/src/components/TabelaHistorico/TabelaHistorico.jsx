@@ -20,6 +20,7 @@ import dayjs from "dayjs";
 import 'dayjs/locale/en-gb';
 import { useState } from 'react';
 import axios from 'axios';
+import { api } from "../../provider/api";
 
 
 
@@ -107,7 +108,7 @@ export function TabelaHistorico(props) {
         if (props.tipoMovimentacao == 1) { 
             endpoint = 'paginadoSaida'
         }
-        axios.get(`/api/lotes-item-estoque/${endpoint}?page=${page}&limit=${rowsPerPage}`)
+        api.get(`/lotes-item-estoque/${endpoint}?page=${page}&limit=${rowsPerPage}`)
             .then((response) => {
                 setTableData(response.data.conteudo)
                 setTableSize(response.data.totalRegistros)

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { Navbar } from "../../components/Navbar/Navbar"
 import axios from "axios";
 import AlertDialog from "../../components/AlertDialog/AlertDialog";
+import { api } from "../../provider/api";
 
 export function EsqueciMinhaSenha() {
 
@@ -23,7 +24,7 @@ export function EsqueciMinhaSenha() {
         e.preventDefault();
 
         try {
-            await axios.post("http://localhost:8080/funcionarios/esqueci-minha-senha", {
+            await api.post("http://localhost:8080/funcionarios/esqueci-minha-senha", {
                 email: email
             });
             console.log("EMAIL ENVIADO" );

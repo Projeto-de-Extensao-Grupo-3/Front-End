@@ -9,6 +9,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
 import { Paper } from '@mui/material';
+import { api } from '../../provider/api';
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
 
@@ -58,7 +59,7 @@ export function GraficoMargemLucro(props) {
     }
 
     const chamarApi = useEffect(() => {
-        axios.get(`/api/lotes-item-estoque/margem-lucro-produtos`, {
+        api.get(`/lotes-item-estoque/margem-lucro-produtos`, {
             params: props.filters
         }).then((response) => {
             if (response.status == 204) {

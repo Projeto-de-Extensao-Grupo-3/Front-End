@@ -20,6 +20,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Typography from '@mui/material/Typography';
+import { api } from '../../provider/api.js';
 
 export function Perfil() {
 
@@ -52,7 +53,7 @@ export function Perfil() {
             const id = decoded.sub;
             setPermissoes(decoded.permissoes || []);
 
-            axios.get(`http://localhost:8080/funcionarios/${id}`)
+            api.get(`http://localhost:8080/funcionarios/${id}`)
                 .then(response => {
                     setFuncionario(response.data);
                 })
@@ -102,7 +103,7 @@ export function Perfil() {
         }
 
         try {
-            await axios.put(`/api/funcionarios/${funcionario.idFuncionario}`, {
+            await api.put(`/funcionarios/${funcionario.idFuncionario}`, {
                 nome,
                 cpf: funcionario.cpf,
                 telefone,
@@ -142,7 +143,7 @@ export function Perfil() {
 
         try {
             console.log("ID FUNCIONARIO: ", funcionario.idFuncionario);
-            await axios.patch(`/api/funcionarios/${funcionario.idFuncionario}/senha`, {
+            await api.patch(`/funcionarios/${funcionario.idFuncionario}/senha`, {
                 senhaAtual,
                 novaSenha
             });

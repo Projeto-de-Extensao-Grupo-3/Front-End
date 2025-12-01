@@ -4,10 +4,12 @@ import { CategoryScale } from 'chart.js';
 import Chart from "chart.js/auto";
 import axios from 'axios';
 import { Paper } from '@mui/material';
+import { api } from '../../provider/api';
 
 Chart.register(CategoryScale);
 
 export function DefeitosPorCostureira(props) {
+
 
     const [labels, setLabels] = useState([]);
     const [total, setTotal] = useState([]);
@@ -28,8 +30,7 @@ export function DefeitosPorCostureira(props) {
     })
 
     const chamarApi = useEffect(() => {
-
-        axios.get("/api/saidas-estoque/taxa-defeito-costura", {
+        api.get("/saidas-estoque/taxa-defeito-costura", {
             params: props.filters
         }).then((response) => {
             console.log(response.data)

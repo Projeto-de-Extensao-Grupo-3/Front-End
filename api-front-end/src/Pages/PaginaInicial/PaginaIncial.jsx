@@ -18,6 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
 import { Link } from "react-router-dom";
 import venuste from "../../../src/assets/venuste_ico.png";
+import { api } from "../../provider/api.js";
 
 export function PaginaInicial(){
 
@@ -43,7 +44,7 @@ export function PaginaInicial(){
         // Eventualmente, a requisição para o back será feita aqui. Por enquanto, apenas redirecionamento sem validação
         // Será necessário diferenciar entre registro rápido e login normal (corte de escopo?)
         
-        axios.post('/api/funcionarios/login', {
+        api.post('/funcionarios/login', {
             email: email,
             senha: senha
         }, {

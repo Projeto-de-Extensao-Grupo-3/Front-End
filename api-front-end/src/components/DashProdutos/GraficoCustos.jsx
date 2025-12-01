@@ -9,6 +9,7 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import IconButton from '@mui/material/IconButton';
 import axios from 'axios';
 import { Paper } from '@mui/material';
+import { api } from '../../provider/api'
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -156,7 +157,7 @@ export function GraficoCustos(props) {
             }
         ]
 
-        axios.get("/api/lotes-item-estoque/peca-maior-mao-obra", {
+        api.get("/lotes-item-estoque/peca-maior-mao-obra", {
             params: props.filters
         }).then((response) => {
             if (response.status == 204) {

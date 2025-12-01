@@ -8,13 +8,14 @@ import TableRow from '@mui/material/TableRow';
 import { Paper } from "@mui/material";
 import { useState } from 'react';
 import axios from 'axios';
+import { api } from "../../provider/api";
 
 export function DefeitosPorRoupa(props) {
 
     const [dados, setDados] = useState([]);
 
     const chamarApi = useEffect(() => {
-        axios.get('/api/itens-estoque/defeitos-por-roupa', {
+        api.get('/itens-estoque/defeitos-por-roupa', {
             params: props.filters
         }).then((response) => {
             if (response.status == 204) {

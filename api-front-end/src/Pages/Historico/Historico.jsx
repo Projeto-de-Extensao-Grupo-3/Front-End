@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import 'dayjs/locale/en-gb';
 
 import axios from 'axios';
+import { api } from "../../provider/api";
 
 import { NumericFormat } from 'react-number-format';
 
@@ -205,7 +206,7 @@ export function Historico() {
             dispatch({ type: 'simples', field: 'parceiros', value: [] });
         } else {
             let endpoint = values.tipoItem == 'saida' ? 'lotes/lotesEmEstoque' : 'itens-estoque/itensResumidos';
-            axios.get(`/api/${endpoint}`)
+            api.get(`/${endpoint}`)
                 .then(response => {
                     dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
                 }).catch(error => {
@@ -213,14 +214,14 @@ export function Historico() {
                 });
 
             let auxParceiro = []
-            axios.get(`/api/parceiros/listagem/costureira`)
+            api.get(`/parceiros/listagem/costureira`)
                 .then(response => {
                     response.data.forEach((e) => auxParceiro.push(e))
                 }).catch(error => {
                     console.log("Erro ao obter dados de parceiros: " + error)
                 });
 
-            axios.get(`/api/parceiros/listagem/fornecedor`)
+            api.get(`/parceiros/listagem/fornecedor`)
                 .then(response => {
                     response.data.forEach((e) => auxParceiro.push(e))
                 }).catch(error => {
@@ -246,7 +247,7 @@ export function Historico() {
 
         if (values.tipoItem == 'saida') {
             values.itensParaRegistrar.forEach((item) =>
-                axios.post(`/api/saidas-estoque`, {
+                api.post(`/saidas-estoque`, {
                     data: dayjs().format('YYYY-MM-DD'),
                     hora: dayjs().format('HH:mm:ss'),
                     qtdSaida: item.quantidadeNova,
@@ -269,7 +270,7 @@ export function Historico() {
             obterDados('paginadoSaida', 1, 9)
         } else if (values.tipoItem == 'entrada') {
             let lote = 0;
-            axios.post(`api/lotes`, {
+            api.post(`api/lotes`, {
                 descricao: motivo,
                 dataEntrada: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
                 parceiro: values.idParceiroEscolhido,
@@ -277,7 +278,7 @@ export function Historico() {
             }).then(response => {
                 lote = response.data.idLote;
                 values.itensParaRegistrar.forEach((item) => {
-                    axios.post(`/api/lotes-item-estoque`, {
+                    api.post(`/lotes-item-estoque`, {
                         qtdItem: item.quantidadeNova,
                         preco: item.preco,
                         itemEstoque: item.idItem,
@@ -304,7 +305,7 @@ export function Historico() {
     globalThis.values = values
 
     const obterDados = (endpoint, page, limit) => {
-        return axios.get(`/api/lotes-item-estoque/${endpoint}?page=${page}&limit=${limit}`)
+        return api.get(`/lotes-item-estoque/${endpoint}?page=${page}&limit=${limit}`)
     }
 
     return (

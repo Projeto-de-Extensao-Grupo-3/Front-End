@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { api } from '../../provider/api';
 
 export function Prateleiras() {
 
@@ -49,7 +50,7 @@ export function Prateleiras() {
             }
         })
         console.log("codigo : " + codigo)
-        // axios.post("/api/prateleiras", {
+        // api.post("/prateleiras", {
         //     codigo: codigo
         // }).then(() => {
         //     setPopupAdicionarAberto(false)
@@ -71,7 +72,7 @@ export function Prateleiras() {
             return;
         }
         var possuiItens = false;
-        // axios.get(`/api/prateleiras/existeItem/${id}`).then((response) => {
+        // api.get(`/prateleiras/existeItem/${id}`).then((response) => {
         //     possuiItens = response.data.existeItem;
         // })
         if (possuiItens) {
@@ -80,7 +81,7 @@ export function Prateleiras() {
         }
         
         console.log(id)
-        // axios.delete(`/api/prateleiras/${id}`).then(() => {
+        // api.delete(`/prateleiras/${id}`).then(() => {
         //         setPopupRemoverAberto(false);
         //         reload();
         //     }).catch(error => console.error("Erro ao remover:", error));
@@ -99,7 +100,7 @@ export function Prateleiras() {
         })
 
         console.log(formJson)
-        // axios.put(`/api/categorias/${formJson.id}`, {
+        // api.put(`/categorias/${formJson.id}`, {
         //     codigo: formJson.codigo
         // }).then( (response) => {
             
@@ -112,7 +113,7 @@ export function Prateleiras() {
     const [dadosPrateleiras, setDadosPrateleiras] = useState([])
 
     const reload = () => {
-        axios.get("/api/prateleiras")
+        api.get("/prateleiras")
             .then(response => {
                 setDadosPrateleiras(response.data)
             })

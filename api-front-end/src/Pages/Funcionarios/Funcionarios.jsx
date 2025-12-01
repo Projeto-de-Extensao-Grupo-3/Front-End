@@ -18,6 +18,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { AuthContext } from '../../components/Permissao/ValidadorDePermissao.jsx';
 import { useContext } from 'react';
 import { formatTelefone, aplicarMascaraTelefone, formatCnpj, formatCpf, aplicarMascaraCnpj, aplicarMascaraCpf, validarEmail } from '../../functions/utils.js';
+import { api } from '../../provider/api.js';
 
 export function Funcionarios() {
 
@@ -55,7 +56,7 @@ export function Funcionarios() {
 
     // Funções para requisições na API
     const listarFuncionarios = () => {
-        axios.get(`/api/funcionarios`)
+        api.get(`/funcionarios`)
             .then(response => {
                 setData(response.data);
                 console.log(response.data);
@@ -67,7 +68,7 @@ export function Funcionarios() {
     }
 
     const listarPermissoes = () => { // É necessário listar permissões para popular o select no cadastro/atualização
-        axios.get(`/api/permissoes`)
+        api.get(`/permissoes`)
             .then(response => {
                 setPermissoes(response.data);
             })
@@ -77,7 +78,7 @@ export function Funcionarios() {
     }
 
     const buscarFuncionario = (nome) => {
-        axios.get(`/api/funcionarios/busca?nome=${nome}`)
+        api.get(`/funcionarios/busca?nome=${nome}`)
             .then(response => {
                 console.log(response.data);
                 if (response.data.length === 0) {
@@ -93,7 +94,7 @@ export function Funcionarios() {
     }
 
     const cadastrarFuncionario = (dados) => {
-        axios.post(`/api/funcionarios`,
+        api.post(`/funcionarios`,
             {
                 "nome": dados.nome,
                 "cpf": dados.cpf,
@@ -130,7 +131,7 @@ export function Funcionarios() {
     }
 
     const atualizarFuncionario = (dados) => {
-        axios.put(`/api/funcionarios/${dados.idFuncionario}`,
+        api.put(`/funcionarios/${dados.idFuncionario}`,
             {
                 "nome": dados.nome,
                 "cpf": dados.cpf,
@@ -161,7 +162,7 @@ export function Funcionarios() {
     }
 
     const deletarFuncionario = (funcionario) => {
-        axios.delete(`/api/funcionarios/${funcionario.idFuncionario}`)
+        api.delete(`/funcionarios/${funcionario.idFuncionario}`)
             .then(response => {
                 console.log(response.data);
                 setAlertType("success");
@@ -185,7 +186,7 @@ export function Funcionarios() {
     }
 
     const deletarFuncionarioReferenciado = (funcionario) => {
-        axios.put(`/api/funcionarios/${funcionario.idFuncionario}`,
+        api.put(`/funcionarios/${funcionario.idFuncionario}`,
             {
                 "nome": funcionario.nome,
                 "cpf": null,

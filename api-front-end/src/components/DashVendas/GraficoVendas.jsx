@@ -5,7 +5,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import Chart from "chart.js/auto";
 import axios from 'axios';
 import { Paper } from '@mui/material';
-
+import { api } from '../../provider/api';
 
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
@@ -28,7 +28,7 @@ export function GraficoVendas(props) {
 
     const chamarApi = useEffect(() => {
 
-        axios.get('/api/itens-estoque/evolucao-vendas', {
+        api.get('/itens-estoque/evolucao-vendas', {
             params: props.filters
         }).then((response) => {
             if (response.status == 204) {

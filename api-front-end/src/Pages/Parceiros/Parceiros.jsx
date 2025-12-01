@@ -11,6 +11,7 @@ import axios from 'axios';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { formatTelefone, aplicarMascaraTelefone, formatCnpj, formatCpf, aplicarMascaraCnpj, aplicarMascaraCpf, validarEmail } from '../../functions/utils.js';
+import { api } from '../../provider/api.js';
 
 export function Parceiros() {
 
@@ -49,7 +50,7 @@ export function Parceiros() {
 
     // Funções para requisições na API
     const listarParceiros = () => {
-        axios.get(`/api/parceiros/listagem/${parceiro}`)
+        api.get(`/parceiros/listagem/${parceiro}`)
             .then(response => {
                 setData(response.data);
                 console.log(response.data)
@@ -61,7 +62,7 @@ export function Parceiros() {
     }
 
     const buscarParceiro = (nome) => {
-        axios.get(`/api/parceiros/${parceiro}/nome?nome=${nome}`)
+        api.get(`/parceiros/${parceiro}/nome?nome=${nome}`)
             .then(response => {
                 console.log(response.data);
                 if (response.data.length === 0) {
@@ -79,7 +80,7 @@ export function Parceiros() {
 
     const atualizarParceiro = (dados) => {
         console.log(dados);
-        axios.put(`/api/parceiros/${dados.id}`,
+        api.put(`/parceiros/${dados.id}`,
             {
                 "categoria": parceiro,
                 "nome": dados.nome,
@@ -111,7 +112,7 @@ export function Parceiros() {
 
     const cadastrarParceiro = (dados) => {
         console.log(dados);
-        axios.post(`/api/parceiros`,
+        api.post(`/parceiros`,
             {
                 "categoria": parceiro,
                 "nome": dados.nome,
@@ -148,7 +149,7 @@ export function Parceiros() {
     }
 
     const deletarParceiro = (parceiro) => {
-        axios.delete(`/api/parceiros/${parceiro.id}`)
+        api.delete(`/parceiros/${parceiro.id}`)
             .then(response => {
                 console.log(response.data);
                 setAlertType("success");
@@ -171,7 +172,7 @@ export function Parceiros() {
     }
 
     const deletarParceiroReferenciado = (parceiro) => {
-        axios.put(`/api/parceiros/${parceiro.id}`,
+        api.put(`/parceiros/${parceiro.id}`,
             {
                 "categoria": parceiro.categoria,
                 "nome": parceiro.nome,
