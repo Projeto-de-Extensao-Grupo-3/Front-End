@@ -29,7 +29,7 @@ export function Filtro(props) {
     const [dadosRoupa, setDadosRoupa] = useState([])
 
     const obterCaracteristicas = useEffect(() => {
-        api.get("/categorias/tipo/caracteristica")
+        api.get("/categorias/tipo/Característica")
             .then((response) => {
                 if (response.status == 204) {
                     setListCaracteristicas([]);
@@ -97,7 +97,7 @@ export function Filtro(props) {
     }
 
     const changePage = (newPage) => {
-        props.changePage(newPage)
+        props.handleChangePage(newPage)
     }
 
     

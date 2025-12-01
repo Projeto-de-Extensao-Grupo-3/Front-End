@@ -141,7 +141,7 @@ export function Caracteristicas() {
     const [dadosCaracteristicas, setDadosCaracteristicas] = useState([])
 
     const reload = () => {
-        api.get("/categorias/tipo/caracteristica")
+        api.get("/categorias/tipo/Característica")
             .then(response => setDadosCaracteristicas(response.data))
             .catch(error => {
                 if (error.response?.status === 401) navigate('/');
