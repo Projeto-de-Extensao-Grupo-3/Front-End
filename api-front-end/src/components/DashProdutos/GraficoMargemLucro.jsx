@@ -59,6 +59,10 @@ export function GraficoMargemLucro(props) {
     }
 
     const chamarApi = useEffect(() => {
+
+        setFirst(0)
+        setLast(5) // Reinicia pagina ao filtrar
+
         api.get(`/lotes-item-estoque/margem-lucro-produtos`, {
             params: props.filters
         }).then((response) => {

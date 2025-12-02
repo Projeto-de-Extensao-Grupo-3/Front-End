@@ -64,6 +64,9 @@ export function GraficoCustos(props) {
 
     const chamarApi = useEffect(() => {
 
+        setFirst(0)
+        setLast(5) // Reiniciando pagina ao filtrar
+
         api.get("/lotes-item-estoque/peca-maior-mao-obra", {
             params: props.filters
         }).then((response) => {
