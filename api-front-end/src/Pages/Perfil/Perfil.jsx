@@ -58,7 +58,7 @@ export function Perfil() {
 
             setPermissoes(decoded.permissoes || []);
 
-            api.get(`http://localhost:8080/funcionarios/busca-por-email?email=${emailFuncionario}`)
+            api.get(`/funcionarios/busca-por-email?email=${emailFuncionario}`)
                 .then(response => {
                     setFuncionario(response.data);
                     console.log("Dados do funcionário:", response.data);

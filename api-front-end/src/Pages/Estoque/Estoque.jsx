@@ -267,7 +267,7 @@ export function Estoque() {
 
     const atualizarItemEstoque = (dados) => {
         console.log(dados)
-        console.log(caracteristicasAtualizacao);
+        const imagem = imagemCadastro !== undefined ? imagemCadastro : dados.imagem;
         const caracteristicasCadastro = caracteristicasAtualizacao.length === 0 ? dados.caracteristicas : caracteristicasAtualizacao // Mantém as características atuais se nenhuma nova for selecionada
         const caracteristicasIds = caracteristicasCadastro.map(item => { const { nome, ...ids } = item; return ids }) // Extrai apenas os ids das características selecionadas
         console.log(`{
@@ -286,8 +286,8 @@ export function Estoque() {
                 }
                 "preco": ${dados.preco}
                 "imagem":
-                    "idImagem": ${imagemCadastro.id}
-                    "url": ${imagemCadastro.url}
+                    "idImagem": ${imagem.id}
+                    "url": ${imagem.url}
                 }
             }`)
         api.put(`/itens-estoque/${dados.idItemEstoque}`,
@@ -307,8 +307,8 @@ export function Estoque() {
                 },
                 "preco": dados.preco,
                 "imagem": {
-                    "idImagem": imagemCadastro.id,
-                    "url": imagemCadastro.url
+                    "idImagem": imagem.id,
+                    "url": imagem.url
                 }
             }
         )
