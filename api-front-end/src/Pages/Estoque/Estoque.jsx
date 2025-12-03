@@ -166,7 +166,7 @@ export function Estoque() {
     function gerarNomeImagem() {
         const date = new Date().toISOString();
         const cleanDate = date.replace(/[-:.]/g, "").replace("Z", "");
-        const result = `${categoriaCadastro}_${cleanDate}`;
+        const result = `${itemEstoque}_${cleanDate}`;
         return result;
     }
 
@@ -181,7 +181,7 @@ export function Estoque() {
             .then(response => {
                 urlImagem = response.data;
                 console.log(urlImagem);
-                cadastrarImagem(nomeImagem); // Chama a função de cadastro da imagem utilizando URL gerada após o upload
+                cadastrarImagem(`${nomeImagem}.jpg`); // Chama a função de cadastro da imagem utilizando URL gerada após o upload
                 setOperations(operations + 1);
             })
             .catch(error => {
@@ -246,7 +246,7 @@ export function Estoque() {
     const cadastrarImagem = (urlImagem) => {
         api.post('/imagens',
             {
-                "url": urlImagem
+                "url": urlImagem 
             }
         )
             .then(response => {
