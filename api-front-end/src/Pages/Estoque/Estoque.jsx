@@ -181,7 +181,7 @@ export function Estoque() {
             .then(response => {
                 urlImagem = response.data;
                 console.log(urlImagem);
-                cadastrarImagem(urlImagem); // Chama a função de cadastro da imagem utilizando URL gerada após o upload
+                cadastrarImagem(nomeImagem); // Chama a função de cadastro da imagem utilizando URL gerada após o upload
                 setOperations(operations + 1);
             })
             .catch(error => {
@@ -195,27 +195,51 @@ export function Estoque() {
             });
     }
 
-    const atualizarImagemS3 = (urlImagemCadastrada) => {
-        const nomeImagem = urlImagemCadastrada.match("(?<=com/).*$")[0]; // Extrai o nome da imagem da URL
-        console.log(nomeImagem)
-        api.post(`/s3/upload/${nomeImagem}`, imagem, {
-            headers: {
-                'Content-Type': imagem.type,
-            },
-        })
+    const atualizarImagemS3 = (dados) => {
+        if (imagem.length != 0) {
+            const nomeImagem = gerarNomeImagem();
+            api.post(`/s3/upload/${nomeImagem}`, imagem, {
+                headers: {
+                    'Content-Type': imagem.type,
+                },
+            })
+                .then(response => {
+                    const urlImagem = response.data;
+                    console.log(urlImagem);
+                    imagemCadastro = response.data;
+                    atualizarImagem(dados, nomeImagem);
+                })
+                .catch(error => {
+                    console.error('Erro ao realizar atualização da imagem:', error);
+                    setAlertType("error");
+                    setAlertTitle("Erro ao atualizar dados!");
+                    setAlertMessage(`Ocorreu um erro ao atualizar as informações ${atualizarDados}. Entre em contato com o suporte.`);
+                    setAlertOpen(true);
+                    setDadosAtualizacao([]);
+                    setOperations(operations + 1);
+                });
+        } else {
+            atualizarItemEstoque(dados);
+        }
+    }
+
+    const atualizarImagem = (dados, nomeImagem) => {
+        api.put(`/imagens/${dados.imagem.id}`,
+            {
+                "url": nomeImagem
+            }
+        )
             .then(response => {
-                const urlImagem = response.data;
-                console.log(urlImagem);
-                setOperations(operations + 1);
+                console.log(response.data);
+                imagemCadastro = response.data;
+                atualizarItemEstoque(dados); // Chama a função de cadastro do item em estoque após o cadastro da imagem (dependência do id da imagem cadastrada)
             })
             .catch(error => {
                 console.error('Erro ao realizar atualização da imagem:', error);
                 setAlertType("error");
-                setAlertTitle("Erro ao atualizar dados!");
-                setAlertMessage(`Ocorreu um erro ao atualizar as informações ${atualizarDados}. Entre em contato com o suporte.`);
+                setAlertTitle("Erro ao realizar cadastro!");
+                setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${atualizarDados}. Entre em contato com o suporte.`);
                 setAlertOpen(true);
-                setDadosAtualizacao([]);
-                setOperations(operations + 1);
             });
     }
 
@@ -243,7 +267,6 @@ export function Estoque() {
 
     const atualizarItemEstoque = (dados) => {
         console.log(dados)
-        if (imagem.length != 0) atualizarImagemS3(dados.imagem.url);
         console.log(caracteristicasAtualizacao);
         const caracteristicasCadastro = caracteristicasAtualizacao.length === 0 ? dados.caracteristicas : caracteristicasAtualizacao // Mantém as características atuais se nenhuma nova for selecionada
         const caracteristicasIds = caracteristicasCadastro.map(item => { const { nome, ...ids } = item; return ids }) // Extrai apenas os ids das características selecionadas
@@ -263,8 +286,8 @@ export function Estoque() {
                 }
                 "preco": ${dados.preco}
                 "imagem":
-                    "idImagem": ${dados.imagem.id}
-                    "url": ${dados.imagem.url}
+                    "idImagem": ${imagemCadastro.id}
+                    "url": ${imagemCadastro.url}
                 }
             }`)
         api.put(`/itens-estoque/${dados.idItemEstoque}`,
@@ -284,14 +307,14 @@ export function Estoque() {
                 },
                 "preco": dados.preco,
                 "imagem": {
-                    "idImagem": dados.imagem.id,
-                    "url": dados.imagem.url
+                    "idImagem": imagemCadastro.id,
+                    "url": imagemCadastro.url
                 }
             }
         )
             .then(response => {
                 console.log(response.data);
-                atualizarConfeccaoRoupa(dados.idItemEstoque, dados.confeccaoRoupa);;
+                atualizarConfeccaoRoupa(dados.idItemEstoque, dados.confeccaoRoupa, dados);
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -317,9 +340,8 @@ export function Estoque() {
                 setAlertTitle("Dados atualizados com sucesso!");
                 setAlertMessage(`Os dados ${atualizarDados} foram atualizados com sucesso.`);
                 setAlertOpen(true);
-                setDadosCadastro([]);
-                listarItensEstoque(); // Recarrega a lista de itens para refletir as mudanças de tecidos
-                setOperations(operations + 1);
+                listarItensEstoque();
+
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -780,7 +802,7 @@ export function Estoque() {
                             <BarraVisualizacao key={item.idItemEstoque} pagina={"estoque"}
                                 children={
                                     <>
-                                        <li className={styles.liImagem}> <img src={item.imagem.url} className={styles.imagemItem} style={{ height: matches ? "6rem" : "4rem" }} /> </li>
+                                        <li className={styles.liImagem}> <img key={imageUpdateCount} src={item.imagem.url} className={styles.imagemItem} style={{ height: matches ? "6rem" : "4rem" }} /> </li>
                                         <hr />
                                         <li className={styles.liTextoLargo}>Descrição: <br /> {item.descricao} </li>
                                         <hr />
@@ -789,7 +811,7 @@ export function Estoque() {
                                     </>}
                                 limparCampos={limparCampos}
                                 acao={`Atualizar dados ${atualizarDados}`} confirm={"Confirmar alterações"}
-                                func={atualizarItemEstoque}
+                                func={atualizarImagemS3}
                                 dadoTitle={atualizarDados}
                                 deleteFunc={() => deletarItemEstoque(item)}
                                 dados={dadosAtualizacao[dadosAtualizacao.findIndex(dado => dado.idItemEstoque === item.idItemEstoque)]}
@@ -944,7 +966,7 @@ export function Estoque() {
                                             <h3>Preço {itemEstoque == "Roupa" ? "(de venda)" : "(de compra) p/ metro"}:</h3>
                                             <p style={{ width: '100%', marginBottom: '2rem' }}>{item.preco}</p>
                                             <h3>Imagem:</h3>
-                                            <img src={item.imagem.url} style={{ height: "8rem" }} />
+                                            <img key={imageUpdateCount} src={item.imagem.url} style={{ height: "8rem" }} />
                                         </div>
                                     </>
                                 }
