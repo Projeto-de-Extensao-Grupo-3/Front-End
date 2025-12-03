@@ -16,7 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Autocomplete from '@mui/material/Autocomplete';
-import axios from 'axios';
+import { useNavigate } from "react-router-dom"
 import { AuthContext } from '../../components/Permissao/ValidadorDePermissao.jsx';
 import { useContext } from "react";
 import { api } from '../../provider/api.js';
@@ -24,6 +24,8 @@ import { api } from '../../provider/api.js';
 export function Estoque() {
 
     /*============================= Variáveis ============================*/
+
+    const navigate = useNavigate();
 
     // Tipo de item em estoque (Roupa ou Tecido)
     const [itemEstoque, setItemEstoque] = useState("Roupa");
@@ -534,7 +536,7 @@ export function Estoque() {
 
     // Limpa os campos do formulário de cadastro
     const limparCampos = () => {
-        setOperations(operations+1);
+        setOperations(operations + 1);
         setTecidosSelecionados([]);
         setCategoriaAtualizacao("");
         setPrateleiraAtualizacao("");
@@ -645,127 +647,131 @@ export function Estoque() {
                     <div className={styles.barra_pesquisa}>
                         <BarraPesquisa func={buscarItemEstoque} busca={pesquisa} width='90%' />
                     </div>
-                {hasPermission("CADASTRAR ITEM ESTOQUE") && (
-                    <div>
-                        <JanelaCadastro func={uploadImagemS3}
-                            limparCampos={limparCampos}
-                            dados={dadosCadastro}
-                            children={
-                                <Button className={styles.btnCadastro} variant="contained" size="large"
-                                    sx={{
-                                        p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)", marginTop: matches ? '0' : '20px'
-                                    }}>Cadastrar {categoria}</Button>
-                            } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
-                            form={
-                                <>
-                                    <div>
-                                        <h3>Descrição</h3>
-                                        <TextField size='small' key="descricao" required={true} onChange={(e) => setAtribute(e.target.value, "descricao")}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                        <h3>Complemento</h3>
-                                        <TextField size='small' key="complemento" required={true} onChange={(e) => setAtribute(e.target.value, "complemento")}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                        <h3>Peso (em gramas)</h3>
-                                        <TextField type="number" size='small' key="peso" required={true} onChange={(e) => setAtribute(e.target.value, "peso")}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                        <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}</h3>
-                                        <TextField type="number" size='small' key="qtdMinimo" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdMinimo")}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                        {itemEstoque === "Roupa" ? (
-                                            <>
-                                                <h3>Receber notificações de saída do estoque?</h3>
-                                                <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
-                                                    labelId="select-notificar"
-                                                    id="select-notificar"
-                                                    value={dadosCadastro.notificar}
-                                                    onChange={(e) => setAtribute(e.target.value, "notificar")}
-                                                >
-                                                    <MenuItem key={"true"} value={true}>Sim</MenuItem>
-                                                    <MenuItem key={"false"} value={false}>Não</MenuItem>
-                                                </Select>
-                                            </>
-                                        ) : <></>
-                                        }
-                                        {itemEstoque === "Roupa" ? (
-                                            <>
-                                                <h3>Selecionar tecidos da roupa</h3>
-                                                <Autocomplete
-                                                    onChange={handleTecidosSelecionadosChange}
-                                                    disablePortal
-                                                    size="small"
-                                                    options={tecidos}
-                                                    getOptionLabel={(option) => option.descricao}
-                                                    noOptionsText={"Nenhum tecido encontrado"}
-                                                    sx={{ width: "35vw", marginBottom: '0.5rem' }}
-                                                    renderInput={(params) => <TextField {...params} />}
-                                                />
-                                                {tecidosSelecionados.length > 0 ? (
-                                                    <div>
-                                                        {tecidosSelecionados.map(confeccaoRoupa => (
-                                                            <div className={estoque_styles.container}>
-                                                                <p>{confeccaoRoupa.tecido.descricao}:</p>
-                                                                <TextField required id={confeccaoRoupa.tecido.idTecido} label="Quantidade (em metros)"
-                                                                    onChange={(e) => handleAdicionarQtdTecido(e)}
-                                                                    sx={{
-                                                                        m: 1,
-                                                                        "& .MuiOutlinedInput-input": { height: "0.1rem" }, width: '11rem',
-                                                                        '& input': { textAlign: 'center' }
-                                                                    }}
-                                                                    slotProps={{ inputLabel: { shrink: true, tyle: { color: 'blue' } } }} />
-                                                                <IconButton id={confeccaoRoupa.tecido.idTecido} onClick={(e) => handleRemoverTecidoSelecionado(e.currentTarget.id)}>
-                                                                    <ClearIcon fontSize="large" color="action" sx={{ color: "rgba(143, 140, 140, 1)", cursor: "pointer" }} />
-                                                                </IconButton>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                ) : <></>}
-                                            </>
-                                        ) : <></>}
-                                    </div>
-                                    <div>
-                                        <h3>Categoria</h3>
-                                        <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
-                                            labelId="select-categoria"
-                                            id="select-categoria"
-                                            value={categoriaCadastro}
-                                            onChange={(e) => handleCategoriaCadastroChange(e)}
-                                            label="Age">
-                                            {categorias.map(categoria => (
-                                                <MenuItem key={categoria.id} value={categoria.nome}>{categoria.nome}</MenuItem>
-                                            ))}
-                                        </Select>
-                                        <h3>Características</h3>
-                                        <SelectOptions lista={caracteristicas}
-                                            chave={"nome"}
-                                            id={"id"}
-                                            dados={caracteristicasAtualizacao.map((item) => item.caracteristica)}
-                                            func={setCaracteristicasAtualizacao}>
-                                        </SelectOptions>
-                                        <h3>Prateleira</h3>
-                                        <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
-                                            labelId="select-prateleira"
-                                            id="select-prateleira"
-                                            value={prateleiraCadastro}
-                                            onChange={(e) => handlePrateleiraCadastroChange(e)}
-                                            label="Age">
-                                            {prateleiras.map(prateleira => (
-                                                <MenuItem key={prateleira.id} value={prateleira.codigo}>{prateleira.codigo}</MenuItem>
-                                            ))}
-                                        </Select>
-                                        <h3>Preço {itemEstoque == "Roupa" ? "(de venda)" : "(de compra) p/ metro"}</h3>
-                                        <TextField type="number" size='small' key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
-                                        <h3>Imagem</h3>
-                                        <Button variant="contained" component="label">
-                                            Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg, .webp" hidden />
-                                        </Button>
-                                        <br />
-                                        <img style={{ width: matches ? "10em" : "4rem" }} src={imagePreview} alt="" />
-                                    </div>
-                                </>
-                            } />
-                    </div>
-                )}
+                    <Button onClick={() => navigate("/prateleiras")} className={styles.btnCadastro} variant="contained" size="large"
+                        sx={{
+                            p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)", marginTop: matches ? '0' : '20px', backgroundColor: "#B85700"
+                        }}>Acessar Prateleiras</Button>
+                    {hasPermission("CADASTRAR ITEM ESTOQUE") && (
+                        <div>
+                            <JanelaCadastro func={uploadImagemS3}
+                                limparCampos={limparCampos}
+                                dados={dadosCadastro}
+                                children={
+                                    <Button className={styles.btnCadastro} variant="contained" size="large"
+                                        sx={{
+                                            p: "1rem 2rem 1rem 2rem", color: "rgba(255, 255, 255, 1)", marginTop: matches ? '0' : '20px'
+                                        }}>Cadastrar {categoria}</Button>
+                                } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
+                                form={
+                                    <>
+                                        <div>
+                                            <h3>Descrição</h3>
+                                            <TextField size='small' key="descricao" required={true} onChange={(e) => setAtribute(e.target.value, "descricao")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Complemento</h3>
+                                            <TextField size='small' key="complemento" required={true} onChange={(e) => setAtribute(e.target.value, "complemento")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Peso (em gramas)</h3>
+                                            <TextField type="number" size='small' key="peso" required={true} onChange={(e) => setAtribute(e.target.value, "peso")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}</h3>
+                                            <TextField type="number" size='small' key="qtdMinimo" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdMinimo")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            {itemEstoque === "Roupa" ? (
+                                                <>
+                                                    <h3>Receber notificações de saída do estoque?</h3>
+                                                    <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
+                                                        labelId="select-notificar"
+                                                        id="select-notificar"
+                                                        value={dadosCadastro.notificar}
+                                                        onChange={(e) => setAtribute(e.target.value, "notificar")}
+                                                    >
+                                                        <MenuItem key={"true"} value={true}>Sim</MenuItem>
+                                                        <MenuItem key={"false"} value={false}>Não</MenuItem>
+                                                    </Select>
+                                                </>
+                                            ) : <></>
+                                            }
+                                            {itemEstoque === "Roupa" ? (
+                                                <>
+                                                    <h3>Selecionar tecidos da roupa</h3>
+                                                    <Autocomplete
+                                                        onChange={handleTecidosSelecionadosChange}
+                                                        disablePortal
+                                                        size="small"
+                                                        options={tecidos}
+                                                        getOptionLabel={(option) => option.descricao}
+                                                        noOptionsText={"Nenhum tecido encontrado"}
+                                                        sx={{ width: "35vw", marginBottom: '0.5rem' }}
+                                                        renderInput={(params) => <TextField {...params} />}
+                                                    />
+                                                    {tecidosSelecionados.length > 0 ? (
+                                                        <div>
+                                                            {tecidosSelecionados.map(confeccaoRoupa => (
+                                                                <div className={estoque_styles.container}>
+                                                                    <p>{confeccaoRoupa.tecido.descricao}:</p>
+                                                                    <TextField required id={confeccaoRoupa.tecido.idTecido} label="Quantidade (em metros)"
+                                                                        onChange={(e) => handleAdicionarQtdTecido(e)}
+                                                                        sx={{
+                                                                            m: 1,
+                                                                            "& .MuiOutlinedInput-input": { height: "0.1rem" }, width: '11rem',
+                                                                            '& input': { textAlign: 'center' }
+                                                                        }}
+                                                                        slotProps={{ inputLabel: { shrink: true, tyle: { color: 'blue' } } }} />
+                                                                    <IconButton id={confeccaoRoupa.tecido.idTecido} onClick={(e) => handleRemoverTecidoSelecionado(e.currentTarget.id)}>
+                                                                        <ClearIcon fontSize="large" color="action" sx={{ color: "rgba(143, 140, 140, 1)", cursor: "pointer" }} />
+                                                                    </IconButton>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    ) : <></>}
+                                                </>
+                                            ) : <></>}
+                                        </div>
+                                        <div>
+                                            <h3>Categoria</h3>
+                                            <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
+                                                labelId="select-categoria"
+                                                id="select-categoria"
+                                                value={categoriaCadastro}
+                                                onChange={(e) => handleCategoriaCadastroChange(e)}
+                                                label="Age">
+                                                {categorias.map(categoria => (
+                                                    <MenuItem key={categoria.id} value={categoria.nome}>{categoria.nome}</MenuItem>
+                                                ))}
+                                            </Select>
+                                            <h3>Características</h3>
+                                            <SelectOptions lista={caracteristicas}
+                                                chave={"nome"}
+                                                id={"id"}
+                                                dados={caracteristicasAtualizacao.map((item) => item.caracteristica)}
+                                                func={setCaracteristicasAtualizacao}>
+                                            </SelectOptions>
+                                            <h3>Prateleira</h3>
+                                            <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
+                                                labelId="select-prateleira"
+                                                id="select-prateleira"
+                                                value={prateleiraCadastro}
+                                                onChange={(e) => handlePrateleiraCadastroChange(e)}
+                                                label="Age">
+                                                {prateleiras.map(prateleira => (
+                                                    <MenuItem key={prateleira.id} value={prateleira.codigo}>{prateleira.codigo}</MenuItem>
+                                                ))}
+                                            </Select>
+                                            <h3>Preço {itemEstoque == "Roupa" ? "(de venda)" : "(de compra) p/ metro"}</h3>
+                                            <TextField type="number" size='small' key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
+                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            <h3>Imagem</h3>
+                                            <Button variant="contained" component="label">
+                                                Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg, .webp" hidden />
+                                            </Button>
+                                            <br />
+                                            <img style={{ width: matches ? "10em" : "4rem" }} src={imagePreview} alt="" />
+                                        </div>
+                                    </>
+                                } />
+                        </div>
+                    )}
                 </div>
                 <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
                 {data.length > 0 ? (

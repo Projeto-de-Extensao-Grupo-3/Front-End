@@ -79,7 +79,7 @@ export function Prateleiras() {
             document.getElementById('alert-cadastro-remove-conflito').style.display = "flex"
             return;
         }
-        
+
         console.log(id)
         // api.delete(`/prateleiras/${id}`).then(() => {
         //         setPopupRemoverAberto(false);
@@ -103,7 +103,7 @@ export function Prateleiras() {
         // api.put(`/categorias/${formJson.id}`, {
         //     codigo: formJson.codigo
         // }).then( (response) => {
-            
+
         //     setPopupAtualizarAberto(false);
         //     reload();
         // }).catch(error => console.error("Erro ao remover:", error));
@@ -127,18 +127,42 @@ export function Prateleiras() {
         reload();
     }, []);
 
+    const [filtroPrateleira, setFiltroPrateleira] = useState("");
+
+    // Filtra os itens conforme o texto digitado
+    const dadosPrateleiraFiltrado = dadosPrateleiras.filter((prateleira) =>
+        prateleira.codigo.toLowerCase().includes(filtroPrateleira.toLowerCase())
+    );
+
+
+
     return (
         <div>
             <Navbar vazio={false} pageNumber={1} />
             <div className={styles.main}>
                 <div className={styles.lista}>
-                    <Paper >
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="Pesquisar Prateleira..."
+                        fullWidth
+                        value={filtroPrateleira}
+                        onChange={(e) => setFiltroPrateleira(e.target.value)}
+                        sx={{ mb: 2 }}
+                    />
+                    <Paper style={{ maxHeight: 300, overflowY: 'auto' }}>
                         <List>
-                            <ListItem key={0}>Prateleiras</ListItem>
+                            <ListItem style={{ fontWeight: 'bold', textAlign: 'center' }} key={0}>Prateleiras</ListItem>
                             <Divider style={{ width: '100%' }} orientation='horizontal' component="li" />
-                            {dadosPrateleiras.map((prateleira) =>
+                            {dadosPrateleiraFiltrado.map((prateleira) => (
                                 <ListItem key={prateleira.id}>
                                     {prateleira.codigo}
+                                </ListItem>
+                            ))}
+
+                            {dadosPrateleiraFiltrado.length === 0 && (
+                                <ListItem style={{ opacity: 0.6, fontStyle: "italic" }}>
+                                    Nenhum resultado encontrado...
                                 </ListItem>
                             )}</List>
                     </Paper>

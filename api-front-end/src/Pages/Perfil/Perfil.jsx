@@ -50,18 +50,25 @@ export function Perfil() {
         const token = sessionStorage.getItem("authToken");
         if (token) {
             const decoded = jwtDecode(token);
-            const id = decoded.sub;
+            console.log("Decoded JWT:", decoded);
+
+            // Pega o email dentro de claims
+            const emailFuncionario = decoded.email;
+            console.log("Email do usuário:", emailFuncionario);
+
             setPermissoes(decoded.permissoes || []);
 
-            api.get(`http://localhost:8080/funcionarios/${id}`)
+            api.get(`http://localhost:8080/funcionarios/busca-por-email?email=${emailFuncionario}`)
                 .then(response => {
                     setFuncionario(response.data);
+                    console.log("Dados do funcionário:", response.data);
                 })
                 .catch(error => {
                     console.error('Error fetching data:', error);
                 });
         }
     }, []);
+
 
     useEffect(() => {
         if (!popupSenhaAberto) {
@@ -156,10 +163,10 @@ export function Perfil() {
             if (error.response?.status === 400) {
                 setErroSenhaInvalida("A senha atual está incorreta");
             } else {
-            setAlertType("error");
-            setAlertTitle("Erro ao alterar senha");
-            setAlertMessage(`Ocorreu um erro ao tentar alterar a senha.`);
-            setAlertOpen(true);
+                setAlertType("error");
+                setAlertTitle("Erro ao alterar senha");
+                setAlertMessage(`Ocorreu um erro ao tentar alterar a senha.`);
+                setAlertOpen(true);
             }
         }
     };
