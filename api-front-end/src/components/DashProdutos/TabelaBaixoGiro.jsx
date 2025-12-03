@@ -36,7 +36,7 @@ export function TabelaBaixoGiro(props) {
                 <TableContainer component={Paper} sx={{ maxHeight: 400, width: '100%' }}>
                     <Table>
                         <TableHead>
-                            <TableRow >
+                            <TableRow>
                                 <TableCell>Produto</TableCell>
                                 <TableCell>Total Vendido</TableCell>
                                 <TableCell>Quantidade de Vendas</TableCell>
@@ -47,7 +47,7 @@ export function TabelaBaixoGiro(props) {
                         </TableHead>
                         <TableBody>
                             {dados.map((data) => (
-                                <TableRow key={data.produto}>
+                                <TableRow key={data.produto} sx={{ maxHeight: '4px', width: '100%' }}>
                                     <TableCell>{data.produto}</TableCell>
                                     <TableCell >{data.totalVendido}</TableCell>
                                     <TableCell>{data.quantidadeVendas}</TableCell>

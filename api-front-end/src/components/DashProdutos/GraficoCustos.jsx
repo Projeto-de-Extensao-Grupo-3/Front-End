@@ -11,8 +11,8 @@ import axios from 'axios';
 import { Paper } from '@mui/material';
 import { api } from '../../provider/api'
 
-Chart.register(CategoryScale);
-Chart.register(ChartDataLabels);
+// Chart.register(CategoryScale);
+// Chart.register(ChartDataLabels);
 
 
 export function GraficoCustos(props) {
@@ -43,7 +43,6 @@ export function GraficoCustos(props) {
             return;
         }
         if (!isSplit) {
-            console.log("poggers?")
             return;
         }
         setFirst(first - 5);

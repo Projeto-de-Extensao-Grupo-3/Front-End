@@ -28,6 +28,27 @@ export function Filtro(props) {
     const [dadosTecido, setDadosTecido] = useState([])
     const [dadosRoupa, setDadosRoupa] = useState([])
 
+    const [isValid, setIsValid] = useState(true)
+
+    const handleIsValid = useEffect(() => {
+        if (!dayjs(dataInicio).isValid()) {
+            setIsValid(false);
+            return;
+        }
+        if (!dayjs(dataFim).isValid()) {
+            setIsValid(false);
+            return;
+        }
+
+        if (dayjs(dataFim).isBefore(dataInicio)) {
+            setIsValid(false);
+            return;
+        }
+
+        setIsValid(true);
+
+    }, [dataInicio, dataFim])
+
     const obterCaracteristicas = useEffect(() => {
         api.get(`/categorias/tipo/Característica`)
             .then((response) => {
@@ -59,18 +80,18 @@ export function Filtro(props) {
     const handleDataInicio = (event) => {
         let newDate = event.target.value;
         newDate = dayjs(newDate).format('YYYY-MM-DD');
-        if (dayjs(newDate).isAfter(dataFim)) {
-            return;
-        }
+        // if (dayjs(newDate).isAfter(dataFim)) {
+        //     return;
+        // }
         setDataInicio(newDate);
     }
 
     const handleDataFim = (event) => {
         let newDate = event.target.value;
         newDate = dayjs(newDate).format('YYYY-MM-DD');
-        if (dayjs(newDate).isBefore(dataFim)) {
-            return;
-        }
+        // if (dayjs(newDate).isBefore(dataFim)) {
+        //     return;
+        // }
         setDataFim(newDate);
     }
 
@@ -89,6 +110,11 @@ export function Filtro(props) {
         }
         if (!dayjs(dataFim).isValid()) {
             // Alerta data de fim
+            return;
+        }
+
+        if (dayjs(newDate).isBefore(dataFim)) {
+            // Data inválida
             return;
         }
 
@@ -219,7 +245,7 @@ export function Filtro(props) {
                     </Select>
                 </FormControl>
             </Box>
-            <Button variant="contained" onClick={() => updateData()}>Confirmar</Button>
+            <Button variant="contained" onClick={() => updateData()} disabled={!isValid}>Confirmar</Button>
         </Box>
     );
 }

@@ -29,7 +29,7 @@ export function DefeitosPorRoupa(props) {
     return (
 
         <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {Array.isArray(dados) ?
+            {Array.isArray(dados) || dados.length == 0?
                     <TableContainer component={Paper} sx={{ maxHeight: 800, width: '70%' }}>
                         <Table stickyHeader>
                             <TableHead>
