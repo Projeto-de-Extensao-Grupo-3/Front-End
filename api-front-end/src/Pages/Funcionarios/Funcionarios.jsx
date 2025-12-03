@@ -110,8 +110,7 @@ export function Funcionarios() {
                 setAlertTitle("Cadastro realizado com sucesso!");
                 setAlertMessage(`Os dados do funcionário foram cadastrados com sucesso.`);
                 setAlertOpen(true);
-                setDadosCadastro([]);
-                setOperations(operations + 1);
+                listarFuncionarios();
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -125,8 +124,7 @@ export function Funcionarios() {
                     setAlertMessage(`Ocorreu um erro ao cadastrar as informações do funcionário. Entre em contato com o suporte.`);
                 }
                 setAlertOpen(true);
-                setDadosCadastro([]);
-                setOperations(operations + 1);
+                listarFuncionarios();
             });
     }
 
@@ -147,8 +145,7 @@ export function Funcionarios() {
                 setAlertTitle("Dados atualizados com sucesso!");
                 setAlertMessage(`As informações do funcionário foram atualizadas com sucesso.`);
                 setAlertOpen(true);
-                setDadosAtualizacao([]);
-                setOperations(operations + 1);
+                listarFuncionarios();
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -156,8 +153,7 @@ export function Funcionarios() {
                 setAlertTitle("Erro ao atualizar dados!");
                 setAlertMessage(`Ocorreu um erro ao atualizar as informações do funcionário. Entre em contato com o suporte.`);
                 setAlertOpen(true);
-                setDadosAtualizacao([]);
-                setOperations(operations + 1);
+                listarFuncionarios();
             });
     }
 

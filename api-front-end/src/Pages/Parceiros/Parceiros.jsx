@@ -96,8 +96,7 @@ export function Parceiros() {
                 setAlertTitle("Dados atualizados com sucesso!");
                 setAlertMessage(`As informações ${atualizarDados} foram atualizadas com sucesso.`);
                 setAlertOpen(true);
-                setDadosAtualizacao([]);
-                setOperations(operations + 1);
+                listarParceiros();
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -105,8 +104,7 @@ export function Parceiros() {
                 setAlertTitle("Erro ao atualizar dados!");
                 setAlertMessage(`Ocorreu um erro ao atualizar as informações ${atualizarDados}. Entre em contato com o suporte.`);
                 setAlertOpen(true);
-                setDadosAtualizacao([]);
-                setOperations(operations + 1);
+                listarParceiros();
             });
     }
 
@@ -128,8 +126,7 @@ export function Parceiros() {
                 setAlertTitle("Cadastro realizado com sucesso!");
                 setAlertMessage(`Os dados ${atualizarDados} foram cadastrados com sucesso.`);
                 setAlertOpen(true);
-                setDadosCadastro([]);
-                setOperations(operations + 1);
+                listarParceiros();
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
@@ -143,8 +140,7 @@ export function Parceiros() {
                     setAlertMessage(`Ocorreu um erro ao cadastrar as informações ${atualizarDados}. Entre em contato com o suporte.`);
                 }
                 setAlertOpen(true);
-                setDadosCadastro([]);
-                setOperations(operations + 1);
+                listarParceiros();
             });
     }
 

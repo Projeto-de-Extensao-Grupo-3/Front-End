@@ -924,7 +924,6 @@ export function Estoque() {
                                                 <h3>Receber notificações</h3>
                                                 <p style={{ width: '100%', marginBottom: '2rem' }}>{item.notificar === false ? "Não" : "Sim"}</p>
                                                 <h3>Tecidos:</h3>
-                                                {console.log(tecidos)}
                                                 {item.confeccaoRoupa.map((dado) => {
                                                     const tecidoEncontrado = tecidos.find(tecido => tecido.idItemEstoque === dado.tecido.idTecido);
                                                     return (
