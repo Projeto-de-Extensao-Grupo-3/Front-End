@@ -17,10 +17,28 @@ import Alert from '@mui/material/Alert';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import Select from '@mui/material/Select';
+import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import MenuItem from '@mui/material/MenuItem';
 import { api } from '../../provider/api';
 
 export function Prateleiras() {
+
+    // Variáveis para alertas
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState("");
+    const [alertMessage, setAlertMessage] = useState("");
+    const [alertType, setAlertType] = useState("");
+
+    // Fecha o alerta (sucesso, erro, aviso) automaticamente após 10 segundos
+    useEffect(() => {
+        if (alertOpen) {
+            console.log("ALERT OPENED");
+            const timer = setTimeout(() => {
+                setAlertOpen(false);
+            }, 10000);
+            return () => clearTimeout(timer);
+        }
+    }, [alertOpen]);
 
     const navigate = useNavigate();
 
@@ -50,14 +68,29 @@ export function Prateleiras() {
             }
         })
         console.log("codigo : " + codigo)
-        // api.post("/prateleiras", {
-        //     codigo: codigo
-        // }).then(() => {
-        //     setPopupAdicionarAberto(false)
-        //     reload();
-        // }).catch(error => {
-        //     console.error("Erro ao cadastrar Categoria: ", error);
-        // });
+        api.post("/prateleiras", {
+            codigo: codigo
+        }).then(() => {
+            setPopupAdicionarAberto(false);
+            setAlertType("success");
+            setAlertTitle("Cadastro com sucesso!");
+            setAlertMessage(`A prateleira ${codigo} foi cadastrada com sucesso.`);
+            setAlertOpen(true);
+            reload();
+        }).catch(error => {
+            console.error("Erro ao cadastrar Categoria: ", error);
+            if (error.response.status === 409) { 
+                setAlertType("warning");
+                setAlertTitle("Cadastro existente!");
+                setAlertMessage(`A prateleira de código ${codigo} já existe no sistema.`);
+                setAlertOpen(true);
+            } else {
+                setAlertType("error");
+                setAlertTitle("Erro no cadastro!");
+                setAlertMessage(`Ocorreu um erro ao cadastrar a prateleira ${codigo}.`);
+                setAlertOpen(true);
+            }
+        });
     }
 
     const removerPrateleira = (event) => {
@@ -175,6 +208,7 @@ export function Prateleiras() {
                     </div>
                 </div>
             </div>
+            <AlertDialog alertType={alertType} alertTitle={alertTitle} alertMessage={alertMessage} state={alertOpen} />
 
             <Dialog open={popupAdicionarAberto}>
                 <DialogTitle>Adiconar nova Prateleira</DialogTitle>
