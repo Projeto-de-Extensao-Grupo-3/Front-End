@@ -129,29 +129,31 @@ export function TabelaHistorico(props) {
                             <TableCell>Nome do Item</TableCell>
                             <TableCell>Lote</TableCell>
                             <TableCell>{props.tipoMovimentacao == 0 ? "Origem" : "Destino"}</TableCell>
+                            <TableCell>Motivo</TableCell>
                             <TableCell>Horário</TableCell>
-                            {/* <TableCell>Motivo</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {tableData.map((data) => (
                             <TableRow key={data.nomeItem + data.idLote + tableData.indexOf(data)}>
-                                <TableCell><img src={data.url} className={styles.boxImagem} /></TableCell>
+                                <TableCell>
+                                    <img src={data.url} className={styles.boxImagem} />
+                                </TableCell>
                                 <TableCell >{data.qtdItem}</TableCell>
                                 <TableCell>{data.nomeItem}</TableCell>
                                 <TableCell>{data.idLote}</TableCell>
-                                <TableCell>{data.nomeParceiro}</TableCell>
+                                <TableCell>{data.nomeParceiro == null ? 'Cliente (venda)' : data.nomeParceiro}</TableCell>
+                                <TableCell>{data.motivo}</TableCell>
                                 <TableCell>
                                     {props.tipoMovimentacao == 0 ? dayjs(data.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(data.saidaEstoque).format('HH:mm:ss DD/MM/YY')}
                                 </TableCell>
-                                {/* <TableCell>{data.motivo}</TableCell> */}
                             </TableRow>
                         ))}
                     </TableBody>
                     <TableFooter>
                         <TableRow>
                             <TablePagination
-                                align="right" rowsPerPageOptions={[6, 9, 12]} colSpan={6}
+                                align="right" rowsPerPageOptions={[6, 9, 12]} colSpan={7}
                                 count={tableSize} rowsPerPage={rowsPerPage} page={page}
                                 slotProps={{
                                     select: {

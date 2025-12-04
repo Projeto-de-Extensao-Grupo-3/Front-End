@@ -34,7 +34,7 @@ export function TabelaBaixoGiro(props) {
             Array.isArray(dados)
                 ?
                 <TableContainer component={Paper} sx={{ maxHeight: 400, width: '100%' }}>
-                    <Table>
+                    <Table size="small">
                         <TableHead>
                             <TableRow>
                                 <TableCell>Produto</TableCell>

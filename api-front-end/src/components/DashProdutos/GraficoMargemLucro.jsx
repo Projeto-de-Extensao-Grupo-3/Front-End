@@ -12,6 +12,7 @@ import { Paper } from '@mui/material';
 import { api } from '../../provider/api';
 Chart.register(CategoryScale);
 Chart.register(ChartDataLabels);
+import InfoOutlineIcon from '@mui/icons-material/InfoOutline';
 
 
 

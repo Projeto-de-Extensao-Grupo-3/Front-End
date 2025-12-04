@@ -122,7 +122,8 @@ function reducer(state, action) {
                 ...state,
                 displayPopup: action.display,
                 tipoItem: action.tipoItem,
-                idParceiroEscolhido: -1
+                idParceiroEscolhido: -1,
+                loteEscolhido: 0
 
             }
         }
@@ -141,6 +142,9 @@ export function Historico() {
 
         itensParaRegistrar: [],
         itensDisponiveis: [],
+
+        lotesDisponiveis: [],
+        loteEscolhido: 0,
 
         parceiros: [],
         idParceiroEscolhido: -1,
@@ -204,14 +208,23 @@ export function Historico() {
             dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] });
             dispatch({ type: 'simples', field: 'itensParaRegistrar', value: [] });
             dispatch({ type: 'simples', field: 'parceiros', value: [] });
+            dispatch({ type: 'simples', field: 'lotesDisponiveis', value: [] });
         } else {
             let endpoint = values.tipoItem == 'saida' ? 'lotes/lotesEmEstoque' : 'itens-estoque/itensResumidos';
             api.get(`/${endpoint}`)
                 .then(response => {
                     if (response.status == 204 || response.data.length == 0) {
                         dispatch({ type: 'simples', field: 'itensDisponiveis', value: [] })
+                        return;
                     }
+                    let auxLotes = []
+                    response.data.map((dado) => {
+                        if (auxLotes.indexOf(dado.idLote) == -1) {
+                            auxLotes.push(dado.idLote)
+                        }
+                    })
                     dispatch({ type: 'simples', field: 'itensDisponiveis', value: response.data })
+                    dispatch({ type: 'simples', field: 'lotesDisponiveis', value: auxLotes })
                 }).catch(error => {
                     console.log("Erro ao obter dados de lotes em estoque: " + error)
                 });
@@ -353,15 +366,30 @@ export function Historico() {
                             <div>
                                 <div className={styles.barraPopup}>
                                     <div className={styles.selectsPopup}>
-                                        <Select value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'registro_add', value: event.target.value })}>
-                                            <MenuItem value={0} disabled>Selecione um Item</MenuItem>
-                                            <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
-                                            {values.itensDisponiveis.map((dadoItem) => (
-                                                values.tipoItem == 'saida' ?
-                                                    <MenuItem value={dadoItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem> :
-                                                    <MenuItem value={dadoItem}>{`${dadoItem.descricao}`}</MenuItem>
-                                            ))}
-                                        </Select>
+                                        {values.tipoItem == 'saida' && 
+                                        <FormControl>
+                                            <InputLabel id="labelFiltroLote">Filtrar Lote</InputLabel>
+                                            <Select sx={{minWidth: 200}} labelId='labelFiltroLote' label="Filtrar Lote" value={values.loteEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'loteEscolhido', value: event.target.value })}>
+                                                <MenuItem value={0}>Todos os Lotes</MenuItem>
+                                                {values.lotesDisponiveis.map((lote) => (
+                                                        <MenuItem value={lote}>{`Lote: ${lote} `}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>}
+                                        <FormControl>
+                                            <InputLabel id="labelItensDisponiveis">Selecione um ou mais itens</InputLabel>
+                                            <Select sx={{minWidth: 200}} labelId='labelItensDisponiveis' label="Selecione um ou mais itens" value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'registro_add', value: event.target.value })}>
+                                                <MenuItem value={0} disabled>Selecionar itens</MenuItem>
+                                                <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
+                                                {values.itensDisponiveis.map((dadoItem) => (
+                                                    values.tipoItem != 'saida' ? <MenuItem value={dadoItem}>{`${dadoItem.descricao}`}</MenuItem> :
+                                                    values.loteEscolhido == dadoItem.idLote ? <MenuItem value={dadoItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem> 
+                                                    : values.loteEscolhido == 0  ? <MenuItem value={dadoItem}>{`Lote: ${dadoItem.idLote} ${dadoItem.nomeItem} (${dadoItem.qtdItem})`}</MenuItem> 
+                                                    : "nada"
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+
                                         <FormControl>
                                             <InputLabel id="labelDestino">{values.tipoItem == 'saida' ? "Destino dos Itens" : "Origem dos itens"}</InputLabel>
                                             <Select labelId="labelDestino" label={values.tipoItem == 'saida' ? "Destino dos Itens" : "Origem dos itens"} value={values.idParceiroEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'idParceiroEscolhido', value: event.target.value })}>
