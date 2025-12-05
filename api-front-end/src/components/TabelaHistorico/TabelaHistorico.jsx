@@ -149,7 +149,7 @@ export function TabelaHistorico(props) {
                                 <TableCell>{data.nomeParceiro == null ? 'Cliente (venda)' : data.nomeParceiro}</TableCell>
                                 <TableCell>{data.motivo}</TableCell>
                                 <TableCell>
-                                    {props.tipoMovimentacao == 0 ? dayjs(data.dataEntrada).format('HH:mm:ss DD/MM/YY') : dayjs(data.saidaEstoque).format('HH:mm:ss DD/MM/YY')}
+                                    {props.tipoMovimentacao == 0 ? dayjs.tz(data.dataEntrada, 'America/Sao_Paulo').format('HH:mm:ss DD/MM/YY') : dayjs.tz(data.saidaEstoque, 'America/Sao_Paulo').format('HH:mm:ss DD/MM/YY')}
                                 </TableCell>
                             </TableRow>
                         ))}
