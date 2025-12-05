@@ -369,7 +369,7 @@ export function Historico() {
                                         {values.tipoItem == 'saida' && 
                                         <FormControl>
                                             <InputLabel id="labelFiltroLote">Filtrar Lote</InputLabel>
-                                            <Select sx={{minWidth: 200}} labelId='labelFiltroLote' label="Filtrar Lote" value={values.loteEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'loteEscolhido', value: event.target.value })}>
+                                            <Select MenuProps={{ style: { maxHeight: 400} }} sx={{minWidth: 200}} labelId='labelFiltroLote' label="Filtrar Lote" value={values.loteEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'loteEscolhido', value: event.target.value })}>
                                                 <MenuItem value={0}>Todos os Lotes</MenuItem>
                                                 {values.lotesDisponiveis.map((lote) => (
                                                         <MenuItem value={lote}>{`Lote: ${lote} `}</MenuItem>
@@ -378,7 +378,7 @@ export function Historico() {
                                         </FormControl>}
                                         <FormControl>
                                             <InputLabel id="labelItensDisponiveis">Selecione um ou mais itens</InputLabel>
-                                            <Select sx={{minWidth: 200}} labelId='labelItensDisponiveis' label="Selecione um ou mais itens" value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'registro_add', value: event.target.value })}>
+                                            <Select MenuProps={{ style: { maxHeight: 400} }} sx={{minWidth: 200}} labelId='labelItensDisponiveis' label="Selecione um ou mais itens" value={values.auxSelectItensSaida} onChange={(event) => dispatch({ type: 'registro_add', value: event.target.value })}>
                                                 <MenuItem value={0} disabled>Selecionar itens</MenuItem>
                                                 <MenuItem value={-1} disabled>Confirme ou Selecione mais Itens</MenuItem>
                                                 {values.itensDisponiveis.map((dadoItem) => (
@@ -392,7 +392,7 @@ export function Historico() {
 
                                         <FormControl>
                                             <InputLabel id="labelDestino">{values.tipoItem == 'saida' ? "Destino dos Itens" : "Origem dos itens"}</InputLabel>
-                                            <Select labelId="labelDestino" label={values.tipoItem == 'saida' ? "Destino dos Itens" : "Origem dos itens"} value={values.idParceiroEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'idParceiroEscolhido', value: event.target.value })}>
+                                            <Select MenuProps={{ style: { maxHeight: 400} }} labelId="labelDestino" label={values.tipoItem == 'saida' ? "Destino dos Itens" : "Origem dos itens"} value={values.idParceiroEscolhido} onChange={(event) => dispatch({ type: 'simples', field: 'idParceiroEscolhido', value: event.target.value })}>
                                                 {values.tipoItem == 'saida' ?
                                                     <MenuItem value={-1}>Cliente (venda)</MenuItem> :
                                                     <MenuItem disabled value={-1}>Escolha o fornecedor de origem</MenuItem>
@@ -421,7 +421,11 @@ export function Historico() {
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {values.tipoItem == 'saida' ? values.itensParaRegistrar.map((item) => (
+                                            {values.itensParaRegistrar.length == 0 ? 
+                                                <TableRow key={'persona5'}>
+                                                    <TableCell colSpan={7}>Comece inserindo um ou mais utens</TableCell>
+                                                </TableRow>
+                                            : values.tipoItem == 'saida' ? values.itensParaRegistrar.map((item) => (
                                                 <TableRow key={item.idLoteItemEstoque}>
                                                     <TableCell>{item.idLote}</TableCell>
                                                     <TableCell>{item.nomeItem}</TableCell>

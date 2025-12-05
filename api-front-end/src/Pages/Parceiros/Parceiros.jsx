@@ -319,24 +319,24 @@ export function Parceiros() {
                             } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                             form={
                                 <>
-                                    <div>
+                                    <div style={{width: '40%'}}>
                                         <h3>Nome</h3>
                                         <TextField size='small' key="nome" required={true} onChange={(e) => setAtribute(e.target.value, "nome")}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>Telefone</h3>
                                         <TextField size='small' error={errorTelefone} helperText={helperTextTelefone} key="telefone" required={true} onChange={(e) => { setAtribute(e.target.value, "telefone"); formatTelefone(e, setErrorTelefone, setHelperTextTelefone); }}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>E-mail</h3>
                                         <TextField size='small' error={errorEmail} helperText={helperTextEmail} key="email" required={true} onChange={(e) => { setAtribute(e.target.value, "email"); validarEmail(e, setErrorEmail, setHelperTextEmail); }}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
-                                    <div>
+                                    <div style={{width: '40%'}}>
                                         <h3>Endereço</h3>
                                         <TextField size='small' key="endereco" required={true} onChange={(e) => setAtribute(e.target.value, "endereco")}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                         <h3>{parceiro === "fornecedor" ? "CNPJ:" : "CPF:"}</h3>
                                         <TextField size='small' error={errorIdentificacao} helperText={helperTextIdentificacao} key="identificacao" required={true} onChange={(e) => { setAtribute(e.target.value, "identificacao"); parceiro === "fornecedor" ? formatCnpj(e, setErrorIdentificacao, setHelperTextIdentificacao) : formatCpf(e, setErrorIdentificacao, setHelperTextIdentificacao) }}
-                                            sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                            sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                     </div>
                                 </>
                             } />

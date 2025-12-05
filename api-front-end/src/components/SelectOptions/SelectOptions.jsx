@@ -28,7 +28,7 @@ export function SelectOptions(props) {
 
   return (
     <div>
-      <FormControl sx={{width:'35vw', marginBottom:'2rem'}}>
+      <FormControl sx={{width:'95%', marginBottom:'2rem'}}>
         <InputLabel id="demo-multiple-checkbox-label"></InputLabel>
         <Select
           labelId="demo-multiple-checkbox-label"

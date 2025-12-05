@@ -686,23 +686,23 @@ export function Estoque() {
                                 } action={`Cadastrar ${categoria}`} message={"Confirmar cadastro"}
                                 form={
                                     <>
-                                        <div>
+                                        <div style={{width: '40%'}}>
                                             <h3>Descrição</h3>
                                             <TextField size='small' key="descricao" required={true} onChange={(e) => setAtribute(e.target.value, "descricao")}
-                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                                sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             <h3>Complemento</h3>
                                             <TextField size='small' key="complemento" required={true} onChange={(e) => setAtribute(e.target.value, "complemento")}
-                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                                sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             <h3>Peso (em gramas)</h3>
                                             <TextField type="number" size='small' key="peso" required={true} onChange={(e) => setAtribute(e.target.value, "peso")}
-                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                                sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             <h3>Qtd. mínimo {itemEstoque == "Roupa" ? "(unidades)" : "(metros)"}</h3>
                                             <TextField type="number" size='small' key="qtdMinimo" required={true} onChange={(e) => setAtribute(Number(e.target.value), "qtdMinimo")}
-                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                                sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             {itemEstoque === "Roupa" ? (
                                                 <>
                                                     <h3>Receber notificações de saída do estoque?</h3>
-                                                    <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
+                                                    <Select size='small' fullWidth sx={{ width: '95%', marginBottom: '2rem' }}
                                                         labelId="select-notificar"
                                                         id="select-notificar"
                                                         value={dadosCadastro.notificar}
@@ -724,7 +724,7 @@ export function Estoque() {
                                                         options={tecidos}
                                                         getOptionLabel={(option) => option.descricao}
                                                         noOptionsText={"Nenhum tecido encontrado"}
-                                                        sx={{ width: "35vw", marginBottom: '0.5rem' }}
+                                                        sx={{ width: "95%", marginBottom: '0.5rem' }}
                                                         renderInput={(params) => <TextField {...params} />}
                                                     />
                                                     {tecidosSelecionados.length > 0 ? (
@@ -750,14 +750,13 @@ export function Estoque() {
                                                 </>
                                             ) : <></>}
                                         </div>
-                                        <div>
+                                        <div style={{width: '40%'}}>
                                             <h3>Categoria</h3>
-                                            <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
-                                                labelId="select-categoria"
+                                            <Select size='small' fullWidth sx={{ width: '95%', marginBottom: '2rem' }}
+                                                // labelId="select-categoria"
                                                 id="select-categoria"
                                                 value={categoriaCadastro}
-                                                onChange={(e) => handleCategoriaCadastroChange(e)}
-                                                label="Age">
+                                                onChange={(e) => handleCategoriaCadastroChange(e)}>
                                                 {categorias.map(categoria => (
                                                     <MenuItem key={categoria.id} value={categoria.nome}>{categoria.nome}</MenuItem>
                                                 ))}
@@ -766,11 +765,12 @@ export function Estoque() {
                                             <SelectOptions lista={caracteristicas}
                                                 chave={"nome"}
                                                 id={"id"}
+                                                fullWidth
                                                 dados={caracteristicasAtualizacao.map((item) => item.caracteristica)}
                                                 func={setCaracteristicasAtualizacao}>
                                             </SelectOptions>
                                             <h3>Prateleira</h3>
-                                            <Select size='small' fullWidth sx={{ width: '35vw', marginBottom: '2rem' }}
+                                            <Select size='small' fullWidth sx={{ width: '95%', marginBottom: '2rem' }}
                                                 labelId="select-prateleira"
                                                 id="select-prateleira"
                                                 value={prateleiraCadastro}
@@ -782,7 +782,7 @@ export function Estoque() {
                                             </Select>
                                             <h3>Preço {itemEstoque == "Roupa" ? "(de venda)" : "(de compra) p/ metro"}</h3>
                                             <TextField type="number" size='small' key="preco" required={true} onChange={(e) => setAtribute(Number(e.target.value), "preco")}
-                                                sx={{ width: '35vw', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
+                                                sx={{ width: '95%', marginBottom: '2rem' }} id="outlined-basic" variant="outlined" />
                                             <h3>Imagem</h3>
                                             <Button variant="contained" component="label">
                                                 Carregar Imagem <input onChange={handleImageUpload} type='file' accept=".png, .jpg, .jpeg, .svg, .webp" hidden />
