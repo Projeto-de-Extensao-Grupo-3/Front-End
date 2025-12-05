@@ -6,7 +6,14 @@ import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import { TabelaHistorico } from "../../components/TabelaHistorico/TabelaHistorico";
 
 import dayjs from "dayjs";
-import 'dayjs/locale/en-gb';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import 'dayjs/locale/pt-br';
+
+// Configura Dayjs para usar UTC/timezone e definir locale padrão para pt-BR
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale('pt-br');
 
 import axios from 'axios';
 import { api } from "../../provider/api";
@@ -264,8 +271,8 @@ export function Historico() {
         if (values.tipoItem == 'saida') {
             values.itensParaRegistrar.forEach((item) =>
                 api.post(`/saidas-estoque`, {
-                    data: dayjs().format('YYYY-MM-DD'),
-                    hora: dayjs().format('HH:mm:ss'),
+                    data: dayjs().tz('America/Sao_Paulo').format('YYYY-MM-DD'),
+                    hora: dayjs().tz('America/Sao_Paulo').format('HH:mm:ss'),
                     qtdSaida: item.quantidadeNova,
                     motivoSaida: motivo,
                     responsavel: {
@@ -287,7 +294,7 @@ export function Historico() {
             let lote = 0;
             api.post(`lotes`, {
                 descricao: motivo,
-                dataEntrada: dayjs().format('YYYY-MM-DDTHH:mm:ss'),
+                dataEntrada: dayjs().tz('America/Sao_Paulo').format('YYYY-MM-DDTHH:mm:ss'),
                 parceiro: values.idParceiroEscolhido,
                 responsavel: sessionStorage.getItem('idFuncionario')
             }).then(response => {
