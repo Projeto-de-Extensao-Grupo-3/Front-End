@@ -13,6 +13,7 @@ import { EsqueciMinhaSenha } from "./Pages/RecuperacaoDeSenha/EsqueciMinhaSenha.
 import { CriarNovaSenha } from "./Pages/RecuperacaoDeSenha/CriarNovaSenha.jsx";
 import { ProtectedRoute } from "./components/protectRoute/ProtectRoute.jsx";
 import { Erro } from "./Pages/Erro/Erro.jsx";
+import { Lotes } from "./Pages/Lotes/Lotes.jsx";
 
 export const routes = createBrowserRouter([
 
@@ -112,6 +113,15 @@ export const routes = createBrowserRouter([
         element: (
             <ProtectedRoute>
                 <Prateleiras />
+            </ProtectedRoute>
+        ),
+        errorElement: <Erro />
+    },
+    {
+        path: "/lotes",
+        element: (
+            <ProtectedRoute>
+                <Lotes />
             </ProtectedRoute>
         ),
         errorElement: <Erro />

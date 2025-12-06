@@ -1,0 +1,13 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    min-height: 92vh;
+}
+
+.Accordion {
+    padding-top: 50px;
+    width: 80%;
+    
+}

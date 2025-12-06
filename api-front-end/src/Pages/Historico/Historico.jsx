@@ -5,6 +5,8 @@ import { Navbar } from "../../components/Navbar/Navbar"
 import AlertDialog from '../../components/AlertDialog/AlertDialog';
 import { TabelaHistorico } from "../../components/TabelaHistorico/TabelaHistorico";
 
+import { useNavigate } from "react-router-dom"
+
 import dayjs from "dayjs";
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -139,6 +141,9 @@ function reducer(state, action) {
 }
 
 export function Historico() {
+
+    const navigate = useNavigate();
+    
 
     const initialState = {
 
@@ -357,6 +362,11 @@ export function Historico() {
                                     </Select>
                                 </FormControl>
                             </div>
+                                <div className={styles.boxButton}>
+                                <Button sx={{height: '100%', p: 2}} variant="contained" onClick={() => navigate('/lotes')}>
+                                    Visualizar Lotes
+                                </Button>
+                                </div>
                         </div>
                         <br />
                         <TabelaHistorico tipoMovimentacao={values.tipoMovimentacao} triggerAtualizar={values.triggerAtualizar} obter={obterDados} />
