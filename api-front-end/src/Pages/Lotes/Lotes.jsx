@@ -66,7 +66,7 @@ export function Lotes() {
                                             <TableBody>
                                                 {lote.itens.map((item) => (
                                                     <TableRow key={item.nomeItem}>
-                                                        <TableCell><img src="item.url" style={{height: '24px'}}/></TableCell>
+                                                        <TableCell><img src={item.url} style={{height: '24px'}}/></TableCell>
                                                         <TableCell align="right">{item.nomeItem}</TableCell>
                                                         <TableCell align="right">{item.qtdEntrada}</TableCell>
                                                         <TableCell align="right">{item.qtdSaida}</TableCell>
