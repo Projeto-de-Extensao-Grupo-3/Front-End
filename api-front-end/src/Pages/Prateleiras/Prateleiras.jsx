@@ -79,7 +79,7 @@ export function Prateleiras() {
             reload();
         }).catch(error => {
             console.error("Erro ao cadastrar Categoria: ", error);
-            if (error.response.status === 409) { 
+            if (error.response.status === 409) {
                 setAlertType("warning");
                 setAlertTitle("Cadastro existente!");
                 setAlertMessage(`A prateleira de código ${codigo} já existe no sistema.`);
@@ -104,20 +104,29 @@ export function Prateleiras() {
             document.getElementById('alert-cadastro-remove').style.display = "flex"
             return;
         }
-        var possuiItens = false;
-        // api.get(`/prateleiras/existeItem/${id}`).then((response) => {
-        //     possuiItens = response.data.existeItem;
-        // })
-        if (possuiItens) {
-            document.getElementById('alert-cadastro-remove-conflito').style.display = "flex"
-            return;
-        }
 
         console.log(id)
-        // api.delete(`/prateleiras/${id}`).then(() => {
-        //         setPopupRemoverAberto(false);
-        //         reload();
-        //     }).catch(error => console.error("Erro ao remover:", error));
+        api.delete(`/prateleiras/${id}`).then(() => {
+            setAlertType("success");
+            setAlertTitle("Remoção bem sucedida!");
+            setAlertMessage(`A prateleira foi removida com sucesso.`);
+            setAlertOpen(true);
+            setPopupRemoverAberto(false);
+            reload();
+        }).catch(error => {
+            console.error("Erro ao remover:", error);
+            if (error.response.status === 409) {
+                setAlertType("warning");
+                setAlertTitle("Prateleira em uso!");
+                setAlertMessage(`Não é possível remover esta prateleira, pois ela está em uso.`);
+                setAlertOpen(true);
+            } else {
+                setAlertType("error");
+                setAlertTitle("Erro na remoção!");
+                setAlertMessage(`Ocorreu um erro ao remover a prateleira. Entre em contato com o suporte.`);
+                setAlertOpen(true);
+            }
+        });
     }
 
     const atualizarPrateleira = (event) => {
@@ -133,13 +142,29 @@ export function Prateleiras() {
         })
 
         console.log(formJson)
-        // api.put(`/categorias/${formJson.id}`, {
-        //     codigo: formJson.codigo
-        // }).then( (response) => {
-
-        //     setPopupAtualizarAberto(false);
-        //     reload();
-        // }).catch(error => console.error("Erro ao remover:", error));
+        api.put(`/prateleiras/${formJson.id}`, {
+            codigo: formJson.codigo
+        }).then((response) => {
+            setAlertType("success");
+            setAlertTitle("Atualizado com sucesso!");
+            setAlertMessage(`A prateleira foi atualizada com sucesso.`);
+            setAlertOpen(true);
+            setPopupAtualizarAberto(false);
+            reload();
+        }).catch(error => {
+            console.error("Erro ao remover:", error)
+            if (error.response.status === 409) {
+                setAlertType("warning");
+                setAlertTitle("Prateleira existente!");
+                setAlertMessage(`A prateleira de código ${formJson.codigo} já existe no sistema.`);
+                setAlertOpen(true);
+            } else {
+                setAlertType("error");
+                setAlertTitle("Erro na atualização!");
+                setAlertMessage(`Ocorreu um erro ao atualizar a prateleira. Entre em contato com o suporte.`);
+                setAlertOpen(true);
+            }
+        });
     };
 
 
