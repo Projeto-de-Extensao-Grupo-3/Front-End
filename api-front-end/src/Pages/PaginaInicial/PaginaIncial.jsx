@@ -58,7 +58,7 @@ export function PaginaInicial(){
                 sessionStorage.setItem('idFuncionario', response.data.idFuncionario)
                 carregarPermissoes(); 
                 setTimeout(() => {
-                    navigate('/historico')
+                    navigate('/estoque')
                 }
                 , 1000);
             }
