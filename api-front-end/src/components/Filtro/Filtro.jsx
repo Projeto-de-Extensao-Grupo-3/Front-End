@@ -113,7 +113,7 @@ export function Filtro(props) {
             return;
         }
 
-        if (dayjs(newDate).isBefore(dataFim)) {
+        if (!dayjs(dataInicio).isBefore(dataFim)) {
             // Data inválida
             return;
         }
